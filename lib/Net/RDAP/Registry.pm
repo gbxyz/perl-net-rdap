@@ -96,7 +96,7 @@ sub get_url {
 
 =pod
 
-L<Net::RDAP::Registry->get_url()> is just a wrapper to the methods below:
+C<Net::RDAP::Registry-E<gt>get_url()> is just a wrapper to the methods below:
 
 =cut
 
