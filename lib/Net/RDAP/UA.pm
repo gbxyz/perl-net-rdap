@@ -7,7 +7,7 @@ use strict;
 
 =head1 NAME
 
-C<Net::RDAP::UA> - an RDAP user agent, based on C<LWP::UserAgent>.
+L<Net::RDAP::UA> - an RDAP user agent, based on L<LWP::UserAgent>.
 
 =head1 SYNOPSIS
 

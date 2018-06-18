@@ -16,7 +16,7 @@ $VERSION = 0.1;
 
 =head1 NAME
 
-C<Net::RDAP> - an interface to the Registration Data Access Protocol
+L<Net::RDAP> - an interface to the Registration Data Access Protocol
 (RDAP).
 
 =head1 SYNOPSIS
@@ -37,14 +37,14 @@ C<Net::RDAP> - an interface to the Registration Data Access Protocol
 
 =head1 DESCRIPTION
 
-C<Net::RDAP> provides an interface to the Registration Data Access
+L<Net::RDAP> provides an interface to the Registration Data Access
 Protocol (RDAP). RDAP is a replacement for Whois.
 
-C<Net::RDAP> does all the hard work of determining the correct
-server to query (C<Net::RDAP::Registry> is an interface to the
-IANA registries), querying thes server (C<Net::RDAP::UA> is an
+L<Net::RDAP> does all the hard work of determining the correct
+server to query (L<Net::RDAP::Registry> is an interface to the
+IANA registries), querying the sserver (L<Net::RDAP::UA> is an
 RDAP HTTP user agent), and parsing the response
-(C<Net::RDAP::Response> provides access to the data returned
+(L<Net::RDAP::Response> provides access to the data returned
 by the server).
 
 =head1 METHODS
@@ -61,9 +61,9 @@ sub new { bless({}, shift) }
 
 	$info = $rdap->domain($domain);
 
-This method returns a C<Net::RDAP::Response> object containing
+This method returns a L<Net::RDAP::Response> object containing
 information about the domain name referenced by C<$domain>.
-C<$domain> must be a C<Net::DNS::Domain> object.
+C<$domain> must be a L<Net::DNS::Domain> object.
 
 If no RDAP service can be found, then C<undef> is returned.
 
@@ -79,9 +79,9 @@ sub domain {
 
 	$info = $rdap->ip($ip);
 
-This method returns a C<Net::RDAP::Response> object containing
+This method returns a L<Net::RDAP::Response> object containing
 information about the resource referenced by C<$ip>.
-C<$ip> must be a C<Net::IP> object and can represent any of the
+C<$ip> must be a L<Net::IP> object and can represent any of the
 following:
 
 =over
@@ -110,9 +110,9 @@ sub ip {
 
 	$info = $rdap->autnum($autnum);
 
-This method returns a C<Net::RDAP::Response> object containing
+This method returns a L<Net::RDAP::Response> object containing
 information about to the autonymous system referenced by C<$autnum>.
-C<$autnum> must be a C<Net::ASN> object.
+C<$autnum> must be a L<Net::ASN> object.
 
 If no RDAP service can be found, then C<undef> is returned.
 

@@ -5,7 +5,7 @@ use strict;
 
 =head1 NAME
 
-C<Net::RDAP::Response> - an RDAP response.
+L<Net::RDAP::Response> - an RDAP response.
 
 =head1 SYNOPSIS
 
@@ -13,7 +13,7 @@ C<Net::RDAP::Response> - an RDAP response.
 
 =head1 DESCRIPTION
 
-The C<Net::RDAP> module will return objects of this class which have
+The L<Net::RDAP> module will return objects of this class which have
 been populated using JSON responses from RDAP servers.
 
 This module doesn't do much at the moment, but you can directly access

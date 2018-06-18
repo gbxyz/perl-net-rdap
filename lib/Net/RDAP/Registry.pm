@@ -24,7 +24,7 @@ $REGISTRY = {};
 
 =head1 NAME
 
-C<Net::RDAP::Registry> - an interface to the IANA RDAP registries.
+L<Net::RDAP::Registry> - an interface to the IANA RDAP registries.
 
 =head1 SYNOPSIS
 
@@ -44,28 +44,28 @@ service for a given internet resource using one of several IANA
 registries.
 
 This module provides an interface to these registries, and will return
-a C<URI> object corresponding to the URL for a resource obtained from
+a L<URI> object corresponding to the URL for a resource obtained from
 them.
 
-C<Net::RDAP::Registry> downloads the registry files from the IANA
+L<Net::RDAP::Registry> downloads the registry files from the IANA
 website and will maintain up-to-date copies of those files locally.
 
 =head1 METHODS
 
 	$url = Net::RDAP::Registry->get_url($resource);
 
-This method returns a C<URI> object corresponding to the authoritative
+This method returns a L<URI> object corresponding to the authoritative
 RDAP URL for the given resource. C<$resource> may be one of the
 following:
 
 =over
 
-=item * a C<Net::IP> object representing an IPv4 or IPv6 address or
+=item * a L<Net::IP> object representing an IPv4 or IPv6 address or
 address range;
 
-=item * a C<Net::ASN> object representing an Autonymous System;
+=item * a L<Net::ASN> object representing an Autonymous System;
 
-=item * a C<Net::DNS::Domain> object representing a domain name.
+=item * a L<Net::DNS::Domain> object representing a domain name.
 
 =back
 
@@ -96,7 +96,7 @@ sub get_url {
 
 =pod
 
-C<Net::RDAP::Registry->get_url()> is just a wrapper to the methods below:
+L<Net::RDAP::Registry->get_url()> is just a wrapper to the methods below:
 
 =cut
 
@@ -104,8 +104,8 @@ C<Net::RDAP::Registry->get_url()> is just a wrapper to the methods below:
 
 	$url = Net::RDAP::Registry->ip($ip);
 
-This method returns a C<URI> object corresponding to the authoritative
-RDAP URL for C<$ip>, which is a C<Net::IP> object corresponding to an
+This method returns a L<URI> object corresponding to the authoritative
+RDAP URL for C<$ip>, which is a L<Net::IP> object corresponding to an
 IPv4 or IPv6 address or address range.
 
 If no URL can be found in the IANA registry, then C<undef> is returned.
@@ -144,8 +144,8 @@ sub ip {
 
 	$url = Net::RDAP::Registry->autnum($autnum);
 
-This method returns a C<URI> object corresponding to the authoritative
-RDAP URL for C<$autnum>, which is a C<Net::ASN> object corresponding
+This method returns a L<URI> object corresponding to the authoritative
+RDAP URL for C<$autnum>, which is a L<Net::ASN> object corresponding
 to an Autonymous System number.
 
 If no URL can be found in the IANA registry, then C<undef> is returned.
@@ -196,8 +196,8 @@ sub autnum {
 
 	$url = Net::RDAP::Registry->domain($domain);
 
-This method returns a C<URI> object corresponding to the authoritative
-RDAP URL for C<$domain>, which is a C<Net::DNS::Domain> object
+This method returns a L<URI> object corresponding to the authoritative
+RDAP URL for C<$domain>, which is a L<Net::DNS::Domain> object
 corresponding to a fully-qualified domain name.
 
 If no URL can be found in the IANA registry, then C<undef> is returned.
