@@ -1,6 +1,6 @@
 # NAME
 
-`Net::RDAP` - an interface to the Registration Data Access Protocol
+[Net::RDAP](https://metacpan.org/pod/Net::RDAP) - an interface to the Registration Data Access Protocol
 (RDAP).
 
 # SYNOPSIS
@@ -21,14 +21,14 @@
 
 # DESCRIPTION
 
-`Net::RDAP` provides an interface to the Registration Data Access
+[Net::RDAP](https://metacpan.org/pod/Net::RDAP) provides an interface to the Registration Data Access
 Protocol (RDAP). RDAP is a replacement for Whois.
 
-`Net::RDAP` does all the hard work of determining the correct
-server to query (`Net::RDAP::Registry` is an interface to the
-IANA registries), querying thes server (`Net::RDAP::UA` is an
+[Net::RDAP](https://metacpan.org/pod/Net::RDAP) does all the hard work of determining the correct
+server to query ([Net::RDAP::Registry](https://metacpan.org/pod/Net::RDAP::Registry) is an interface to the
+IANA registries), querying the sserver ([Net::RDAP::UA](https://metacpan.org/pod/Net::RDAP::UA) is an
 RDAP HTTP user agent), and parsing the response
-(`Net::RDAP::Response` provides access to the data returned
+([Net::RDAP::Response](https://metacpan.org/pod/Net::RDAP::Response) provides access to the data returned
 by the server).
 
 # METHODS
@@ -39,17 +39,17 @@ Constructor method, returns a new object.
 
         $info = $rdap->domain($domain);
 
-This method returns a `Net::RDAP::Response` object containing
+This method returns a [Net::RDAP::Response](https://metacpan.org/pod/Net::RDAP::Response) object containing
 information about the domain name referenced by `$domain`.
-`$domain` must be a `Net::DNS::Domain` object.
+`$domain` must be a [Net::DNS::Domain](https://metacpan.org/pod/Net::DNS::Domain) object.
 
 If no RDAP service can be found, then `undef` is returned.
 
         $info = $rdap->ip($ip);
 
-This method returns a `Net::RDAP::Response` object containing
+This method returns a [Net::RDAP::Response](https://metacpan.org/pod/Net::RDAP::Response) object containing
 information about the resource referenced by `$ip`.
-`$ip` must be a `Net::IP` object and can represent any of the
+`$ip` must be a [Net::IP](https://metacpan.org/pod/Net::IP) object and can represent any of the
 following:
 
 - An IPv4 address (e.g. `192.168.0.1`);
@@ -61,9 +61,9 @@ If no RDAP service can be found, then `undef` is returned.
 
         $info = $rdap->autnum($autnum);
 
-This method returns a `Net::RDAP::Response` object containing
+This method returns a [Net::RDAP::Response](https://metacpan.org/pod/Net::RDAP::Response) object containing
 information about to the autonymous system referenced by `$autnum`.
-`$autnum` must be a `Net::ASN` object.
+`$autnum` must be a [Net::ASN](https://metacpan.org/pod/Net::ASN) object.
 
 If no RDAP service can be found, then `undef` is returned.
 
