@@ -26,7 +26,7 @@ Protocol (RDAP). RDAP is a replacement for Whois.
 
 [Net::RDAP](https://metacpan.org/pod/Net::RDAP) does all the hard work of determining the correct
 server to query ([Net::RDAP::Registry](https://metacpan.org/pod/Net::RDAP::Registry) is an interface to the
-IANA registries), querying the sserver ([Net::RDAP::UA](https://metacpan.org/pod/Net::RDAP::UA) is an
+IANA registries), querying the server ([Net::RDAP::UA](https://metacpan.org/pod/Net::RDAP::UA) is an
 RDAP HTTP user agent), and parsing the response
 ([Net::RDAP::Response](https://metacpan.org/pod/Net::RDAP::Response) provides access to the data returned
 by the server).
