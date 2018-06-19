@@ -133,7 +133,7 @@ sub ip {
 	}
 
 	return undef if (scalar(keys(%{$matches})) < 1);
-	
+
 	# prefer the service with the longest prefix length
 	my @urls = @{$matches->{(sort { Net::IP->new($b)->prefixlen <=> Net::IP->new($a)->prefixlen } keys(%{$matches}))[0]}};
 
