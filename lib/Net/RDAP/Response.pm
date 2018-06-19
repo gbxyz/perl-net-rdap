@@ -22,8 +22,34 @@ L<Net::RDAP::Response> - an RDAP response.
 The L<Net::RDAP> module will return objects of this class which have
 been populated using JSON responses from RDAP servers.
 
-This module doesn't do much at the moment, but you can directly access
-its properties to obtain RDAP response data.
+This class inherits from L<Net::RDAP::Object> and therefore has all the
+methods available in that class.
+
+Additional methods:
+
+	@conformance = $response->conformance;
+
+Returns an array of strings, each providing a hint as to the
+specifications used in the construction of the response.
+
+=cut
+
+sub conformance {
+	my $self = shift;
+	return @{$self->{'rdapConformance'}};
+}
+
+=pod
+
+	@notices = $response->notices;
+
+Returns a (potentially empty) array of L<Net::RDAP::Notice> objects.
+
+=cut
+
+sub notices { $_[0]->objects('Net::RDAP::Notice', $_[0]->{'notices'}) }
+
+=pod
 
 =head1 COPYRIGHT
 
