@@ -229,7 +229,7 @@ sub domain {
 	return undef if (scalar(keys(%{$matches})) < 1);
 
 	# prefer the service with the longest domain name
-	my @urls = @{$matches->{(sort { length($a) <=> length($b) } keys(%{$matches}))[0]}};
+	my @urls = @{$matches->{(sort { length($b) <=> length($a) } keys(%{$matches}))[0]}};
 
 	return $package->assemble_url($package->get_best_url(@urls), 'domain', $domain->name);
 }
