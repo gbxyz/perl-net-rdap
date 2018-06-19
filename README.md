@@ -67,6 +67,26 @@ information about to the autonymous system referenced by `$autnum`.
 
 If no RDAP service can be found, then `undef` is returned.
 
+# DISTRIBUTION
+
+The [Net::RDAP](https://metacpan.org/pod/Net::RDAP) CPAN distribution contains a large number of RDAP-
+related classes that all work together. See:
+
+- [Net::RDAP::Base](https://metacpan.org/pod/Net::RDAP::Base), and its submodules:
+    - [Net::RDAP::Event](https://metacpan.org/pod/Net::RDAP::Event)
+    - [Net::RDAP::ID](https://metacpan.org/pod/Net::RDAP::ID)
+    - [Net::RDAP::Object](https://metacpan.org/pod/Net::RDAP::Object), and its submodules:
+        - [Net::RDAP::Autnum](https://metacpan.org/pod/Net::RDAP::Autnum)
+        - [Net::RDAP::Domain](https://metacpan.org/pod/Net::RDAP::Domain)
+        - [Net::RDAP::Entity](https://metacpan.org/pod/Net::RDAP::Entity)
+        - [Net::RDAP::Nameserver](https://metacpan.org/pod/Net::RDAP::Nameserver)
+        - [Net::RDAP::Response](https://metacpan.org/pod/Net::RDAP::Response)
+    - [Net::RDAP::Remark](https://metacpan.org/pod/Net::RDAP::Remark), and its submodule:
+        - [Net::RDAP::Notice](https://metacpan.org/pod/Net::RDAP::Notice)
+- [Net::RDAP::Registry](https://metacpan.org/pod/Net::RDAP::Registry)
+- [Net::RDAP::Link](https://metacpan.org/pod/Net::RDAP::Link)
+- [Net::RDAP::UA](https://metacpan.org/pod/Net::RDAP::UA)
+
 # COPYRIGHT
 
 Copyright 2018 CentralNic Ltd. All rights reserved.

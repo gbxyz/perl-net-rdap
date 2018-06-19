@@ -175,6 +175,55 @@ sub ua {
 
 =pod
 
+=head1 DISTRIBUTION
+
+The L<Net::RDAP> CPAN distribution contains a large number of RDAP-
+related classes that all work together. See:
+
+=over
+
+=item * L<Net::RDAP::Base>, and its submodules:
+
+=over
+
+=item * L<Net::RDAP::Event>
+
+=item * L<Net::RDAP::ID>
+
+=item * L<Net::RDAP::Object>, and its submodules:
+
+=over
+
+=item * L<Net::RDAP::Autnum>
+
+=item * L<Net::RDAP::Domain>
+
+=item * L<Net::RDAP::Entity>
+
+=item * L<Net::RDAP::Nameserver>
+
+=item * L<Net::RDAP::Response>
+
+=back
+
+=item * L<Net::RDAP::Remark>, and its submodule:
+
+=over
+
+=item * L<Net::RDAP::Notice>
+
+=back
+
+=back
+
+=item * L<Net::RDAP::Registry>
+
+=item * L<Net::RDAP::Link>
+
+=item * L<Net::RDAP::UA>
+
+=back
+
 =head1 COPYRIGHT
 
 Copyright 2018 CentralNic Ltd. All rights reserved.
