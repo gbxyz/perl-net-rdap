@@ -45,20 +45,28 @@ Returns a L<vCard> object for the entity.
 sub vcard {
 	my $self = shift;
 
+	return undef unless ($self->{'vcardArray'});
+
 	my $card = vCard->new;
 
 	my @nodes = @{$self->{'vcardArray'}->[1]};
-	
+
+	my @emails;
+
 	foreach my $nref (@nodes) {
 		my ($type, $params, $vtype, $value) = @{$nref};
 
-		if ('fn' eq $type)		{	$card->full_name($value)	}
-		elsif ('org' eq $type)		{	$card->organization($value)	}
-		# elsif ('adr' eq $type)		{	$card->addresses()		}
-		# elsif ('tel' eq $type)		{	$card->addresses()		}
-		# elsif ('email' eq $type)	{	$card->addresses()		}
-
+		#
+		# vCard is a very loosely defined format, so supporting anything
+		# beyond the most basic properties will require a lot of work.
+		# This is the bare minimum for now.
+		#
+		if ('fn' eq $type)		{	$card->full_name($value)		}
+		elsif ('org' eq $type)		{	$card->organization($value)		}
+		elsif ('email' eq $type)	{	push(@emails, $value)			}
 	}
+
+	$card->email_addresses([ map { { 'address' => $_ } } @emails ]);
 
 	return $card;
 }
