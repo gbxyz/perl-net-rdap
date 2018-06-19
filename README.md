@@ -67,6 +67,13 @@ information about to the autonymous system referenced by `$autnum`.
 
 If no RDAP service can be found, then `undef` is returned.
 
+# HOW TO CONTRIBUTE
+
+[Net::RDAP](https://metacpan.org/pod/Net::RDAP) is a work-in-progress; if you would like to help, the
+project is hosted here:
+
+- [https://gitlab.centralnic.com/centralnic/perl-net-rdap](https://gitlab.centralnic.com/centralnic/perl-net-rdap)
+
 # DISTRIBUTION
 
 The [Net::RDAP](https://metacpan.org/pod/Net::RDAP) CPAN distribution contains a large number of RDAP-

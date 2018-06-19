@@ -175,6 +175,17 @@ sub ua {
 
 =pod
 
+=head1 HOW TO CONTRIBUTE
+
+L<Net::RDAP> is a work-in-progress; if you would like to help, the
+project is hosted here:
+
+=over
+
+=item * L<https://gitlab.centralnic.com/centralnic/perl-net-rdap>
+
+=back
+
 =head1 DISTRIBUTION
 
 The L<Net::RDAP> CPAN distribution contains a large number of RDAP-
