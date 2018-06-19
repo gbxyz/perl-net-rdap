@@ -42,7 +42,7 @@ Protocol (RDAP). RDAP is a replacement for Whois.
 
 L<Net::RDAP> does all the hard work of determining the correct
 server to query (L<Net::RDAP::Registry> is an interface to the
-IANA registries), querying the sserver (L<Net::RDAP::UA> is an
+IANA registries), querying the server (L<Net::RDAP::UA> is an
 RDAP HTTP user agent), and parsing the response
 (L<Net::RDAP::Response> provides access to the data returned
 by the server).
