@@ -1,15 +1,21 @@
 package Net::RDAP::Response;
+use base qw(Net::RDAP::Object);
 use strict;
+
+#
+# unlike Net::RDAP::Base, this module
+# requires a reference:
+#
+sub new {
+	my ($package, $ref) = @_;
+	bless($ref, $package);
+}
 
 =pod
 
 =head1 NAME
 
 L<Net::RDAP::Response> - an RDAP response.
-
-=head1 SYNOPSIS
-
-	use Net::RDAP::Response;
 
 =head1 DESCRIPTION
 
@@ -42,10 +48,5 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 =cut
-
-sub new {
-	my ($package, $ref) = @_;
-	bless($ref, $package);
-}
 
 1;
