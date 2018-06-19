@@ -61,9 +61,17 @@ sub new {
 # server for JSON:
 #
 sub request {
-	my $self = shift;
-	$_[0]->header('Accept' => 'application/rdap+json, application/json');
-	return $self->SUPER::request(@_);
+	my ($self, $request) = @_;
+
+	$request->header('Accept' => 'application/rdap+json, application/json');
+
+	print STDERR $request->as_string if (1 == $ENV{'NET_RDAP_UA_DEBUG'});
+
+	my $response = $self->SUPER::request($request);
+
+	print STDERR $response->as_string if (1 == $ENV{'NET_RDAP_UA_DEBUG'});
+
+	return $response;
 }
 
 1;
