@@ -194,15 +194,15 @@ related classes that all work together. See:
 
 =over
 
-=item * L<Net::RDAP::Autnum>
+=item * L<Net::RDAP::Autnum> (doesn't exist yet)
 
-=item * L<Net::RDAP::Domain>
+=item * L<Net::RDAP::Domain> (doesn't exist yet)
 
 =item * L<Net::RDAP::Entity>
 
-=item * L<Net::RDAP::Nameserver>
+=item * L<Net::RDAP::Nameserver> (doesn't exist yet)
 
-=item * L<Net::RDAP::Response>
+=item * L<Net::RDAP::Response> (doesn't exist yet)
 
 =back
 

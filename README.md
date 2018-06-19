@@ -76,11 +76,11 @@ related classes that all work together. See:
     - [Net::RDAP::Event](https://metacpan.org/pod/Net::RDAP::Event)
     - [Net::RDAP::ID](https://metacpan.org/pod/Net::RDAP::ID)
     - [Net::RDAP::Object](https://metacpan.org/pod/Net::RDAP::Object), and its submodules:
-        - [Net::RDAP::Autnum](https://metacpan.org/pod/Net::RDAP::Autnum)
-        - [Net::RDAP::Domain](https://metacpan.org/pod/Net::RDAP::Domain)
+        - [Net::RDAP::Autnum](https://metacpan.org/pod/Net::RDAP::Autnum) (doesn't exist yet)
+        - [Net::RDAP::Domain](https://metacpan.org/pod/Net::RDAP::Domain) (doesn't exist yet)
         - [Net::RDAP::Entity](https://metacpan.org/pod/Net::RDAP::Entity)
-        - [Net::RDAP::Nameserver](https://metacpan.org/pod/Net::RDAP::Nameserver)
-        - [Net::RDAP::Response](https://metacpan.org/pod/Net::RDAP::Response)
+        - [Net::RDAP::Nameserver](https://metacpan.org/pod/Net::RDAP::Nameserver) (doesn't exist yet)
+        - [Net::RDAP::Response](https://metacpan.org/pod/Net::RDAP::Response) (doesn't exist yet)
     - [Net::RDAP::Remark](https://metacpan.org/pod/Net::RDAP::Remark), and its submodule:
         - [Net::RDAP::Notice](https://metacpan.org/pod/Net::RDAP::Notice)
 - [Net::RDAP::Registry](https://metacpan.org/pod/Net::RDAP::Registry)
