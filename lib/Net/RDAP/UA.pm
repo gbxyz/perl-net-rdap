@@ -9,10 +9,6 @@ use strict;
 
 L<Net::RDAP::UA> - an RDAP user agent, based on L<LWP::UserAgent>.
 
-=head1 SYNOPSIS
-
-	use Net::RDAP::UA;
-
 =head1 DESCRIPTION
 
 This module extends L<LWP::UserAgent> in order to inject various
