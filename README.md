@@ -77,7 +77,7 @@ project is hosted here:
 # DISTRIBUTION
 
 The [Net::RDAP](https://metacpan.org/pod/Net::RDAP) CPAN distribution contains a large number of RDAP-
-related classes that all work together. See:
+related classes that all work together. They are:
 
 - [Net::RDAP::Base](https://metacpan.org/pod/Net::RDAP::Base), and its submodules:
     - [Net::RDAP::Event](https://metacpan.org/pod/Net::RDAP::Event)
@@ -93,6 +93,40 @@ related classes that all work together. See:
 - [Net::RDAP::Registry](https://metacpan.org/pod/Net::RDAP::Registry)
 - [Net::RDAP::Link](https://metacpan.org/pod/Net::RDAP::Link)
 - [Net::RDAP::UA](https://metacpan.org/pod/Net::RDAP::UA)
+
+# DEPENDENCIES
+
+- [DateTime::Format::ISO8601](https://metacpan.org/pod/DateTime::Format::ISO8601)
+- [File::Basename](https://metacpan.org/pod/File::Basename)
+- [File::Slurp](https://metacpan.org/pod/File::Slurp)
+- [File::Spec](https://metacpan.org/pod/File::Spec)
+- [File::stat](https://metacpan.org/pod/File::stat)
+- [HTTP::Request::Common](https://metacpan.org/pod/HTTP::Request::Common)
+- [JSON](https://metacpan.org/pod/JSON)
+- [LWP::Protocol::https](https://metacpan.org/pod/LWP::Protocol::https)
+- [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent)
+- [Mozilla::CA](https://metacpan.org/pod/Mozilla::CA)
+- [Net::ASN](https://metacpan.org/pod/Net::ASN)
+- [Net::DNS](https://metacpan.org/pod/Net::DNS)
+- [Net::IP](https://metacpan.org/pod/Net::IP)
+- [URI](https://metacpan.org/pod/URI)
+- [vCard](https://metacpan.org/pod/vCard)
+
+# REFERENCES
+
+- [https://tools.ietf.org/html/rfc7480](https://tools.ietf.org/html/rfc7480) - HTTP Usage in the Registration
+Data Access Protocol (RDAP)
+- [https://tools.ietf.org/html/rfc7481](https://tools.ietf.org/html/rfc7481) - Security Services for the
+Registration Data Access Protocol (RDAP)
+- [https://tools.ietf.org/html/rfc7482](https://tools.ietf.org/html/rfc7482) - Registration Data Access
+Protocol (RDAP) Query Format
+- [https://tools.ietf.org/html/rfc7483](https://tools.ietf.org/html/rfc7483) - JSON Responses for the
+Registration Data Access Protocol (RDAP)
+- [https://tools.ietf.org/html/rfc7484](https://tools.ietf.org/html/rfc7484) - Finding the Authoritative
+Registration Data (RDAP) Service
+- [https://tools.ietf.org/html/rfc8056](https://tools.ietf.org/html/rfc8056) - Extensible Provisioning
+Protocol (EPP) and Registration Data Access Protocol (RDAP) Status Mapping
+- [https://tools.ietf.org/html/rfc8288](https://tools.ietf.org/html/rfc8288) -  Web Linking
 
 # COPYRIGHT
 

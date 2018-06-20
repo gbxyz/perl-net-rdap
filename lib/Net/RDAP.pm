@@ -193,7 +193,7 @@ project is hosted here:
 =head1 DISTRIBUTION
 
 The L<Net::RDAP> CPAN distribution contains a large number of RDAP-
-related classes that all work together. See:
+related classes that all work together. They are:
 
 =over
 
@@ -236,6 +236,68 @@ related classes that all work together. See:
 =item * L<Net::RDAP::Link>
 
 =item * L<Net::RDAP::UA>
+
+=back
+
+=head1 DEPENDENCIES
+
+=over
+
+=item * L<DateTime::Format::ISO8601>
+
+=item * L<File::Basename>
+
+=item * L<File::Slurp>
+
+=item * L<File::Spec>
+
+=item * L<File::stat>
+
+=item * L<HTTP::Request::Common>
+
+=item * L<JSON>
+
+=item * L<LWP::Protocol::https>
+
+=item * L<LWP::UserAgent>
+
+=item * L<Mozilla::CA>
+
+=item * L<Net::ASN>
+
+=item * L<Net::DNS>
+
+=item * L<Net::IP>
+
+=item * L<URI>
+
+=item * L<vCard>
+
+=back
+
+=head1 REFERENCES
+
+=over
+
+=item * L<https://tools.ietf.org/html/rfc7480> - HTTP Usage in the Registration
+Data Access Protocol (RDAP)
+
+=item * L<https://tools.ietf.org/html/rfc7481> - Security Services for the
+Registration Data Access Protocol (RDAP)
+
+=item * L<https://tools.ietf.org/html/rfc7482> - Registration Data Access
+Protocol (RDAP) Query Format
+
+=item * L<https://tools.ietf.org/html/rfc7483> - JSON Responses for the
+Registration Data Access Protocol (RDAP)
+
+=item * L<https://tools.ietf.org/html/rfc7484> - Finding the Authoritative
+Registration Data (RDAP) Service
+
+=item * L<https://tools.ietf.org/html/rfc8056> - Extensible Provisioning
+Protocol (EPP) and Registration Data Access Protocol (RDAP) Status Mapping
+
+=item * L<https://tools.ietf.org/html/rfc8288> -  Web Linking
 
 =back
 
