@@ -1,4 +1,4 @@
-package Net::RDAP::Entity;
+package Net::RDAP::Object::Entity;
 use base qw(Net::RDAP::Object);
 use vCard;
 use strict;
@@ -7,14 +7,14 @@ use strict;
 
 =head1 NAME
 
-L<Net::RDAP::Entity> - a module representing an entity (person or
-organization).
+L<Net::RDAP::Object::Entity> - a module representing an entity (person
+or organization).
 
 =head1 DESCRIPTION
 
-L<Net::RDAP::Entity> represents persons or organizations in RDAP
-responses. An entity is a vCard object plus metadata.
-L<Net::RDAP::Entity> inherits from L<Net::RDAP::Object> so has
+L<Net::RDAP::Object::Entity> represents persons or organizations in
+RDAP responses. An entity is a vCard object plus metadata.
+L<Net::RDAP::Object::Entity> inherits from L<Net::RDAP::Object> so has
 access to all that's modules methods.
 
 Other methods include:
