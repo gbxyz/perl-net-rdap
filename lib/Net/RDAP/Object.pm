@@ -21,6 +21,36 @@ available to that module.
 
 Other methods include:
 
+	@conformance = $response->conformance;
+
+Returns an array of strings, each providing a hint as to the
+specifications used in the construction of the response.
+
+This method will return C<undef> unless called on the top-most object
+in a response.
+
+=cut
+
+sub conformance {
+	my $self = shift;
+	return @{$self->{'rdapConformance'}};
+}
+
+=pod
+
+	@notices = $response->notices;
+
+Returns a (potentially empty) array of L<Net::RDAP::Notice> objects.
+
+The array will always be empty unless called on the top-most object
+in a response.
+
+=cut
+
+sub notices { $_[0]->objects('Net::RDAP::Notice', $_[0]->{'notices'}) }
+
+=pod
+
 	$class = $object->class;
 
 Returns a string containing the class name of this object.
@@ -101,11 +131,11 @@ sub ids { $_[0]->objects('Net::RDAP::ID', $_[0]->{'publicIds'}) }
 
 	@entities = $object->entities;
 
-Returns a (potentially empty) array of L<Net::RDAP::Entity> objects.
+Returns a (potentially empty) array of L<Net::RDAP::Object::Entity> objects.
 
 =cut
 
-sub entities { $_[0]->objects('Net::RDAP::Entity', $_[0]->{'entities'}) }
+sub entities { $_[0]->objects('Net::RDAP::Object::Entity', $_[0]->{'entities'}) }
 
 =pod
 
