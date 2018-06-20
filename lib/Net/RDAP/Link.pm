@@ -16,7 +16,7 @@ or more links:
 
 =over
 
-=item * top-level responses (see L<Net::RDAP::Response>)
+=item * objects (see L<Net::RDAP::Object>)
 
 =item * remarks (see L<Net::RDAP::Remark>)
 
@@ -26,9 +26,10 @@ or more links:
 
 =back
 
-In most cases, the modules representing these types of object provide a
-C<links()> method which will return a (potentially empty) array of
-L<Net::RDAP::Link> objects.
+In all cases, the modules representing these types of object inherit
+from L<Net::RDAP::Base> and therefore provide a C<links()> method
+which will return a (potentially empty) array of L<Net::RDAP::Link>
+objects.
 
 The available methods are:
 
