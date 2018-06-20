@@ -55,13 +55,13 @@ network of this network registration
 
 =cut
 
-sub start		{ Net::IP->new($_[0]->{'startAddress'}) }
-sub end			{ Net::IP->new($_[0]->{'endAddress'}) }
-sub version		{ $_[0]->{'ipVersion'} }
-sub name		{ $_[0]->{'name'} }
-sub type		{ $_[0]->{'type'} }
-sub country		{ $_[0]->{'country'} }
-sub parentHandle	{ $_[0]->{'parentHandle'} }
+sub start		{ Net::IP->new($_[0]->{'startAddress'})	}
+sub end			{ Net::IP->new($_[0]->{'endAddress'})	}
+sub version		{ $_[0]->{'ipVersion'}			}
+sub name		{ $_[0]->{'name'}			}
+sub type		{ $_[0]->{'type'}			}
+sub country		{ $_[0]->{'country'}			}
+sub parentHandle	{ $_[0]->{'parentHandle'}		}
 
 =pod
 
