@@ -147,8 +147,16 @@ sub query {
 		croak('500 Invalid Content-Type');
 
 	} else {
-		return Net::RDAP::Response->new(decode_json($response->content));
+		my $data = decode_json($response->content);
+		if (!defined($data) || 'HASH' ne ref($data) || !defined($data->{'objectClassName'})) {
+			croak('500 JSON parse error');
 
+		} else {
+			if ('domain' eq $data->{'objectClassName'}) 		{	return Net::RDAP::Object::Domain->new($data)	}
+			elsif ('ip network' eq $data->{'objectClassName'})	{	return Net::RDAP::Object::IPNetwork->new($data)	}
+			elsif ('autnum' eq $data->{'objectClassName'})		{	return Net::RDAP::Object::Autnum->new($data)	}
+
+		}
 	}
 }
 
