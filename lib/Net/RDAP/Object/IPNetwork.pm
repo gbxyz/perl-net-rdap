@@ -14,7 +14,7 @@ L<Net::RDAP::Object::IPNetwork> represents a block of IP addresses
 (IPv4 or IPv6) allocated by an RIR.
 
 L<Net::RDAP::Object::IPNetwork> inherits from L<Net::RDAP::Object> so has
-access to all that's modules methods.
+access to all that module's methods.
 
 Other methods include:
 

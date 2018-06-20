@@ -13,7 +13,7 @@ L<Net::RDAP::Object::Autnum> represents one or more autonymous system
 numbers.
 
 L<Net::RDAP::Object::IPNetwork> inherits from L<Net::RDAP::Object> so has
-access to all that's modules methods.
+access to all that module's methods.
 
 Other methods include:
 

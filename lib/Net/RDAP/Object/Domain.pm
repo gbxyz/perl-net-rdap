@@ -18,7 +18,7 @@ L<Net::RDAP::Object::Domain> represents a domain name - either a
 C<1.168.192.in-addr.arpa>.
 
 L<Net::RDAP::Object::Domain> inherits from L<Net::RDAP::Object> so has
-access to all that's modules methods.
+access to all that module's methods.
 
 Other methods include:
 

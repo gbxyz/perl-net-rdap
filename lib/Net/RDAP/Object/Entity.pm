@@ -15,7 +15,7 @@ or organization).
 L<Net::RDAP::Object::Entity> represents persons or organizations in
 RDAP responses. An entity is a vCard object plus metadata.
 L<Net::RDAP::Object::Entity> inherits from L<Net::RDAP::Object> so has
-access to all that's modules methods.
+access to all that module's methods.
 
 Other methods include:
 

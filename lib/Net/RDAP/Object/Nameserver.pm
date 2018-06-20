@@ -16,7 +16,7 @@ L<Net::RDAP::Object::Nameserver> represents DNS servers to which domain
 names are delegated.
 
 L<Net::RDAP::Object::Nameserver> inherits from L<Net::RDAP::Object> so has
-access to all that's modules methods.
+access to all that module's methods.
 
 Other methods include:
 
