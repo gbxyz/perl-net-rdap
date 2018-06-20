@@ -1,10 +1,14 @@
 package Net::RDAP::Base;
-use Net::RDAP::Link;
-use Net::RDAP::Notice;
-use Net::RDAP::Remark;
 use Net::RDAP::Event;
 use Net::RDAP::ID;
-use Net::RDAP::Entity;
+use Net::RDAP::Link;
+use Net::RDAP::Notice;
+use Net::RDAP::Object::Autnum;
+use Net::RDAP::Object::Domain;
+use Net::RDAP::Object::Entity;
+use Net::RDAP::Object::IPNetwork;
+use Net::RDAP::Object::Nameserver;
+use Net::RDAP::Remark;
 use strict;
 
 #
