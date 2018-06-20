@@ -10,14 +10,14 @@
         my $rdap = Net::RDAP->new;
 
         # get domain info:
-        $data = $rdap->domain(Net::DNS::Domain->new('example.com'));
+        $object = $rdap->domain(Net::DNS::Domain->new('example.com'));
 
         # get info about IP addresses/ranges:
-        $data = $rdap->ip(Net::IP->new('192.168.0.1'));
-        $data = $rdap->ip(Net::IP->new('2001:DB8::/32'));
+        $object = $rdap->ip(Net::IP->new('192.168.0.1'));
+        $object = $rdap->ip(Net::IP->new('2001:DB8::/32'));
 
         # get info about AS numbers:
-        $data = $rdap->ip(Net::ASN->new(65536));
+        $object = $rdap->ip(Net::ASN->new(65536));
 
 # DESCRIPTION
 
@@ -28,8 +28,8 @@ Protocol (RDAP). RDAP is a replacement for Whois.
 server to query ([Net::RDAP::Registry](https://metacpan.org/pod/Net::RDAP::Registry) is an interface to the
 IANA registries), querying the server ([Net::RDAP::UA](https://metacpan.org/pod/Net::RDAP::UA) is an
 RDAP HTTP user agent), and parsing the response
-([Net::RDAP::Response](https://metacpan.org/pod/Net::RDAP::Response) provides access to the data returned
-by the server).
+([Net::RDAP::Object](https://metacpan.org/pod/Net::RDAP::Object) and its submodules provide access to the data
+returned by the server).
 
 # METHODS
 
@@ -39,7 +39,7 @@ Constructor method, returns a new object.
 
         $info = $rdap->domain($domain);
 
-This method returns a [Net::RDAP::Response](https://metacpan.org/pod/Net::RDAP::Response) object containing
+This method returns a [Net::RDAP::Object::Domain](https://metacpan.org/pod/Net::RDAP::Object::Domain) object containing
 information about the domain name referenced by `$domain`.
 `$domain` must be a [Net::DNS::Domain](https://metacpan.org/pod/Net::DNS::Domain) object.
 
@@ -47,7 +47,7 @@ If no RDAP service can be found, then `undef` is returned.
 
         $info = $rdap->ip($ip);
 
-This method returns a [Net::RDAP::Response](https://metacpan.org/pod/Net::RDAP::Response) object containing
+This method returns a [Net::RDAP::Object::IPNetwork](https://metacpan.org/pod/Net::RDAP::Object::IPNetwork) object containing
 information about the resource referenced by `$ip`.
 `$ip` must be a [Net::IP](https://metacpan.org/pod/Net::IP) object and can represent any of the
 following:
@@ -61,7 +61,7 @@ If no RDAP service can be found, then `undef` is returned.
 
         $info = $rdap->autnum($autnum);
 
-This method returns a [Net::RDAP::Response](https://metacpan.org/pod/Net::RDAP::Response) object containing
+This method returns a [Net::RDAP::Object::Autnum](https://metacpan.org/pod/Net::RDAP::Object::Autnum) object containing
 information about to the autonymous system referenced by `$autnum`.
 `$autnum` must be a [Net::ASN](https://metacpan.org/pod/Net::ASN) object.
 
@@ -83,11 +83,11 @@ related classes that all work together. See:
     - [Net::RDAP::Event](https://metacpan.org/pod/Net::RDAP::Event)
     - [Net::RDAP::ID](https://metacpan.org/pod/Net::RDAP::ID)
     - [Net::RDAP::Object](https://metacpan.org/pod/Net::RDAP::Object), and its submodules:
-        - [Net::RDAP::Autnum](https://metacpan.org/pod/Net::RDAP::Autnum) (doesn't exist yet)
-        - [Net::RDAP::Domain](https://metacpan.org/pod/Net::RDAP::Domain) (doesn't exist yet)
-        - [Net::RDAP::Entity](https://metacpan.org/pod/Net::RDAP::Entity)
-        - [Net::RDAP::Nameserver](https://metacpan.org/pod/Net::RDAP::Nameserver) (doesn't exist yet)
-        - [Net::RDAP::Response](https://metacpan.org/pod/Net::RDAP::Response) (doesn't exist yet)
+        - [Net::RDAP::Object::Autnum](https://metacpan.org/pod/Net::RDAP::Object::Autnum)
+        - [Net::RDAP::Object::Domain](https://metacpan.org/pod/Net::RDAP::Object::Domain)
+        - [Net::RDAP::Object::Entity](https://metacpan.org/pod/Net::RDAP::Object::Entity)
+        - [Net::RDAP::Object::IPNetwork](https://metacpan.org/pod/Net::RDAP::Object::IPNetwork)
+        - [Net::RDAP::Object::Nameserver](https://metacpan.org/pod/Net::RDAP::Object::Nameserver)
     - [Net::RDAP::Remark](https://metacpan.org/pod/Net::RDAP::Remark), and its submodule:
         - [Net::RDAP::Notice](https://metacpan.org/pod/Net::RDAP::Notice)
 - [Net::RDAP::Registry](https://metacpan.org/pod/Net::RDAP::Registry)

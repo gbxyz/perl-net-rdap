@@ -22,14 +22,14 @@ L<Net::RDAP> - an interface to the Registration Data Access Protocol
 	my $rdap = Net::RDAP->new;
 
 	# get domain info:
-	$data = $rdap->domain(Net::DNS::Domain->new('example.com'));
+	$object = $rdap->domain(Net::DNS::Domain->new('example.com'));
 
 	# get info about IP addresses/ranges:
-	$data = $rdap->ip(Net::IP->new('192.168.0.1'));
-	$data = $rdap->ip(Net::IP->new('2001:DB8::/32'));
+	$object = $rdap->ip(Net::IP->new('192.168.0.1'));
+	$object = $rdap->ip(Net::IP->new('2001:DB8::/32'));
 
 	# get info about AS numbers:
-	$data = $rdap->ip(Net::ASN->new(65536));
+	$object = $rdap->ip(Net::ASN->new(65536));
 
 =head1 DESCRIPTION
 
@@ -40,8 +40,8 @@ L<Net::RDAP> does all the hard work of determining the correct
 server to query (L<Net::RDAP::Registry> is an interface to the
 IANA registries), querying the server (L<Net::RDAP::UA> is an
 RDAP HTTP user agent), and parsing the response
-(L<Net::RDAP::Response> provides access to the data returned
-by the server).
+(L<Net::RDAP::Object> and its submodules provide access to the data
+returned by the server).
 
 =head1 METHODS
 
@@ -57,7 +57,7 @@ sub new { bless({}, shift) }
 
 	$info = $rdap->domain($domain);
 
-This method returns a L<Net::RDAP::Response> object containing
+This method returns a L<Net::RDAP::Object::Domain> object containing
 information about the domain name referenced by C<$domain>.
 C<$domain> must be a L<Net::DNS::Domain> object.
 
@@ -75,7 +75,7 @@ sub domain {
 
 	$info = $rdap->ip($ip);
 
-This method returns a L<Net::RDAP::Response> object containing
+This method returns a L<Net::RDAP::Object::IPNetwork> object containing
 information about the resource referenced by C<$ip>.
 C<$ip> must be a L<Net::IP> object and can represent any of the
 following:
@@ -106,7 +106,7 @@ sub ip {
 
 	$info = $rdap->autnum($autnum);
 
-This method returns a L<Net::RDAP::Response> object containing
+This method returns a L<Net::RDAP::Object::Autnum> object containing
 information about to the autonymous system referenced by C<$autnum>.
 C<$autnum> must be a L<Net::ASN> object.
 
@@ -209,15 +209,15 @@ related classes that all work together. See:
 
 =over
 
-=item * L<Net::RDAP::Autnum> (doesn't exist yet)
+=item * L<Net::RDAP::Object::Autnum>
 
-=item * L<Net::RDAP::Domain> (doesn't exist yet)
+=item * L<Net::RDAP::Object::Domain>
 
-=item * L<Net::RDAP::Entity>
+=item * L<Net::RDAP::Object::Entity>
 
-=item * L<Net::RDAP::Nameserver> (doesn't exist yet)
+=item * L<Net::RDAP::Object::IPNetwork>
 
-=item * L<Net::RDAP::Response> (doesn't exist yet)
+=item * L<Net::RDAP::Object::Nameserver>
 
 =back
 
