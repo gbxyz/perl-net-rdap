@@ -2,11 +2,7 @@ package Net::RDAP;
 use Carp qw(croak);
 use HTTP::Request::Common;
 use JSON;
-use LWP::UserAgent;
-use Mozilla::CA;
 use Net::RDAP::Registry;
-use Net::RDAP::Response;
-use URI;
 use vars qw($VERSION);
 use strict;
 
