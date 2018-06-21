@@ -212,9 +212,9 @@ sub fetch {
 			croak('500 JSON parse error');
 
 		} else {
-			if ('domain' eq $data->{'objectClassName'}) 		{	return Net::RDAP::Object::Domain->new($data)	}
-			elsif ('ip network' eq $data->{'objectClassName'})	{	return Net::RDAP::Object::IPNetwork->new($data)	}
-			elsif ('autnum' eq $data->{'objectClassName'})		{	return Net::RDAP::Object::Autnum->new($data)	}
+			if ('domain' eq $data->{'objectClassName'}) 		{	return Net::RDAP::Object::Domain->new($data,	$url) }
+			elsif ('ip network' eq $data->{'objectClassName'})	{	return Net::RDAP::Object::IPNetwork->new($data,	$url) }
+			elsif ('autnum' eq $data->{'objectClassName'})		{	return Net::RDAP::Object::Autnum->new($data,	$url) }
 
 		}
 	}
