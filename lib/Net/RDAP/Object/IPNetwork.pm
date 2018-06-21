@@ -86,6 +86,38 @@ sub range {
 
 =pod
 
+	$url = $network->domain;
+
+Returns a L<URI> object representing the RDAP URL of the "reverse"
+domain object corresponding to this network. For example, if the IP
+network is C<192.168.0.0/24>, then the corresponding reverse domain is
+C<168.192.in-addr.arpa>. The URL is constructed using the base URL of
+the RDAP service for the IP network.
+
+You will need to fetch the object representing this domain yourself,
+for example:
+
+	$ip = $rdap->ip(Net::IP->new('192.168.0.0/24'));
+
+	# $ip is a Net::RDAP::IPNetwork
+
+	$url = $ip->domain;
+
+	# $url is a URI
+
+	$domain = $rdap->fetch($url);
+
+	# domain is a Net::RDAP::Domain for 168.192.in-addr.arpa
+
+=cut
+
+sub domain {
+	my $self = shift;
+	URI->new_abs(sprintf('../../domain/%s', $self->start->reverse_ip), $self->self->href);
+}
+
+=pod
+
 =head1 COPYRIGHT
 
 Copyright 2018 CentralNic Ltd. All rights reserved.
