@@ -41,9 +41,12 @@ Constructor method, returns a new object.
 
 This method returns a [Net::RDAP::Object::Domain](https://metacpan.org/pod/Net::RDAP::Object::Domain) object containing
 information about the domain name referenced by `$domain`.
-`$domain` must be a [Net::DNS::Domain](https://metacpan.org/pod/Net::DNS::Domain) object.
+`$domain` must be a [Net::DNS::Domain](https://metacpan.org/pod/Net::DNS::Domain) object. The domain may be
+either a "forward" domain (such as `example.com`) or a "reverse"
+domain (such as `168.192.in-addr.arpa`).
 
-If no RDAP service can be found, or an error occurs, then `undef` is returned.
+If no RDAP service can be found, or an error occurs, then `undef` is
+returned.
 
         $object = $rdap->ip($ip);
 
@@ -57,7 +60,8 @@ following:
 - An IPv6 address (e.g. `2001:DB8::42:1`);
 - An IPv6 CIDR range (e.g. `2001:DB8::/32`).
 
-If no RDAP service can be found, or an error occurs, then `undef` is returned.
+If no RDAP service can be found, or an error occurs, then `undef` is
+returned.
 
         $object = $rdap->autnum($autnum);
 
@@ -65,15 +69,16 @@ This method returns a [Net::RDAP::Object::Autnum](https://metacpan.org/pod/Net::
 information about the autonymous system referenced by `$autnum`.
 `$autnum` must be a [Net::ASN](https://metacpan.org/pod/Net::ASN) object.
 
-If no RDAP service can be found, or an error occurs, then `undef` is returned.
+If no RDAP service can be found, or an error occurs, then `undef` is
+returned.
 
         $object = $rdap->fetch($url);
         $object = $rdap->fetch($link);
         $object = $rdap->fetch($object);
 
-The first and second forms of this method fetches the resource
+The first and second forms of this method fetch the resource
 identified by `$url` or `$link` (which must be either a [URI](https://metacpan.org/pod/URI) or
-[Net;:RDAP::Link](https://metacpan.org/pod/Net;:RDAP::Link) object), and returns a [Net::RDAP::Object](https://metacpan.org/pod/Net::RDAP::Object)
+[Net::RDAP::Link](https://metacpan.org/pod/Net::RDAP::Link) object), and return a [Net::RDAP::Object](https://metacpan.org/pod/Net::RDAP::Object)
 object (assuming that the resource is a valid RDAP response). This
 is used internally by `query()` but is also available for when
 you need to directly fetch a resource without using the IANA

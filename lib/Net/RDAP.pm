@@ -62,9 +62,12 @@ sub new { bless({}, shift) }
 
 This method returns a L<Net::RDAP::Object::Domain> object containing
 information about the domain name referenced by C<$domain>.
-C<$domain> must be a L<Net::DNS::Domain> object.
+C<$domain> must be a L<Net::DNS::Domain> object. The domain may be
+either a "forward" domain (such as C<example.com>) or a "reverse"
+domain (such as C<168.192.in-addr.arpa>).
 
-If no RDAP service can be found, or an error occurs, then C<undef> is returned.
+If no RDAP service can be found, or an error occurs, then C<undef> is
+returned.
 
 =cut
 
@@ -95,7 +98,8 @@ following:
 
 =back
 
-If no RDAP service can be found, or an error occurs, then C<undef> is returned.
+If no RDAP service can be found, or an error occurs, then C<undef> is
+returned.
 
 =cut
 
@@ -113,7 +117,8 @@ This method returns a L<Net::RDAP::Object::Autnum> object containing
 information about the autonymous system referenced by C<$autnum>.
 C<$autnum> must be a L<Net::ASN> object.
 
-If no RDAP service can be found, or an error occurs, then C<undef> is returned.
+If no RDAP service can be found, or an error occurs, then C<undef> is
+returned.
 
 =cut
 
