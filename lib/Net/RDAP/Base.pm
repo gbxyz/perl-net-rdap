@@ -34,7 +34,31 @@ sub objects {
 
 	if (defined($ref) && 'ARRAY' eq ref($ref)) {
 		foreach my $item (@{$ref}) {
-			push(@list, $class->new($item));
+
+			my $object = $class->new($item);
+
+			# new object doesn't have a "self" link, but we might be able to create one:
+			if ($class =~ /^Net::RDAP::Object/) {
+				if (!$object->self) {
+					my $base = $self->self->href;
+					if ($base) {
+						my ($type, $handle);
+						if ($class =~ /^Net::RDAP::Object::Domain$/)		{ $type = 'domain'	; $handle = $object->name		}
+						elsif ($class =~ /^Net::RDAP::Object::Nameserver$/)	{ $type = 'nameserver'	; $handle = $object->name		}
+						elsif ($class =~ /^Net::RDAP::Object::Entity$/)		{ $type = 'entity'	; $handle = $object->handle		}
+						elsif ($class =~ /^Net::RDAP::Object::IPNetwork$/)	{ $type = 'ip'		; $handle = $object->range->prefix	}
+						elsif ($class =~ /^Net::RDAP::Object::Autnum$/)		{ $type = 'autnum'	; $handle = $object->start		}
+
+						push(@{$object->{'links'}}, {
+							'rel' => 'self',
+							'type' => 'application/rdap+json',
+							'href' => URI->new_abs(sprintf('../%s/%s', $type, $handle), $base)->as_string,
+						});
+					}
+				}
+			}
+
+			push(@list, $object);
 		}
 	}
 
