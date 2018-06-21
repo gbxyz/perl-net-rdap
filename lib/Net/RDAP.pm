@@ -144,9 +144,9 @@ sub query {
 	$object = $rdap->fetch($link);
 	$object = $rdap->fetch($object);
 
-The first and second forms of this method fetches the resource
+The first and second forms of this method fetch the resource
 identified by C<$url> or C<$link> (which must be either a L<URI> or
-L<Net;:RDAP::Link> object), and returns a L<Net::RDAP::Object>
+L<Net::RDAP::Link> object), and return a L<Net::RDAP::Object>
 object (assuming that the resource is a valid RDAP response). This
 is used internally by C<query()> but is also available for when
 you need to directly fetch a resource without using the IANA
