@@ -202,6 +202,10 @@ This method returns a L<URI> object corresponding to the authoritative
 RDAP URL for C<$domain>, which is a L<Net::DNS::Domain> object
 corresponding to a fully-qualified domain name.
 
+C<$domain> may either represent a "forward" name such as
+C<example.com>, or a "reverse" domain such as
+C<168.192.in-addr.arpa>.
+
 If no URL can be found in the IANA registry, then C<undef> is returned.
 
 =cut
@@ -228,12 +232,84 @@ sub domain {
 		}
 	}
 
-	return undef if (scalar(keys(%{$matches})) < 1);
+	if (scalar(keys(%{$matches})) < 1) {
+		if ($domain->name =~ /\.(in-addr|ip6)\.arpa$/) {
+			# special workaround for the lack of .arpa in the RDAP registry
+			return $package->reverse_domain($domain);
 
-	# prefer the service with the longest domain name
-	my @urls = @{$matches->{(sort { length($b) <=> length($a) } keys(%{$matches}))[0]}};
+		} else {
+			return undef;
 
-	return $package->assemble_url($package->get_best_url(@urls), 'domain', $domain->name);
+		}
+
+	} else {
+		# prefer the service with the longest domain name
+		my @urls = @{$matches->{(sort { length($b) <=> length($a) } keys(%{$matches}))[0]}};
+
+		return $package->assemble_url($package->get_best_url(@urls), 'domain', $domain->name);
+	}
+}
+
+#
+# construct the RDAP URL for a reverse domain. as of writing there's
+# nothing in the IANA registry for the reverse tree so we work around
+# that by by constructing the CIDR prefix that corresponds to the
+# domain, resolving the RDAP URL for that, and then munging it to
+# obtain the URL for the domain. clever, eh?
+#
+sub reverse_domain {
+	my ($package, $domain) = @_;
+
+	my @labels = reverse($domain->label);
+	shift(@labels); # discard 'arpa'
+
+	my $ip;
+	if ('ip6' eq shift(@labels)) {
+		# @labels is an array of hex digits, we want an array of 4-hex digit parts
+		my @parts;
+		push(@parts, join('', splice(@labels, 0, 4))) while (scalar(@labels) > 0);
+
+		# remove any trailing parts that are zero
+		pop(@parts) while (0 == hex($parts[-1]));
+
+		# compute prefix length
+		my $prefixlen = 16 * (scalar(@parts));
+
+		$ip = Net::IP->new(sprintf(
+			'%s:%s:%s:%s:%s:%s:%s:%s/%u',
+			shift(@parts) || 0,
+			shift(@parts) || 0,
+			shift(@parts) || 0,
+			shift(@parts) || 0,
+			shift(@parts) || 0,
+			shift(@parts) || 0,
+			shift(@parts) || 0,
+			shift(@parts) || 0,
+			$prefixlen,
+		));
+
+	} else {
+		pop(@labels) while (0 == $labels[-1]);
+
+		my $prefixlen = 8 * (scalar(@labels));
+
+		$ip = Net::IP->new(sprintf(
+			'%u.%u.%u.%u/%u',
+			shift(@labels) || 0,
+			shift(@labels) || 0,
+			shift(@labels) || 0,
+			shift(@labels) || 0,
+			$prefixlen,
+		));
+	}
+
+	return undef if (!$ip);
+
+	my $url = $package->ip($ip);
+
+	return undef if (!$url);
+
+	return URI->new_abs(sprintf('../../domain/%s', $domain->name), $url);
 }
 
 #
