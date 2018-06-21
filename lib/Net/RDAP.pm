@@ -135,6 +135,63 @@ sub query {
 	my $url = Net::RDAP::Registry->get_url($args{'object'});
 	croak('Unable to obtain URL for object') if (!$url);
 
+	return $self->fetch($url);
+}
+
+=pod
+
+	$object = $rdap->fetch($url);
+	$object = $rdap->fetch($link);
+	$object = $rdap->fetch($object);
+
+The first and second forms of this method fetches the resource
+identified by C<$url> or C<$link> (which must be either a L<URI> or
+L<Net;:RDAP::Link> object), and returns a L<Net::RDAP::Object>
+object (assuming that the resource is a valid RDAP response). This
+is used internally by C<query()> but is also available for when
+you need to directly fetch a resource without using the IANA
+registry, such as for nameserver or entity queries.
+
+The third form allows the method to be called on an existing
+L<Net::RDAP::Object>. Objects which are embedded inside other
+objects (such as the entities and nameservers which are associated
+with a domain name) may be truncated or redacted in some way:
+this method form allows you to obtain the full object. Here's an
+example:
+
+	$rdap = Net::RDAP->new;
+
+	$domain = $rdap->domain(Net::DNS::Domain->new('example.com'));
+
+	foreach my $ns ($domain->nameservers) {
+		# $ns is a "stub" object, containing only the host name and a "self" link
+
+		my $nameserver = $rdap->fetch($ns);
+
+		# $nameserver is now fully populated
+	}
+
+=cut
+
+sub fetch {
+	my ($self, $arg) = @_;
+
+	my $url;
+	if ($arg->isa('URI')) {
+		$url = $arg;
+
+	} elsif ($arg->isa('Net::RDAP::Link')) {
+		$url = $arg->href;
+
+	} elsif ($arg->isa('Net::RDAP::Object')) {
+		my @links = grep { 'self' eq $_->rel } $arg->links;
+		$url = shift(@links);
+
+	} else {
+		croak("Unable to deal with '$arg'");
+
+	}
+
 	#
 	# get the response from the server
 	#
