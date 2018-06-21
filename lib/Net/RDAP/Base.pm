@@ -63,6 +63,17 @@ sub links { $_[0]->objects('Net::RDAP::Link', $_[0]->{'links'}) }
 
 =pod
 
+	$self = $object->self;
+
+Returns a L<Net::RDAP::Link> object corresponding to the "self"
+link of this object (if one is available).
+
+=cut
+
+sub self { (grep { 'self' eq $_->rel } $_[0]->links)[0] }
+
+=pod
+
 =head1 COPYRIGHT
 
 Copyright 2018 CentralNic Ltd. All rights reserved.
