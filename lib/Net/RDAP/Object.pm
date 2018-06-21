@@ -19,12 +19,41 @@ L<Net::RDAP::Object> represents such objects, whether top-level or
 embedded. It inherits from L<Net::RDAP::Base> so has all the methods
 available to that module.
 
+When L<Net::RDAP::Object> objects are instantiated by L<Net::RDAP>
+from RDAP server responses, a C<self> link will be added to the
+object, if it doesn't already have one.
+
+=cut
+
+#
+# Constructor method. $args is a hashref, $url is the URL this
+# object was loaded from
+#
+sub new {
+	my ($package, $args, $url) = @_;
+
+	my $self = $package->SUPER::new($args);
+
+	# try to make sure that this object always has a "self" URL:
+	if ($url && !$self->self) {
+		push(@{$self->{'links'}}, {
+			'rel'	=> 'self',
+			'href'	=> $url->as_string,
+			'type'	=> 'application/rdap+json',
+		});
+	}
+
+	return $self;
+}
+
+=pod
+
 Other methods include:
 
 	@conformance = $response->conformance;
 
 Returns an array of strings, each providing a hint as to the
-specifications used in the construction of the response.
+specifications used (by the server) in the construction of the response.
 
 This method will return C<undef> unless called on the top-most object
 in a response.
