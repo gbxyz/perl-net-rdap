@@ -58,13 +58,13 @@ sub new { bless({}, shift) }
 
 =pod
 
-	$info = $rdap->domain($domain);
+	$object = $rdap->domain($domain);
 
 This method returns a L<Net::RDAP::Object::Domain> object containing
 information about the domain name referenced by C<$domain>.
 C<$domain> must be a L<Net::DNS::Domain> object.
 
-If no RDAP service can be found, then C<undef> is returned.
+If no RDAP service can be found, or an error occurs, then C<undef> is returned.
 
 =cut
 
@@ -76,7 +76,7 @@ sub domain {
 
 =pod
 
-	$info = $rdap->ip($ip);
+	$object = $rdap->ip($ip);
 
 This method returns a L<Net::RDAP::Object::IPNetwork> object containing
 information about the resource referenced by C<$ip>.
@@ -95,7 +95,7 @@ following:
 
 =back
 
-If no RDAP service can be found, then C<undef> is returned.
+If no RDAP service can be found, or an error occurs, then C<undef> is returned.
 
 =cut
 
@@ -107,13 +107,13 @@ sub ip {
 
 =pod
 
-	$info = $rdap->autnum($autnum);
+	$object = $rdap->autnum($autnum);
 
 This method returns a L<Net::RDAP::Object::Autnum> object containing
-information about to the autonymous system referenced by C<$autnum>.
+information about the autonymous system referenced by C<$autnum>.
 C<$autnum> must be a L<Net::ASN> object.
 
-If no RDAP service can be found, then C<undef> is returned.
+If no RDAP service can be found, or an error occurs, then C<undef> is returned.
 
 =cut
 
