@@ -32,10 +32,10 @@ L<Net::RDAP::Registry> - an interface to the IANA RDAP registries.
 	use Net::IP;
 	use Net::ASN;
 
-	$url = Net::RDAP::Registry->domain(Net::DNS::Domain->new('example.com'));
-	$url = Net::RDAP::Registry->ip(Net::IP->new('192.168.0.1'));
-	$url = Net::RDAP::Registry->ip(Net::IP->new('2001:DB8::/32'));
-	$url = Net::RDAP::Registry->ip(Net::ASN->new(65536));
+	$url = Net::RDAP::Registry->get_url(Net::DNS::Domain->new('example.com'));
+	$url = Net::RDAP::Registry->get_url(Net::IP->new('192.168.0.1'));
+	$url = Net::RDAP::Registry->get_url(Net::IP->new('2001:DB8::/32'));
+	$url = Net::RDAP::Registry->get_url(Net::ASN->new(65536));
 
 =head1 DESCRIPTION
 
@@ -96,7 +96,8 @@ sub get_url {
 
 =pod
 
-C<Net::RDAP::Registry-E<gt>get_url()> is just a wrapper to the methods below:
+C<Net::RDAP::Registry-E<gt>get_url()> is just a wrapper to the
+following methods:
 
 =cut
 
@@ -163,7 +164,8 @@ sub autnum {
 	SERVICE: foreach my $service (@{$registry->{'services'}}) {
 		VALUE: foreach my $value (@{$service->[0]}) {
 			if ($value == $autnum->toasplain) {
-				# exact match, create an entry for NNNN-NNN where both sides are the same (simplifies sorting later)
+				# exact match, create an entry for NNNN-NNN where both sides are
+				# the same (simplifies sorting later)
 				$matches = { sprintf('%d-%d', $value, $value) => $service->[1] };
 				last SERVICE;
 
