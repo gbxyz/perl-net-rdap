@@ -50,7 +50,7 @@ sub new {
 
 	$options{'ssl_opts'}= {} if (!defined($options{'ssl_opts'}));
 
-	$options{'ssl_opts'}->{'verify_hostname'} => 1 unless (defined($options{'ssl_opts'}->{'verify_hostname'}));
+	$options{'ssl_opts'}->{'verify_hostname'} = 1 unless (defined($options{'ssl_opts'}->{'verify_hostname'}));
 	$options{'ssl_opts'}->{'SSL_ca_file'} = Mozilla::CA::SSL_ca_file() unless (defined($options{'ssl_opts'}->{'SSL_ca_file'}));
 
 	return $package->SUPER::new(%options);
