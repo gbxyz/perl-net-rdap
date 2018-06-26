@@ -11,6 +11,7 @@ WriteMakefile(
 		'File::Basename'		=> 0,
 		'File::Slurp'			=> 0,
 		'File::Spec'			=> 0,
+		'File::Temp'			=> 0,
 		'File::stat'			=> 0,
 		'HTTP::Request::Common'		=> 0,
 		'JSON'				=> 0,
