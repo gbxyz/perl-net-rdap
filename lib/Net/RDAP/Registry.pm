@@ -1,9 +1,10 @@
 package Net::RDAP::Registry;
 use Carp qw(croak);
-use File::Basename qw(basename);
-use File::stat;
+use File::Basename qw(dirname basename);
 use File::Slurp;
 use File::Spec;
+use File::Temp;
+use File::stat;
 use HTTP::Request::Common;
 use JSON;
 use Net::RDAP::UA;
@@ -322,9 +323,9 @@ sub load_registry {
 	if (!defined($REGISTRY->{$url})) {
 		my $file = sprintf('%s/%s-%s', File::Spec->tmpdir, $package, basename($url));
 
-		my $mirror = undef;
+		my ($mirror, $stat);
 		if (-e $file) {
-			my $stat = stat($file);
+			$stat = stat($file);
 			$mirror = (time() - $stat->mtime > 86400);
 
 		} else {
@@ -333,10 +334,24 @@ sub load_registry {
 		}
 
 		if ($mirror) {
-			my $response = $UA->mirror($url, $file);
+			my $request = GET($url);
+			$request->header('If-Modified-Since' => HTTP::Date::time2str($stat->mtime)) if ($stat);
 
-			carp($response->status_line) if ($response->is_error);
-			utime(undef, undef, $file) unless ($response->is_error);
+			my $response = $UA->request($request);
+
+			if (304 == $response->code) {
+				utime(undef, undef, $file);
+
+			} elsif ($response->is_success) {
+				my $tmpfile = File::Temp::tempnam(dirname($file), basename($file));
+				carp("Unable to write response data to $tmpfile: $!") if (!write_file($tmpfile, $response->content));
+				carp("Unable to move $tmpfile to $file: $!") if (!rename($tmpfile, $file));
+
+			} else {
+				carp($response->status_line);
+
+			}
+
 		}
 
 		if (-e $file) {
