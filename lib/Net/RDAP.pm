@@ -9,7 +9,7 @@ use Net::RDAP::Registry;
 use vars qw($VERSION);
 use strict;
 
-$VERSION = 0.5;
+$VERSION = 0.6;
 
 =pod
 
