@@ -189,8 +189,7 @@ sub fetch {
 		$url = $arg->href;
 
 	} elsif ($arg->isa('Net::RDAP::Object')) {
-		my @links = grep { 'self' eq $_->rel } $arg->links;
-		$url = shift(@links);
+		$url = $arg->self->href;
 
 	} else {
 		croak("Unable to deal with '$arg'");
