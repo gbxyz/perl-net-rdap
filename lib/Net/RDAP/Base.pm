@@ -74,7 +74,7 @@ L<Net::RDAP::Base> - base module for some L<Net::RDAP>:: modules.
 =head1 DESCRIPTION
 
 You don't use L<Net::RDAP::Base> directly, instead, various other
-modules extend it. All subclasses of L<Net::RDAP::Base> have access
+modules extend it. All submodules of L<Net::RDAP::Base> have access
 to the following method:
 
 	@links = $object->links;

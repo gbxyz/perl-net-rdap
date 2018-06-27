@@ -11,8 +11,8 @@ L<Net::RDAP::Notice> - an RDAP notice
 =head1 DESCRIPTION
 
 This module represents a notice attached to an RDAP response. Since
-notices are identical to remarks (they only differ in their position)
-in RDAP responses, this class inherits everything from
+notices are identical to remarks (they only differ in their position
+in RDAP responses), this module inherits everything from
 L<Net::RDAP::Remark>.
 
 =head1 COPYRIGHT

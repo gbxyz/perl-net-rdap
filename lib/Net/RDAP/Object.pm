@@ -82,7 +82,8 @@ sub notices { $_[0]->objects('Net::RDAP::Notice', $_[0]->{'notices'}) }
 
 	$class = $object->class;
 
-Returns a string containing the class name of this object.
+Returns a string containing the "class name" of this object (i.e., one
+of: C<ip network>, C<entity>, C<nameserver>, C<autnum> or C<domain>).
 
 =cut
 

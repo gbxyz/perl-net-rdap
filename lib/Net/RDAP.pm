@@ -256,8 +256,8 @@ project is hosted here:
 
 =head1 DISTRIBUTION
 
-The L<Net::RDAP> CPAN distribution contains a large number of RDAP-
-related classes that all work together. They are:
+The L<Net::RDAP> CPAN distribution contains a large number of#
+RDAP-related modules that all work together. They are:
 
 =over
 

@@ -112,8 +112,8 @@ project is hosted here:
 
 # DISTRIBUTION
 
-The [Net::RDAP](https://metacpan.org/pod/Net::RDAP) CPAN distribution contains a large number of RDAP-
-related classes that all work together. They are:
+The [Net::RDAP](https://metacpan.org/pod/Net::RDAP) CPAN distribution contains a large number of#
+RDAP-related modules that all work together. They are:
 
 - [Net::RDAP::Base](https://metacpan.org/pod/Net::RDAP::Base), and its submodules:
     - [Net::RDAP::Event](https://metacpan.org/pod/Net::RDAP::Event)
