@@ -62,14 +62,14 @@ sub vcard {
 		# beyond the most basic properties will require a lot of work.
 		# This is the bare minimum for now.
 		#
-		if 	('fn' 		eq $type)	{ $card->full_name($value)		}
-		elsif	('org'		eq $type)	{ $card->organization($value)		}
-		elsif	('email'	eq $type)	{ push(@emails, $value)			}
-		elsif	('tel'		eq $type)	{ push(@phones, $value)			}
+		if 	('fn' 		eq $type)	{ $card->full_name($value)						}
+		elsif	('org'		eq $type)	{ $card->organization($value)						}
+		elsif	('email'	eq $type)	{ push(@emails, $value)							}
+		elsif	('tel'		eq $type)	{ push(@phones, { 'type' => $params->{'type'}, 'number' => $value } )	}
 	}
 
 	$card->email_addresses([ map { { 'address' => $_ } } @emails ]);
-	$card->phones([ map { { 'number' => $_ } } @phones ]);
+	$card->phones(\@phones);
 
 	return $card;
 }
