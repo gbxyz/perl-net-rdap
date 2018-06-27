@@ -52,6 +52,7 @@ sub vcard {
 	my @nodes = @{$self->{'vcardArray'}->[1]};
 
 	my @emails;
+	my @phones;
 
 	foreach my $nref (@nodes) {
 		my ($type, $params, $vtype, $value) = @{$nref};
@@ -61,12 +62,14 @@ sub vcard {
 		# beyond the most basic properties will require a lot of work.
 		# This is the bare minimum for now.
 		#
-		if ('fn' eq $type)		{	$card->full_name($value)		}
-		elsif ('org' eq $type)		{	$card->organization($value)		}
-		elsif ('email' eq $type)	{	push(@emails, $value)			}
+		if 	('fn' 		eq $type)	{ $card->full_name($value)		}
+		elsif	('org'		eq $type)	{ $card->organization($value)		}
+		elsif	('email'	eq $type)	{ push(@emails, $value)			}
+		elsif	('tel'		eq $type)	{ push(@phones, $value)			}
 	}
 
 	$card->email_addresses([ map { { 'address' => $_ } } @emails ]);
+	$card->phones([ map { { 'number' => $_ } } @phones ]);
 
 	return $card;
 }
