@@ -17,6 +17,7 @@ WriteMakefile(
 		'JSON'				=> 0,
 		'LWP::Protocol::https'		=> 0,
 		'LWP::UserAgent'		=> 0,
+		'MIME::Type'			=> 0,
 		'Mozilla::CA'			=> 0,
 		'Net::ASN'			=> 0,
 		'Net::DNS::Domain'		=> 0,
