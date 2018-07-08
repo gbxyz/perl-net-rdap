@@ -37,16 +37,26 @@ L<Net::RDAP> - an interface to the Registration Data Access Protocol
 =head1 DESCRIPTION
 
 L<Net::RDAP> provides an interface to the Registration Data Access
-Protocol (RDAP). RDAP is a replacement for Whois.
+Protocol (RDAP).
+
+RDAP is gradually replacing Whois as the preferred way of obtainining
+information about Internet resources (IP addresses, autonymous system
+numbers, and domain names). As of writing, RDAP is quite well-supported
+by Regional Internet Registries (who are responsible for the allocation
+of IP addresses and AS numbers) but is still being rolled out among
+domain name registries and registrars.
 
 L<Net::RDAP> does all the hard work of determining the correct
 server to query (L<Net::RDAP::Registry> is an interface to the
-IANA registries), querying the server (L<Net::RDAP::UA> is an
-RDAP HTTP user agent), and parsing the response
+IANA registry of RDAP services), querying the server (L<Net::RDAP::UA>
+is an RDAP HTTP user agent), and parsing the response
 (L<Net::RDAP::Object> and its submodules provide access to the data
-returned by the server).
+returned by the server). As such, it provides a single unified
+interface to information about all unique Internet identifiers.
 
 =head1 METHODS
+
+=head2 Constructor
 
 	$rdap = Net::RDAP->new;
 
@@ -58,6 +68,8 @@ sub new { bless({}, shift) }
 
 =pod
 
+=head2 Domain Lookup
+
 	$object = $rdap->domain($domain);
 
 This method returns a L<Net::RDAP::Object::Domain> object containing
@@ -66,8 +78,16 @@ C<$domain> must be a L<Net::DNS::Domain> object. The domain may be
 either a "forward" domain (such as C<example.com>) or a "reverse"
 domain (such as C<168.192.in-addr.arpa>).
 
-If no RDAP service can be found, or an error occurs, then C<undef> is
-returned.
+If there was an error, this method will throw an exception which can be
+caught using C<eval()>:
+
+	eval {
+		$object = $rdap->domain($domain);
+	};
+
+	if ($@) {
+		PRINT STDERR $@;
+	}
 
 =cut
 
@@ -78,6 +98,8 @@ sub domain {
 }
 
 =pod
+
+=head2 IP Lookup
 
 	$object = $rdap->ip($ip);
 
@@ -98,8 +120,8 @@ following:
 
 =back
 
-If no RDAP service can be found, or an error occurs, then C<undef> is
-returned.
+If there was an error, this method will throw an exception which can be
+caught using C<eval()>.
 
 =cut
 
@@ -111,14 +133,16 @@ sub ip {
 
 =pod
 
+=head2 AS Number Lookup
+
 	$object = $rdap->autnum($autnum);
 
 This method returns a L<Net::RDAP::Object::Autnum> object containing
 information about the autonymous system referenced by C<$autnum>.
 C<$autnum> must be a L<Net::ASN> object.
 
-If no RDAP service can be found, or an error occurs, then C<undef> is
-returned.
+If there was an error, this method will throw an exception which can be
+caught using C<eval()>.
 
 =cut
 
@@ -145,15 +169,19 @@ sub query {
 
 =pod
 
+=head2 Directly Fetching Known Resources
+
 	$object = $rdap->fetch($url);
+
 	$object = $rdap->fetch($link);
+
 	$object = $rdap->fetch($object);
 
-The first and second forms of this method fetch the resource
-identified by C<$url> or C<$link> (which must be either a L<URI> or
-L<Net::RDAP::Link> object), and return a L<Net::RDAP::Object>
-object (assuming that the resource is a valid RDAP response). This
-is used internally by C<query()> but is also available for when
+The first and second forms of the C<fetch()> method retrieve the
+resource identified by C<$url> or C<$link> (which must be either a
+L<URI> or L<Net::RDAP::Link> object), and return a L<Net::RDAP::Object>
+object (assuming that the server returns a valid RDAP response). This
+method is used internally by C<query()> but is also available for when
 you need to directly fetch a resource without using the IANA
 registry, such as for nameserver or entity queries.
 
@@ -176,6 +204,10 @@ example:
 		# $nameserver is now fully populated
 	}
 
+In order for this form to work, the object must have a C<self> link:
+L<Net::RDAP> will auto-create one for objects that don't have one if it
+can.
+
 =cut
 
 sub fetch {
@@ -189,7 +221,14 @@ sub fetch {
 		$url = $arg->href;
 
 	} elsif ($arg->isa('Net::RDAP::Object')) {
-		$url = $arg->self->href;
+		my $link = $arg->self;
+		if (!$link) {
+			croak("Object does not have a 'self' link");
+
+		} else {
+			$url = $link->href;
+
+		}
 
 	} else {
 		croak("Unable to deal with '$arg'");
@@ -216,9 +255,10 @@ sub fetch {
 			croak('500 JSON parse error');
 
 		} else {
-			if ('domain' eq $data->{'objectClassName'}) 		{	return Net::RDAP::Object::Domain->new($data,	$url) }
-			elsif ('ip network' eq $data->{'objectClassName'})	{	return Net::RDAP::Object::IPNetwork->new($data,	$url) }
-			elsif ('autnum' eq $data->{'objectClassName'})		{	return Net::RDAP::Object::Autnum->new($data,	$url) }
+			if ('domain' eq $data->{'objectClassName'}) 		{ return Net::RDAP::Object::Domain->new($data, $url)				}
+			elsif ('ip network' eq $data->{'objectClassName'})	{ return Net::RDAP::Object::IPNetwork->new($data, $url)				}
+			elsif ('autnum' eq $data->{'objectClassName'})		{ return Net::RDAP::Object::Autnum->new($data, $url)				}
+			else							{ croak(sprintf("nknown object class '%s'", $data->{'objectClassName'}))	}
 
 		}
 	}
