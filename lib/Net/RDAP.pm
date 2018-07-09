@@ -289,7 +289,6 @@ sub fetch {
 			return Net::RDAP::Error->new($data, $url);
 
 		} else {
-
 			#
 			# build our own error
 			#

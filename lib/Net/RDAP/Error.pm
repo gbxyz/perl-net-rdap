@@ -8,8 +8,9 @@ L<Net::RDAP::Error> - an RDAP object representing an error.
 
 =head1 DESCRIPTION
 
-L<Net::RDAP::Object::Error> represents an error response from an RDAP
-server.
+L<Net::RDAP::Object::Error> represents an error. This could
+be either an error returned by an RDAP server, or an internally
+generated error.
 
 L<Net::RDAP::Object::Error> inherits from L<Net::RDAP::Object> so has
 access to all that module's methods.
@@ -18,7 +19,10 @@ access to all that module's methods.
 
 	$code = $error->errorCode;
 
-Returns the error code number (corresponding to the HTTP response code).
+Returns the error code number (corresponding to the HTTP response
+code). Internally generated errors are usually C<400> if the arguments
+passed to L<Net::RDAP> are invalid in some way, and C<500> if the
+response from the server is invalid or cannot be reached.
 
 	$title = $error->title;
 
