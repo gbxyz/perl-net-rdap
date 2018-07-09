@@ -1,7 +1,7 @@
 package Net::RDAP;
-use Carp qw(croak);
 use HTTP::Request::Common;
 use JSON;
+use Net::RDAP::Error;
 use Net::RDAP::Object::Autnum;
 use Net::RDAP::Object::Domain;
 use Net::RDAP::Object::IPNetwork;
@@ -74,27 +74,28 @@ sub new { bless({}, shift) }
 
 This method returns a L<Net::RDAP::Object::Domain> object containing
 information about the domain name referenced by C<$domain>.
+
 C<$domain> must be a L<Net::DNS::Domain> object. The domain may be
 either a "forward" domain (such as C<example.com>) or a "reverse"
 domain (such as C<168.192.in-addr.arpa>).
 
-If there was an error, this method will throw an exception which can be
-caught using C<eval()>:
-
-	eval {
-		$object = $rdap->domain($domain);
-	};
-
-	if ($@) {
-		PRINT STDERR $@;
-	}
+If there was an error, this method will return a L<Net::RDAP::Error>.
 
 =cut
 
 sub domain {
 	my ($self, $object, %args) = @_;
-	croak('argument must be a Net::DNS::Domain') unless ('Net::DNS::Domain' eq ref($object));
-	return $self->query('object' => $object, %args);
+
+	if ('Net::DNS::Domain' ne ref($object)) {
+		return $self->error(
+			'errorCode'	=> 400,
+			'title'		=> 'argument must be a Net::DNS::Domain',
+		);
+
+	} else {
+		return $self->query('object' => $object, %args);
+
+	}
 }
 
 =pod
@@ -105,6 +106,7 @@ sub domain {
 
 This method returns a L<Net::RDAP::Object::IPNetwork> object containing
 information about the resource referenced by C<$ip>.
+
 C<$ip> must be a L<Net::IP> object and can represent any of the
 following:
 
@@ -120,15 +122,23 @@ following:
 
 =back
 
-If there was an error, this method will throw an exception which can be
-caught using C<eval()>.
+If there was an error, this method will return a L<Net::RDAP::Error>.
 
 =cut
 
 sub ip {
 	my ($self, $object, %args) = @_;
-	croak('argument must be a Net::IP') unless ('Net::IP' eq ref($object));
-	return $self->query('object' => $object, %args);
+
+	if ('Net::IP' ne ref($object)) {
+		return $self->error(
+			'errorCode'	=> 400,
+			'title'		=> 'argument must be a Net::IP',
+		);
+
+	} else {
+		return $self->query('object' => $object, %args);
+
+	}
 }
 
 =pod
@@ -139,17 +149,26 @@ sub ip {
 
 This method returns a L<Net::RDAP::Object::Autnum> object containing
 information about the autonymous system referenced by C<$autnum>.
+
 C<$autnum> must be a L<Net::ASN> object.
 
-If there was an error, this method will throw an exception which can be
-caught using C<eval()>.
+If there was an error, this method will return a L<Net::RDAP::Error>.
 
 =cut
 
 sub autnum {
 	my ($self, $object, %args) = @_;
-	croak('argument must be a Net::ASN') unless ('Net::ASN' eq ref($object));
-	return $self->query('object' => $object, %args);
+
+	if ('Net::ASN' ne ref($object)) {
+		return $self->error(
+			'errorCode'	=> 400,
+			'title'		=> 'argument must be a Net::ASN',
+		);
+
+	} else {
+		return $self->query('object' => $object, %args);
+
+	}
 }
 
 #
@@ -162,9 +181,17 @@ sub query {
 	# get the URL from the registry
 	#
 	my $url = Net::RDAP::Registry->get_url($args{'object'});
-	croak('Unable to obtain URL for object') if (!$url);
 
-	return $self->fetch($url);
+	if (!$url) {
+		return $self->error(
+			'errorCode'	=> 400,
+			'title'		=> 'Unable to obtain URL for object',
+		);
+		
+	} else {
+		return $self->fetch($url);
+
+	}
 }
 
 =pod
@@ -223,7 +250,10 @@ sub fetch {
 	} elsif ($arg->isa('Net::RDAP::Object')) {
 		my $link = $arg->self;
 		if (!$link) {
-			croak("Object does not have a 'self' link");
+			return $self->error(
+				'errorCode'	=> 400,
+				'title'		=> "Object does not have a 'self' link",
+			);
 
 		} else {
 			$url = $link->href;
@@ -231,8 +261,10 @@ sub fetch {
 		}
 
 	} else {
-		croak("Unable to deal with '$arg'");
-
+		return $self->error(
+			'errorCode'		=> 400,
+			'title'			=> "Unable to deal with '$arg'",
+		);
 	}
 
 	#
@@ -241,27 +273,70 @@ sub fetch {
 	my $response = $self->request(GET($url->as_string));
 
 	#
+	# attempt to parse the JSON
+	#
+	my $data;
+	eval { $data = decode_json($response->decoded_content) };
+
+	#
 	# check and parse the response
 	#
 	if ($response->is_error) {
-		croak($response->status_line);
-
-	} elsif ($response->header('Content-Type') !~ /^application\/rdap\+json/) {
-		croak('500 Invalid Content-Type');
-
-	} else {
-		my $data = decode_json($response->content);
-		if (!defined($data) || 'HASH' ne ref($data) || !defined($data->{'objectClassName'})) {
-			croak('500 JSON parse error');
+		if ($self->is_rdap($response) && defined($data->{'errorCode'})) {
+			#
+			# we got an RDAP response from the server which looks like it's an error, so convert it and return
+			#
+			return Net::RDAP::Error->new($data, $url);
 
 		} else {
-			if ('domain' eq $data->{'objectClassName'}) 		{ return Net::RDAP::Object::Domain->new($data, $url)				}
-			elsif ('ip network' eq $data->{'objectClassName'})	{ return Net::RDAP::Object::IPNetwork->new($data, $url)				}
-			elsif ('autnum' eq $data->{'objectClassName'})		{ return Net::RDAP::Object::Autnum->new($data, $url)				}
-			else							{ croak(sprintf("nknown object class '%s'", $data->{'objectClassName'}))	}
 
+			#
+			# build our own error
+			#
+			return $self->error(
+				'url'		=> $url,
+				'errorCode'	=> $response->code,
+				'title'		=> $response->status_line,
+			);
 		}
+
+	} elsif (!$self->is_rdap($response)) {
+		return $self->error(
+			'url'		=> $url,
+			'errorCode'	=> 500,
+			'title'		=> 'Invalid Content-Type',
+			'description'	=> [ sprintf("The Content-Type of the header is '%s', should be 'application/rdap+json'", $response->header('Content-Type')) ],
+		);
+
+	} elsif (!defined($data->{'objectClassName'})) {
+		return $self->error(
+			'url'		=> $url,
+			'errorCode'	=> 500,
+			'title'		=> "Missing 'objectClassName' property",
+			'description'	=> [ "The response from the server is missing the 'objectClassName' property." ],
+		);
+
+	} else {
+		if ('domain' eq $data->{'objectClassName'}) 		{ return Net::RDAP::Object::Domain->new($data, $url)				}
+		elsif ('ip network' eq $data->{'objectClassName'})	{ return Net::RDAP::Object::IPNetwork->new($data, $url)				}
+		elsif ('autnum' eq $data->{'objectClassName'})		{ return Net::RDAP::Object::Autnum->new($data, $url)				}
+		elsif ('entity' eq $data->{'objectClassName'})		{ return Net::RDAP::Object::Entity->new($data, $url)				}
+		else {
+			return $self->error(
+				'url'		=> $url,
+				'errorCode'	=> 500,
+				'title'		=> "Unknown objectClassName '$data->{'objectClassName'}'",
+				'description'	=> [ "Unknown objectClassName '$data->{'objectClassName'}'" ],
+			);
+		}
+
 	}
+}
+
+sub is_rdap {
+	my ($self, $response) = @_;
+
+	$response->header('Content-Type') =~ /^application\/rdap\+json/;
 }
 
 #
@@ -279,6 +354,21 @@ sub ua {
 	my $self = shift;
 	$self->{'ua'} = Net::RDAP::UA->new if (!defined($self->{'ua'}));
 	return $self->{'ua'};
+}
+
+#
+# generate an error
+#
+sub error {
+	my ($self, %params) = @_;
+	return Net::RDAP::Error->new(
+		{
+			'errorCode' => $params{'errorCode'},
+			'title'	=> $params{'title'},
+			'description' => $params{'description'},
+		},
+		$params{'url'},
+	);
 }
 
 =pod
@@ -312,6 +402,8 @@ RDAP-related modules that all work together. They are:
 =item * L<Net::RDAP::Object>, and its submodules:
 
 =over
+
+=item * L<Net::RDAP::Error>
 
 =item * L<Net::RDAP::Object::Autnum>
 
