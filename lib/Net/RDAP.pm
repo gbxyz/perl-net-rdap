@@ -307,12 +307,20 @@ sub fetch {
 			'description'	=> [ sprintf("The Content-Type of the header is '%s', should be 'application/rdap+json'", $response->header('Content-Type')) ],
 		);
 
+	} elsif (!defined($data) || 'HASH' ne ref($data)) {
+		return $self->error(
+			'url'		=> $url,
+			'errorCode'	=> 500,
+			'title'		=> 'Error parsing response body',
+			'description'	=> [ 'The response from the server is not a valid JSON object' ],
+		);
+
 	} elsif (!defined($data->{'objectClassName'})) {
 		return $self->error(
 			'url'		=> $url,
 			'errorCode'	=> 500,
 			'title'		=> "Missing 'objectClassName' property",
-			'description'	=> [ "The response from the server is missing the 'objectClassName' property." ],
+			'description'	=> [ "The response from the server is missing the 'objectClassName' property" ],
 		);
 
 	} else {
