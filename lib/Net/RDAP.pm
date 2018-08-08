@@ -434,6 +434,8 @@ RDAP-related modules that all work together. They are:
 
 =back
 
+=item * L<Net::RDAP::EPPStatusMap>
+
 =item * L<Net::RDAP::Registry>
 
 =item * L<Net::RDAP::Link>
