@@ -9,7 +9,7 @@ use Net::RDAP::Registry;
 use vars qw($VERSION);
 use strict;
 
-$VERSION = 0.8;
+$VERSION = 0.9;
 
 =pod
 
@@ -441,6 +441,8 @@ RDAP-related modules that all work together. They are:
 =item * L<Net::RDAP::Link>
 
 =item * L<Net::RDAP::UA>
+
+=item * L<Net::RDAP::Values>
 
 =back
 
