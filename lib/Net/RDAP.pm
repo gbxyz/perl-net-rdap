@@ -480,6 +480,8 @@ RDAP-related modules that all work together. They are:
 
 =item * L<vCard>
 
+=item * L<XML::LibXML>
+
 =back
 
 =head1 REFERENCES

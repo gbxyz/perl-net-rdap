@@ -26,5 +26,6 @@ WriteMakefile(
 		'Net::IP'			=> 0,
 		'URI'				=> 0,
 		'vCard'				=> 0,
+		'XML::LibXML'			=> 0,
 	},
 );

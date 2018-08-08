@@ -49,6 +49,14 @@ L<Net::RDAP::Values> - interface to the RDAP values registry.
 
 =head1 DESCRIPTION
 
+The RDAP JSON Values Registry was defined in RFC 7483 and lists the
+permitted values of certain RDAP object properties. This class implements
+an interface to that registry.
+
+Ironically, since the registry is only available in CSV and XML formats,
+this module has to use L<XML::LibXML> in order to access the registry data
+that it retrieves from the IANA web server.
+
 =head1 METHODS
 
 =head2 check()
