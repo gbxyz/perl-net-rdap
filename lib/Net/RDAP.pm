@@ -354,9 +354,26 @@ sub request {
 	return $self->ua->request($req);
 }
 
-#
-# wrapper function
-#
+=pod
+
+=head2 RDAP User Agent
+
+	# access the user agent
+	$ua = $rdap->ua;
+
+	# specify a cookie jar
+	$rdap->ua->cookie_jar('/tmp/cookies.txt');
+
+	# specify a proxy
+	$rdap->ua->proxy([qw(http https)], 'https://proxy.example.com');
+
+You can access the L<Net::RDAP::UA> object used to communicate with RDAP
+servers using the C<ua()> method. This allows you to configure additional
+HTTP features such as a file to store cookies, proxies, custom user-agent
+strings, etc.
+
+=cut
+
 sub ua {
 	my $self = shift;
 	$self->{'ua'} = Net::RDAP::UA->new if (!defined($self->{'ua'}));
