@@ -360,6 +360,7 @@ sub request {
 sub ua {
 	my $self = shift;
 	$self->{'ua'} = Net::RDAP::UA->new if (!defined($self->{'ua'}));
+	$NET::RDAP::Registry::UA = $self->{'ua'} if (!defined($NET::RDAP::Registry::UA));
 	return $self->{'ua'};
 }
 
