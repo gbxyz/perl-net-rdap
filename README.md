@@ -127,6 +127,22 @@ In order for this form to work, the object must have a `self` link:
 [Net::RDAP](https://metacpan.org/pod/Net::RDAP) will auto-create one for objects that don't have one if it
 can.
 
+## RDAP User Agent
+
+        # access the user agent
+        $ua = $rdap->ua;
+
+        # specify a cookie jar
+        $rdap->ua->cookie_jar('/tmp/cookies.txt');
+
+        # specify a proxy
+        $rdap->ua->proxy([qw(http https)], 'https://proxy.example.com');
+
+You can access the [Net::RDAP::UA](https://metacpan.org/pod/Net::RDAP::UA) object used to communicate with RDAP
+servers using the `ua()` method. This allows you to configure additional
+HTTP features such as a file to store cookies, proxies, custom user-agent
+strings, etc.
+
 # HOW TO CONTRIBUTE
 
 [Net::RDAP](https://metacpan.org/pod/Net::RDAP) is a work-in-progress; if you would like to help, the
