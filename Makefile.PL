@@ -8,6 +8,7 @@ WriteMakefile(
 	'VERSION_FROM'	=> 'lib/Net/RDAP.pm',
 	'PREREQ_PM'	=> {
 		'DateTime::Format::ISO8601'	=> 0,
+		'Digest::SHA1'			=> 0,
 		'File::Basename'		=> 0,
 		'File::Slurp'			=> 0,
 		'File::Spec'			=> 0,

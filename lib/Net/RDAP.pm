@@ -1,4 +1,7 @@
 package Net::RDAP;
+use Digest::SHA1 qw(sha1_hex);
+use File::stat;
+use File::Slurp;
 use HTTP::Request::Common;
 use JSON;
 use Net::RDAP::Error;
@@ -58,13 +61,34 @@ interface to information about all unique Internet identifiers.
 
 =head2 Constructor
 
-	$rdap = Net::RDAP->new;
+	$rdap = Net::RDAP->new(%OPTIONS);
 
 Constructor method, returns a new object.
 
+Supported options:
+
+=over
+
+=item * C<use_cache> - if true, copies of RDAP responses are stored on
+disk, and are updated if the copy on the server is more up-to-date.
+This behaviour is disabled by default and must be explicitly enabled.
+
+=item * C<debug> - if true, tells L<Net::RDAP::UA> to print all HTTP
+requests and responses to C<STDERR>.
+
+=back
+
 =cut
 
-sub new { bless({}, shift) }
+sub new {
+	my ($package, %options) = @_;
+
+	my $self = bless(\%options, $package);
+
+	$ENV{'NET_RDAP_UA_DEBUG'} = $self->{'debug'};
+
+	return $self;
+}
 
 =pod
 
@@ -267,10 +291,21 @@ sub fetch {
 		);
 	}
 
+	my $request = GET($url);
+
+	my $file = sprintf(
+		'%s/%s::cache::%s.json',
+		($ENV{'TMPDIR'} || '/tmp'),
+		ref($self),
+		sha1_hex($url),
+	);
+
+	$request->header('If-Modified-Since' => HTTP::Date::time2str(stat($file)->mtime)) if (-e $file && $self->{'use_cache'});
+
 	#
 	# get the response from the server
 	#
-	my $response = $self->request(GET($url->as_string));
+	my $response = $self->request($request);
 
 	#
 	# attempt to parse the JSON
@@ -281,7 +316,11 @@ sub fetch {
 	#
 	# check and parse the response
 	#
-	if ($response->is_error) {
+	if (304 == $response->code && -e $file) {
+		utime(undef, undef, $file);
+		return $self->object_from_response(decode_json(read_file($file)), $url);
+
+	} elsif ($response->is_error) {
 		if ($self->is_rdap($response) && defined($data->{'errorCode'})) {
 			#
 			# we got an RDAP response from the server which looks like it's an error, so convert it and return
@@ -324,26 +363,34 @@ sub fetch {
 		);
 
 	} else {
-		if ('domain' eq $data->{'objectClassName'}) 		{ return Net::RDAP::Object::Domain->new($data, $url)				}
-		elsif ('ip network' eq $data->{'objectClassName'})	{ return Net::RDAP::Object::IPNetwork->new($data, $url)				}
-		elsif ('autnum' eq $data->{'objectClassName'})		{ return Net::RDAP::Object::Autnum->new($data, $url)				}
-		elsif ('entity' eq $data->{'objectClassName'})		{ return Net::RDAP::Object::Entity->new($data, $url)				}
-		else {
-			return $self->error(
-				'url'		=> $url,
-				'errorCode'	=> 500,
-				'title'		=> "Unknown objectClassName '$data->{'objectClassName'}'",
-				'description'	=> [ "Unknown objectClassName '$data->{'objectClassName'}'" ],
-			);
-		}
+		write_file($file, $response->decoded_content) if ($self->{'use_cache'});
+		chmod(0600, $file);
 
+		return $self->object_from_response($data, $url);
+	}
+}
+
+sub object_from_response {
+	my ($self, $data, $url) = @_;
+
+	if ('domain' eq $data->{'objectClassName'}) 		{ return Net::RDAP::Object::Domain->new($data, $url)				}
+	elsif ('ip network' eq $data->{'objectClassName'})	{ return Net::RDAP::Object::IPNetwork->new($data, $url)				}
+	elsif ('autnum' eq $data->{'objectClassName'})		{ return Net::RDAP::Object::Autnum->new($data, $url)				}
+	elsif ('entity' eq $data->{'objectClassName'})		{ return Net::RDAP::Object::Entity->new($data, $url)				}
+	else {
+		return $self->error(
+			'url'		=> $url,
+			'errorCode'	=> 500,
+			'title'		=> "Unknown objectClassName '$data->{'objectClassName'}'",
+			'description'	=> [ "Unknown objectClassName '$data->{'objectClassName'}'" ],
+		);
 	}
 }
 
 sub is_rdap {
 	my ($self, $response) = @_;
 
-	$response->header('Content-Type') =~ /^application\/rdap\+json/;
+	return ('file' eq $response->base->scheme || $response->header('Content-Type') =~ /^application\/rdap\+json/);
 }
 
 #
@@ -469,6 +516,8 @@ RDAP-related modules that all work together. They are:
 =over
 
 =item * L<DateTime::Format::ISO8601>
+
+=item * L<Digest::SHA1>
 
 =item * L<File::Basename>
 

@@ -43,9 +43,17 @@ interface to information about all unique Internet identifiers.
 
 ## Constructor
 
-        $rdap = Net::RDAP->new;
+        $rdap = Net::RDAP->new(%OPTIONS);
 
 Constructor method, returns a new object.
+
+Supported options:
+
+- `use_cache` - if true, copies of RDAP responses are stored on
+disk, and are updated if the copy on the server is more up-to-date.
+This behaviour is disabled by default and must be explicitly enabled.
+- `debug` - if true, tells [Net::RDAP::UA](https://metacpan.org/pod/Net::RDAP::UA) to print all HTTP
+requests and responses to `STDERR`.
 
 ## Domain Lookup
 
