@@ -85,7 +85,7 @@ sub new {
 
 	my $self = bless(\%options, $package);
 
-	$ENV{'NET_RDAP_UA_DEBUG'} = $self->{'debug'};
+	$Net::RDAP::UA::DEBUG = $self->{'debug'};
 
 	return $self;
 }

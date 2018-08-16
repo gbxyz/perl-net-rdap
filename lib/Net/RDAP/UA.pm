@@ -1,7 +1,10 @@
 package Net::RDAP::UA;
 use base qw(LWP::UserAgent);
 use Mozilla::CA;
+use vars qw($DEBUG);
 use strict;
+
+our $DEBUG;
 
 =pod
 
@@ -65,11 +68,11 @@ sub request {
 
 	$request->header('Accept' => 'application/rdap+json') unless ($request->header('Accept'));
 
-	print STDERR $request->as_string if (1 == $ENV{'NET_RDAP_UA_DEBUG'});
+	print STDERR $request->as_string if ($DEBUG || 1 == $ENV{'NET_RDAP_UA_DEBUG'});
 
 	my $response = $self->SUPER::request($request);
 
-	print STDERR $response->as_string if (1 == $ENV{'NET_RDAP_UA_DEBUG'});
+	print STDERR $response->as_string if ($DEBUG || 1 == $ENV{'NET_RDAP_UA_DEBUG'});
 
 	return $response;
 }
