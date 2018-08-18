@@ -376,6 +376,7 @@ sub object_from_response {
 	if ('domain' eq $data->{'objectClassName'}) 		{ return Net::RDAP::Object::Domain->new($data, $url)				}
 	elsif ('ip network' eq $data->{'objectClassName'})	{ return Net::RDAP::Object::IPNetwork->new($data, $url)				}
 	elsif ('autnum' eq $data->{'objectClassName'})		{ return Net::RDAP::Object::Autnum->new($data, $url)				}
+	elsif ('nameserver' eq $data->{'objectClassName'})	{ return Net::RDAP::Object::Nameserver->new($data, $url)				}
 	elsif ('entity' eq $data->{'objectClassName'})		{ return Net::RDAP::Object::Entity->new($data, $url)				}
 	else {
 		return $self->error(
