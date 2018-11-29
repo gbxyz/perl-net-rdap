@@ -278,6 +278,8 @@ sub load_registry {
 	my ($package, $url) = @_;
 
 	if (!defined($REGISTRY->{$url})) {
+		$package =~ s/:+/-/g;
+
 		my $file = sprintf('%s/%s-%s', File::Spec->tmpdir, $package, basename($url));
 
 		my ($mirror, $stat);
