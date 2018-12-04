@@ -14,7 +14,7 @@ use Net::RDAP::SearchResult;
 use vars qw($VERSION);
 use strict;
 
-$VERSION = 0.11;
+$VERSION = 0.12;
 
 =pod
 
