@@ -197,6 +197,34 @@ sub autnum {
 	}
 }
 
+=pod
+
+=head2 Entity Lookup
+
+	$entity = $rdap->entity($handle);
+
+This method returns a L<Net::RDAP::Object::Entity> object containing
+information about the entity referenced by C<$handle> which is a string
+containing a "tagged" handle, such as C<ABC123-EXAMPLE>, as per RFC
+8521.
+
+=cut
+
+sub entity {
+	my ($self, $object, %args) = @_;
+
+	if ($object !~ /-/) {
+		return $self->error(
+			'errorCode'	=> 400,
+			'title'		=> 'argument must be a tagged handle',
+		);
+
+	} else {
+		return $self->query('object' => $object, %args);
+
+	}
+}
+
 #
 # main method
 #
@@ -236,7 +264,7 @@ L<URI> or L<Net::RDAP::Link> object), and return a L<Net::RDAP::Object>
 object (assuming that the server returns a valid RDAP response). This
 method is used internally by C<query()> but is also available for when
 you need to directly fetch a resource without using the IANA
-registry, such as for nameserver or entity queries.
+registry, such as for nameserver or untagged entity queries.
 
 The third form allows the method to be called on an existing
 L<Net::RDAP::Object>. Objects which are embedded inside other
@@ -602,6 +630,9 @@ Registration Data (RDAP) Service
 Protocol (EPP) and Registration Data Access Protocol (RDAP) Status Mapping
 
 =item * L<https://tools.ietf.org/html/rfc8288> -  Web Linking
+
+=item * L<https://tools.ietf.org/html/rfc8521> -  Registration Data Access
+Protocol (RDAP) Object Tagging
 
 =back
 
