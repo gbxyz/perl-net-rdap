@@ -319,8 +319,8 @@ sub fetch {
 	#
 	# check and parse the response
 	#
-	if (304 == $response->code && -e $file) {
-		utime(undef, undef, $file);
+	if (-e $file && (304 == $response->code || ($response->code >= 500))) {
+		utime(undef, undef, $file) if (304 == $response->code);
 		return $self->object_from_response(decode_json(read_file($file)), $url);
 
 	} elsif ($response->is_error) {
