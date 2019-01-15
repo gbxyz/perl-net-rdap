@@ -204,9 +204,9 @@ sub autnum {
 	$entity = $rdap->entity($handle);
 
 This method returns a L<Net::RDAP::Object::Entity> object containing
-information about the entity referenced by C<$handle> which is a string
-containing a "tagged" handle, such as C<ABC123-EXAMPLE>, as per RFC
-8521.
+information about the entity referenced by C<$handle>, which must be
+a string containing a "tagged" handle, such as C<ABC123-EXAMPLE>, as
+per RFC 8521.
 
 =cut
 
