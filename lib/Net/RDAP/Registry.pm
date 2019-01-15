@@ -285,9 +285,9 @@ sub entity {
 	return undef if (!$registry);
 
 	foreach my $service (@{$registry->{'services'}}) {
-		foreach my $value (@{$service->[0]}) {
+		foreach my $value (@{$service->[1]}) {
 			# unlike the other registries we are only looking for an exact match as there is no hierarchy to tag
-			return $package->assemble_url($package->get_best_url(@{$service->[1]}), 'entity', $handle) if (lc($value) eq lc($tag));
+			return $package->assemble_url($package->get_best_url(@{$service->[2]}), 'entity', $handle) if (lc($value) eq lc($tag));
 		}
 	}
 
