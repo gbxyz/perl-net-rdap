@@ -1,5 +1,8 @@
 Revision history for perl module Net::RDAP
 
+0.13 - 2019-01-15
+  - add support for RFC 8521 object tagging
+
 0.12 - 2018-12-04
   - remove colons from cache filenames to avoid
     problems on Windows (RT#127684)
