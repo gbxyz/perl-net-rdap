@@ -29,6 +29,10 @@ L<Net::RDAP> - an interface to the Registration Data Access Protocol
 
 	my $rdap = Net::RDAP->new;
 
+	#
+	# traditional lookup:
+	#
+
 	# get domain info:
 	$object = $rdap->domain(Net::DNS::Domain->new('example.com'));
 
@@ -38,6 +42,21 @@ L<Net::RDAP> - an interface to the Registration Data Access Protocol
 
 	# get info about AS numbers:
 	$object = $rdap->autnum(Net::ASN->new(65536));
+
+	#
+	# search functions:
+	#
+
+	my $server = Net::RDAP::Service->new("https://www.example.com/rdap");
+
+	# search for domains by name:
+	my $result = $server->domains('name' => 'ex*mple.com');
+
+	# search for entities by name:
+	my $result = $server->entities('fn' => 'J*n Doe');
+
+	# search for nameservers by IP address:
+	my $result = $server->nameservers('ip' => '192.168.56.101');
 
 =head1 DESCRIPTION
 
@@ -503,6 +522,13 @@ sub request {
 }
 
 =pod
+
+=head2 Performing Searches
+
+RDAP supports a limited search capability, but you need to know in
+advance which RDAP server you want to send the search query to. The
+C<Net::RDAP::Service> class allows you to prepare and submit search
+queries to specific RDAP servers.
 
 =head2 RDAP User Agent
 
