@@ -6,6 +6,7 @@ use HTTP::Request::Common;
 use JSON;
 use MIME::Base64;
 use Net::RDAP::Error;
+use Net::RDAP::Help;
 use Net::RDAP::Object::Autnum;
 use Net::RDAP::Object::Domain;
 use Net::RDAP::Object::IPNetwork;
@@ -497,6 +498,7 @@ sub object_from_response {
 	elsif ('autnum'		eq $data->{'objectClassName'})	{ return Net::RDAP::Object::Autnum->new($data, $url)	}
 	elsif ('nameserver'	eq $data->{'objectClassName'})	{ return Net::RDAP::Object::Nameserver->new($data, $url)}
 	elsif ('entity'		eq $data->{'objectClassName'})	{ return Net::RDAP::Object::Entity->new($data, $url)	}
+	elsif ('help'		eq $data->{'objectClassName'})	{ return Net::RDAP::Help->new($data, $url)		}
 
 	#
 	# search results
@@ -623,6 +625,8 @@ RDAP-related modules that all work together. They are:
 =over
 
 =item * L<Net::RDAP::Error>
+
+=item * L<Net::RDAP::Help>
 
 =item * L<Net::RDAP::Object::Autnum>
 
