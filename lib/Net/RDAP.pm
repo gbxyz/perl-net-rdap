@@ -21,6 +21,8 @@ $VERSION = 0.13;
 
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
 L<Net::RDAP> - an interface to the Registration Data Access Protocol
