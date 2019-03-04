@@ -320,9 +320,19 @@ In order for this form to work, the object must have a C<self> link:
 L<Net::RDAP> will auto-create one for objects that don't have one if it
 can.
 
-C<%OPTIONS> is an optional hash containing additional options for the query. At
-the moment, only the C<user> and C<pass> options are supported; if provided,
-they will be sent to the server in an HTTP Basic Authorization header field.
+C<%OPTIONS> is an optional hash containing additional options for the query.
+The following options are supported:
+
+
+=over
+
+=item * C<user> and C<pass>: if provided, they will be sent to the
+server in an HTTP Basic Authorization header field.
+
+=item * C<class_override>: allows you to set or override the
+C<objectClassName> property in RDAP responses.
+
+=back
 
 =cut
 
@@ -444,28 +454,32 @@ sub fetch {
 			'description'	=> [ 'The response from the server is not a valid JSON object' ],
 		);
 
-	} elsif (!defined($data->{'objectClassName'}) && scalar(grep { /^(domain|nameserver|entity)SearchResults$/ } keys(%{$data})) < 1) {
-		#
-		# response is missing the objectClassName property and is not a search result:
-		#
-		return $self->error(
-			'url'		=> $url,
-			'errorCode'	=> 500,
-			'title'		=> "Missing 'objectClassName' property",
-			'description'	=> [ "The response from the server is missing the 'objectClassName' property" ],
-		);
-
 	} else {
-		#
-		# update local cache
-		#
-		write_file($file, $response->decoded_content) if ($self->{'use_cache'});
-		chmod(0600, $file);
+		$data->{'objectClassName'} = $args{'class_override'} if ($args{'class_override'});
 
-		#
-		# return object
-		#
-		return $self->object_from_response($data, $url);
+		if (!defined($data->{'objectClassName'}) && scalar(grep { /^(domain|nameserver|entity)SearchResults$/ } keys(%{$data})) < 1) {
+			#
+			# response is missing the objectClassName property and is not a search result:
+			#
+			return $self->error(
+				'url'		=> $url,
+				'errorCode'	=> 500,
+				'title'		=> "Missing 'objectClassName' property",
+				'description'	=> [ "The response from the server is missing the 'objectClassName' property" ],
+			);
+
+		} else {
+			#
+			# update local cache
+			#
+			write_file($file, $response->decoded_content) if ($self->{'use_cache'});
+			chmod(0600, $file);
+
+			#
+			# return object
+			#
+			return $self->object_from_response($data, $url);
+		}
 	}
 }
 
