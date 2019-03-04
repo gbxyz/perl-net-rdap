@@ -175,9 +175,13 @@ In order for this form to work, the object must have a `self` link:
 [Net::RDAP](https://metacpan.org/pod/Net::RDAP) will auto-create one for objects that don't have one if it
 can.
 
-`%OPTIONS` is an optional hash containing additional options for the query. At
-the moment, only the `user` and `pass` options are supported; if provided,
-they will be sent to the server in an HTTP Basic Authorization header field.
+`%OPTIONS` is an optional hash containing additional options for the query.
+The following options are supported:
+
+- `user` and `pass`: if provided, they will be sent to the
+server in an HTTP Basic Authorization header field.
+- `class_override`: allows you to set or override the
+`objectClassName` property in RDAP responses.
 
 ## Performing Searches
 
@@ -219,6 +223,7 @@ RDAP-related modules that all work together. They are:
     - [Net::RDAP::ID](https://metacpan.org/pod/Net::RDAP::ID)
     - [Net::RDAP::Object](https://metacpan.org/pod/Net::RDAP::Object), and its submodules:
         - [Net::RDAP::Error](https://metacpan.org/pod/Net::RDAP::Error)
+        - [Net::RDAP::Help](https://metacpan.org/pod/Net::RDAP::Help)
         - [Net::RDAP::Object::Autnum](https://metacpan.org/pod/Net::RDAP::Object::Autnum)
         - [Net::RDAP::Object::Domain](https://metacpan.org/pod/Net::RDAP::Object::Domain)
         - [Net::RDAP::Object::Entity](https://metacpan.org/pod/Net::RDAP::Object::Entity)
@@ -274,7 +279,7 @@ Protocol (RDAP) Object Tagging
 
 # COPYRIGHT
 
-Copyright 2018 CentralNic Ltd. All rights reserved.
+Copyright 2019 CentralNic Ltd. All rights reserved.
 
 # LICENSE
 
@@ -293,11 +298,3 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-# POD ERRORS
-
-Hey! **The above document had some coding errors, which are explained below:**
-
-- Around line 137:
-
-    Non-ASCII character seen before =encoding in '"espécime.com";'. Assuming UTF-8
