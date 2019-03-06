@@ -134,7 +134,7 @@ If there was an error, this method will return a L<Net::RDAP::Error>.
 
 Domain names which contain characters other than those from the ASCII-compatible
 range must be encoded into "A-label" (or "Punycode") format before being passed
-to C<Net::DNS::Domain>. You can use C<Net::LibIDN> or C<Net::LibIDN2> to
+to L<Net::DNS::Domain>. You can use L<Net::LibIDN> or L<Net::LibIDN2> to
 perform this encoding:
 
 	use Net::LibIDN;
@@ -547,7 +547,7 @@ sub request {
 
 RDAP supports a limited search capability, but you need to know in
 advance which RDAP server you want to send the search query to. The
-C<Net::RDAP::Service> class allows you to prepare and submit search
+L<Net::RDAP::Service> class allows you to prepare and submit search
 queries to specific RDAP servers.
 
 =head2 RDAP User Agent

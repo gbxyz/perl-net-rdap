@@ -6,7 +6,7 @@ use strict;
 
 =head1 NAME
 
-C<Net::RDAP::Registry::IANARegistry::Service> - a class which represents
+L<Net::RDAP::Registry::IANARegistry::Service> - a class which represents
 an RDAP service in an IANA bootstrap registry.
 
 =head1 DESCRIPTION
@@ -16,7 +16,7 @@ specific RDAP service that corresponds to the unique identifiers
 associated with that entry (e.g. top-level domains, IP blocks, or AS
 number ranges).
 
-C<Net::RDAP::Registry::IANARegistry::Service> provides a representation
+L<Net::RDAP::Registry::IANARegistry::Service> provides a representation
 of these entries. 
 
 This class is use internally by L<Net::RDAP>.
