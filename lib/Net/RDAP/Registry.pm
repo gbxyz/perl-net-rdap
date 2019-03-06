@@ -8,6 +8,7 @@ use File::stat;
 use HTTP::Request::Common;
 use JSON;
 use Net::RDAP::UA;
+use Net::RDAP::Registry::IANARegistry;
 use vars qw($UA $REGISTRY);
 use strict;
 
@@ -106,25 +107,24 @@ sub ip {
 	my $registry = $package->load_registry(4 == $ip->version ? 'https://data.iana.org/rdap/ipv4.json' : 'https://data.iana.org/rdap/ipv6.json');
 	return undef if (!$registry);
 
-	my $matches = {};
-	SERVICE: foreach my $service (@{$registry->{'services'}}) {
-		VALUE: foreach my $value (@{$service->[0]}) {
+	my %matches;
+	SERVICE: foreach my $service ($registry->services) {
+		VALUE: foreach my $value ($service->registries) {
 			my $range = Net::IP->new($value);
 
 			if ($range->overlaps($ip)) {
-				$matches->{$value} = $service->[1];
+				$matches{$value} = $package->get_best_url($service->urls);
 				last VALUE;
-
 			}
 		}
 	}
 
-	return undef if (scalar(keys(%{$matches})) < 1);
+	return undef if (scalar(keys(%matches)) < 1);
 
 	# prefer the service with the longest prefix length
-	my @urls = @{$matches->{(sort { Net::IP->new($b)->prefixlen <=> Net::IP->new($a)->prefixlen } keys(%{$matches}))[0]}};
+	my $longest = (sort { Net::IP->new($b)->prefixlen <=> Net::IP->new($a)->prefixlen } keys(%matches))[0];
 
-	return $package->assemble_url($package->get_best_url(@urls), 'ip', split(/\//, $ip->prefix));
+	return $package->assemble_url($matches{$longest}, 'ip', split(/\//, $ip->prefix));
 }
 
 #
@@ -137,27 +137,28 @@ sub autnum {
 	my $registry = $package->load_registry('https://data.iana.org/rdap/asn.json');
 	return undef if (!$registry);
 
-	my $matches = {};
-	SERVICE: foreach my $service (@{$registry->{'services'}}) {
-		VALUE: foreach my $value (@{$service->[0]}) {
+	my %matches;
+	SERVICE: foreach my $service ($registry->services) {
+		VALUE: foreach my $value ($service->registries) {
 			if ($value == $autnum->toasplain) {
 				# exact match, create an entry for NNNN-NNN where both sides are
 				# the same (simplifies sorting later)
-				$matches = { sprintf('%d-%d', $value, $value) => $service->[1] };
+				$matches{sprintf('%d-%d', $value, $value)} = $package->get_best_url($service->urls);
 				last SERVICE;
 
 			} elsif ($value =~ /^(\d+)-(\d+)$/) {
 				if ($1 <= $autnum->toasplain && $autnum->toasplain <= $2) {
-					$matches->{$value} = $service->[1];
+					$matches{sprintf('%d-%d', $value, $value)} = $package->get_best_url($service->urls);
 					last VALUE;
 				}
 			}
 		}
 	}
 
-	return undef if (scalar(keys(%{$matches})) < 1);
+	return undef if (scalar(keys(%matches)) < 1);
 
-	my @ranges = keys(%{$matches});
+	my @ranges = keys(%matches);
+
 	# convert array of NNNN-NNNN strings to array of array refs
 	my @pairs = map { [ split(/-/, $_, 2) ] } @ranges;
 
@@ -166,9 +167,9 @@ sub autnum {
 
 	my $range = sprintf('%d-%d', @{$sorted[0]});
 
-	my @urls = @{$matches->{$range}};
+	my $url = $matches{$range};
 
-	return $package->assemble_url($package->get_best_url(@urls), 'autnum', $autnum->toasplain);
+	return $package->assemble_url($url, 'autnum', $autnum->toasplain);
 }
 
 #
@@ -181,22 +182,17 @@ sub domain {
 	my $registry = $package->load_registry('https://data.iana.org/rdap/dns.json');
 	return undef if (!$registry);
 
-	my $matches = {};
-	SERVICE: foreach my $service (@{$registry->{'services'}}) {
-		VALUE: foreach my $value (@{$service->[0]}) {
-			if (lc($domain->name) eq lc($value)) {
-				$matches = { $value => $service->[1] };
-				last SERVICE;
-
-			} elsif ($domain->name =~ /\.$value$/i) {
-				$matches->{$value} = $service->[1];
+	my %matches;
+	SERVICE: foreach my $service ($registry->services) {
+		VALUE: foreach my $value ($service->registries) {
+			if ($domain->name =~ /\.$value$/i) {
+				$matches{$value} = $package->get_best_url($service->urls);
 				last VALUE;
-
 			}
 		}
 	}
 
-	if (scalar(keys(%{$matches})) < 1) {
+	if (scalar(keys(%matches)) < 1) {
 		if ($domain->name =~ /\.(in-addr|ip6)\.arpa$/) {
 			# special workaround for the lack of .arpa in the RDAP registry
 			return $package->reverse_domain($domain);
@@ -208,9 +204,9 @@ sub domain {
 
 	} else {
 		# prefer the service with the longest domain name
-		my @urls = @{$matches->{(sort { length($b) <=> length($a) } keys(%{$matches}))[0]}};
+		my $parent = (sort { length($b) <=> length($a) } keys(%matches))[0];
 
-		return $package->assemble_url($package->get_best_url(@urls), 'domain', $domain->name);
+		return $package->assemble_url($matches{$parent}, 'domain', $domain->name);
 	}
 }
 
@@ -285,10 +281,10 @@ sub entity {
 	my $registry = $package->load_registry('https://data.iana.org/rdap/object-tags.json');
 	return undef if (!$registry);
 
-	foreach my $service (@{$registry->{'services'}}) {
-		foreach my $value (@{$service->[1]}) {
+	foreach my $service ($registry->services) {
+		foreach my $value ($service->registries) {
 			# unlike the other registries we are only looking for an exact match as there is no hierarchy to tag
-			return $package->assemble_url($package->get_best_url(@{$service->[2]}), 'entity', $handle) if (lc($value) eq lc($tag));
+			return $package->assemble_url($package->get_best_url($service->urls), 'entity', $handle) if (lc($value) eq lc($tag));
 		}
 	}
 
@@ -341,10 +337,10 @@ sub load_registry {
 		}
 
 		if (-e $file) {
-			return from_json(read_file($file));
+			$REGISTRY->{$url} = Net::RDAP::Registry::IANARegistry->new(from_json(read_file($file)));
 
 		} else {
-			return undef;
+			$REGISTRY->{$url} = undef;
 
 		}
 	}
@@ -359,12 +355,13 @@ sub load_registry {
 sub get_best_url {
 	my ($package, @urls) = @_;
 
-	my @https = grep { $_ =~ /^https/ } @urls;
+	my @https = grep { 'https' eq lc($_->scheme) } @urls;
+
 	if (scalar(@https)) {
-		return URI->new($https[0]);
+		return shift(@https);
 
 	} else {
-		return URI->new($urls[0]);
+		return shift(@urls);
 
 	}
 }
@@ -375,11 +372,11 @@ sub get_best_url {
 # trailing slashes
 #
 sub assemble_url {
-	my ($package, $uri, @segments) = @_;
+	my ($package, $url, @segments) = @_;
 
-	$uri->path_segments(grep { length > 0 } $uri->path_segments, @segments);
+	$url->path_segments(grep { length > 0 } ($url->path_segments, @segments));
 
-	return $uri;
+	return $url;
 }
 
 =pod

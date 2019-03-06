@@ -660,6 +660,10 @@ RDAP-related modules that all work together. They are:
 
 =item * L<Net::RDAP::Registry>
 
+=item * L<Net::RDAP::Registry::IANARegistry>
+
+=item * L<Net::RDAP::Registry::IANARegistry::Service>
+
 =item * L<Net::RDAP::Service>
 
 =item * L<Net::RDAP::Link>
