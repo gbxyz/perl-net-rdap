@@ -12,12 +12,12 @@ bootstrap registry.
 
 =head1 DESCRIPTION
 
-The IANA maintains a set of RDAP boostrap registries: for IPv4 and IPv6
+The IANA maintains a set of RDAP boostrap registries for IPv4 and IPv6
 address blocks, top-level domains, AS number ranges, and object tags.
 
 This class represents these registries.
 
-This class is use internally by L<Net::RDAP>.
+This class is used internally by L<Net::RDAP::Registry>.
 
 =head1 CONSTRUCTOR
 

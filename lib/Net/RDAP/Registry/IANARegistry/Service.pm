@@ -11,15 +11,14 @@ an RDAP service in an IANA bootstrap registry.
 
 =head1 DESCRIPTION
 
-Each of the entries in the IANA RDAP Bootstrap registries represent a
+Each of the entries in an IANA RDAP Bootstrap registry represen a
 specific RDAP service that corresponds to the unique identifiers
 associated with that entry (e.g. top-level domains, IP blocks, or AS
 number ranges).
 
-L<Net::RDAP::Registry::IANARegistry::Service> provides a representation
-of these entries. 
+This class provides a representation of these entries.
 
-This class is use internally by L<Net::RDAP>.
+This class is used internally by L<Net::RDAP::Registry>.
 
 =head1 CONSTRUCTOR
 
@@ -56,9 +55,11 @@ tags.
 sub new {
 	my ($package, @args) = @_;
 	my $self = bless({}, $package);
+
+	# populate object proprties from @args, right to left:
 	$self->{'urls'} = pop(@args);
 	$self->{'registries'} = pop(@args);
-	$self->{'registrant'} = pop(@args);
+	$self->{'registrant'} = pop(@args); # may be undefined
 
 	return $self;
 }
@@ -70,18 +71,18 @@ sub new {
 	@urls = $svc->urls;
 
 This method returns an array of C<URI> objects representing the
-RDAP base URLs for the RDAP service.
+RDAP base URL(s) for the RDAP service.
 
 	@registries = $svc->registries;
 
 This method returns an array of "registries" (TLDs, IP blocks,
-ASN ranges, etc).
+ASN ranges, etc) for which the RDAP service is authoritatie.
 
 	$registrant = $svc->registrant;
 
 This method returns the registrant of the entry into the
 registry. This is typically an email address. Note that as of
-writing, only the Object Tag registry lists the registrant.
+writing, only entries in the Object Tag registry have registrants.
 
 =cut
 
