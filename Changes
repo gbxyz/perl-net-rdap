@@ -1,5 +1,13 @@
 Revision history for perl module Net::RDAP
 
+0.14 - 2019-03-06
+  - support for getting help response from RDAP
+    services
+
+  - added Net::RDAP::Registry::IANARegistry and
+    Net::RDAP::Registry::IANARegistry::Service
+    and refactored Net::RDAP::Registry to use them
+
 0.13 - 2019-01-15
   - add support for RFC 8521 object tagging
 
