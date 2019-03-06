@@ -10,6 +10,13 @@ use JSON;
 use Net::RDAP::UA;
 use Net::RDAP::Registry::IANARegistry;
 use vars qw($UA $REGISTRY);
+use constant {
+	IP4_URL	=> 'https://data.iana.org/rdap/ipv4.json',
+	IP6_URL => 'https://data.iana.org/rdap/ipv6.json',
+	DNS_URL => 'https://data.iana.org/rdap/dns.json',
+	ASN_URL => 'https://data.iana.org/rdap/asn.json',
+	TAG_URL => 'https://data.iana.org/rdap/object-tags.json',
+};
 use strict;
 
 #
@@ -104,7 +111,7 @@ sub ip {
 	my ($package, $ip) = @_;
 	croak(sprintf('Argument to %s->ip() must be a Net::IP', $package)) unless ('Net::IP' eq ref($ip));
 
-	my $registry = $package->load_registry(4 == $ip->version ? 'https://data.iana.org/rdap/ipv4.json' : 'https://data.iana.org/rdap/ipv6.json');
+	my $registry = $package->load_registry(4 == $ip->version ? IP4_URL : IP6_URL);
 	return undef if (!$registry);
 
 	my %matches;
@@ -134,14 +141,14 @@ sub autnum {
 	my ($package, $autnum) = @_;
 	croak(sprintf('Argument to %s->autnum() must be a Net::ASN', $package)) unless ('Net::ASN' eq ref($autnum));
 
-	my $registry = $package->load_registry('https://data.iana.org/rdap/asn.json');
+	my $registry = $package->load_registry(ASN_URL);
 	return undef if (!$registry);
 
 	my %matches;
 	SERVICE: foreach my $service ($registry->services) {
 		VALUE: foreach my $value ($service->registries) {
 			if ($value == $autnum->toasplain) {
-				# exact match, create an entry for NNNN-NNN where both sides are
+				# exact match, create an entry for NNNN-NNNN where both sides are
 				# the same (simplifies sorting later)
 				$matches{sprintf('%d-%d', $value, $value)} = $package->get_best_url($service->urls);
 				last SERVICE;
@@ -165,11 +172,10 @@ sub autnum {
 	# sort by descending order of the "width" of the range
 	my @sorted = sort { $b->{1} - $b->{0} <=> $a->{1} - $a->{0} } @pairs;
 
-	my $range = sprintf('%d-%d', @{$sorted[0]});
+	# prefer the narrowest (more specific) range
+	my $closest = sprintf('%d-%d', @{$sorted[0]});
 
-	my $url = $matches{$range};
-
-	return $package->assemble_url($url, 'autnum', $autnum->toasplain);
+	return $package->assemble_url($matches{$closest}, 'autnum', $autnum->toasplain);
 }
 
 #
@@ -179,7 +185,7 @@ sub domain {
 	my ($package, $domain) = @_;
 	croak(sprintf('Argument to %s->domain() must be a Net::DNS::Domain', $package)) unless ('Net::DNS::Domain' eq ref($domain));
 
-	my $registry = $package->load_registry('https://data.iana.org/rdap/dns.json');
+	my $registry = $package->load_registry(DNS_URL);
 	return undef if (!$registry);
 
 	my %matches;
@@ -272,18 +278,21 @@ sub reverse_domain {
 	return URI->new_abs(sprintf('../../domain/%s', $domain->name), $url);
 }
 
+#
+# get URL for a tagged entity
+#
 sub entity {
 	my ($package, $handle) = @_;
 
 	my @parts = split(/-/, $handle);
 	my $tag = pop(@parts);
 
-	my $registry = $package->load_registry('https://data.iana.org/rdap/object-tags.json');
+	my $registry = $package->load_registry(TAG_URL);
 	return undef if (!$registry);
 
 	foreach my $service ($registry->services) {
 		foreach my $value ($service->registries) {
-			# unlike the other registries we are only looking for an exact match as there is no hierarchy to tag
+			# unlike the other registries we are only looking for an exact match, as there is no hierarchy:
 			return $package->assemble_url($package->get_best_url($service->urls), 'entity', $handle) if (lc($value) eq lc($tag));
 		}
 	}
@@ -293,7 +302,8 @@ sub entity {
 
 #
 # load a registry. uses (in order of preference) an in-memory cache, a JSON file on disk,
-# or a resource on the IANA website.
+# or a resource on the IANA website. returns a Net::RDAP::Registry::IANARegistry object
+# (or undef)
 #
 sub load_registry {
 	my ($package, $url) = @_;
@@ -367,7 +377,7 @@ sub get_best_url {
 }
 
 #
-# contatenate a URI with a bunch of path segments
+# concatenate a URL with a bunch of path segments
 # this method deals with URI objects which have
 # trailing slashes
 #
