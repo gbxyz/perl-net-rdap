@@ -1,5 +1,8 @@
 Revision history for perl module Net::RDAP
 
+0.15 - 2020-07-07
+  - fixed RT#132736 (Noisy warning on ->fetch(url))
+
 0.14 - 2019-03-06
   - support for getting help response from RDAP
     services
