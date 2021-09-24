@@ -137,7 +137,7 @@ target resource.
 
 =cut
 
-sub type { $_[0]->{'type'} ? MIME::Type->new($_[0]->{'type'}) : undef }
+sub type { $_[0]->{'type'} ? MIME::Type->new('type' => $_[0]->{'type'}) : undef }
 
 =pod
 
