@@ -533,7 +533,7 @@ sub object_from_response {
 sub is_rdap {
 	my ($self, $response) = @_;
 
-	return ('file' eq $response->base->scheme || $response->header('Content-Type') =~ /^application\/rdap\+json/);
+	return ('file' eq $response->base->scheme || $response->header('Content-Type') =~ /^application\/rdap\+json$/ || $response->header('Content-Type') =~ /^application\/json$/);
 }
 
 #
