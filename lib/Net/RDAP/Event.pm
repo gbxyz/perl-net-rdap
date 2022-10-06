@@ -60,7 +60,15 @@ event.
 
 =cut
 
-sub date { DateTime::Format::ISO8601->parse_datetime($_[0]->{'eventDate'}) }
+sub date {
+    #
+    # DateTime::Format::ISO8601 doesn't seem to like strings with "time-secfrac" components, so we strip them out
+    #
+    my $str = shift->{'eventDate'};
+    $str =~ s/(T\d{2}:\d{2}:\d{2})\.\d{1,3}(\+)/$1$2/;
+
+    return DateTime::Format::ISO8601->parse_datetime($str);
+}
 
 =pod
 
