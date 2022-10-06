@@ -24,7 +24,5 @@ lib/Net/RDAP/Values.pm
 LICENSE
 Makefile.PL
 MANIFEST			This list of files
-Net-RDAP-0.1/META.json
-Net-RDAP-0.1/META.yml
 README.md
 t/use.t
