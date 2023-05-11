@@ -5,9 +5,9 @@ use strict;
 WriteMakefile(
     'NAME'        	=> 'Net::RDAP',
     'VERSION_FROM'  => 'lib/Net/RDAP.pm',
-	'ABSTRACT'		=> 'an interface to the Registration Data Access Protocol (RDAP).'
+	'ABSTRACT'		=> 'an interface to the Registration Data Access Protocol (RDAP).',
 	'AUTHOR'		=> ['Gavin Brown <gavin.brown@fastmail.uk>'],
-	'LICENSE'		=> ['freebsd'],
+	'LICENSE'		=> 'freebsd',
     'PREREQ_PM' => {
         'DateTime::Format::ISO8601' => 0,
         'Digest::SHA1'            	=> 0,
