@@ -18,7 +18,7 @@ use Net::RDAP::Service;
 use vars qw($VERSION);
 use strict;
 
-$VERSION = 0.17;
+$VERSION = 0.18;
 
 =pod
 
