@@ -207,7 +207,7 @@ sub ip {
 This method returns a L<Net::RDAP::Object::Autnum> object containing
 information about the autonymous system referenced by C<$autnum>.
 
-C<$autnum> must be a L<Net::ASN> object or an literal integer AS number.
+C<$autnum> must be a L<Net::ASN> object or a literal integer AS number.
 
 If there was an error, this method will return a L<Net::RDAP::Error>.
 
@@ -601,13 +601,13 @@ project is hosted here:
 
 =over
 
-=item * L<https://gitlab.centralnic.com/centralnic/perl-net-rdap>
+=item * L<https://github.com/gbxyz/perl-net-rdap>
 
 =back
 
 =head1 DISTRIBUTION
 
-The L<Net::RDAP> CPAN distribution contains a large number of#
+The L<Net::RDAP> CPAN distribution contains a large number of
 RDAP-related modules that all work together. They are:
 
 =over
