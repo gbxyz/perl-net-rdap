@@ -18,6 +18,7 @@ WriteMakefile(
         'File::stat'            	=> 0,
         'HTTP::Request::Common'     => 0,
         'JSON'                		=> 0,
+		'List::MoreUtils'			=> 0,
         'LWP::Protocol::https'      => 0,
         'LWP::UserAgent'        	=> 0,
         'MIME::Type'            	=> 0,
