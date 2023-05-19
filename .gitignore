@@ -1,0 +1,9 @@
+Net-RDAP-*
+Makefile
+blib/
+pm_to_blib
+MYMETA.*
+META.*
+MANIFEST
+MANIFEST.old
+
