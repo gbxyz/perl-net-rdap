@@ -40,14 +40,14 @@ L<Net::RDAP> - an interface to the Registration Data Access Protocol
     #
 
     # get domain info:
-    $object = $rdap->domain(Net::DNS::Domain->new('example.com'));
+    $object = $rdap->domain('example.com');
 
     # get info about IP addresses/ranges:
-    $object = $rdap->ip(Net::IP->new('192.168.0.1'));
-    $object = $rdap->ip(Net::IP->new('2001:DB8::/32'));
+    $object = $rdap->ip('192.168.0.1');
+    $object = $rdap->ip('2001:DB8::/32');
 
     # get info about AS numbers:
-    $object = $rdap->autnum(Net::ASN->new(65536));
+    $object = $rdap->autnum(65536);
 
     #
     # search functions:
@@ -69,12 +69,12 @@ L<Net::RDAP> - an interface to the Registration Data Access Protocol
 L<Net::RDAP> provides an interface to the Registration Data Access
 Protocol (RDAP).
 
-RDAP is gradually replacing Whois as the preferred way of obtainining
-information about Internet resources (IP addresses, autonymous system
-numbers, and domain names). As of writing, RDAP is quite well-supported
-by Regional Internet Registries (who are responsible for the allocation
-of IP addresses and AS numbers) but is still being rolled out among
-domain name registries and registrars.
+RDAP is replacing Whois as the preferred way of obtainining information
+about Internet resources (IP addresses, autonymous system numbers, and
+domain names). As of writing, RDAP is fully supported by Regional
+Internet Registries (who are responsible for the allocation of IP
+addresses and AS numbers) and generic TLD operators (e.g. .com, .org,
+.xyz) but is still being rolled out among country-code registries.
 
 L<Net::RDAP> does all the hard work of determining the correct
 server to query (L<Net::RDAP::Registry> is an interface to the
@@ -125,7 +125,7 @@ sub new {
 This method returns a L<Net::RDAP::Object::Domain> object containing
 information about the domain name referenced by C<$domain>.
 
-C<$domain> must be a L<Net::DNS::Domain> object or a string containing a
+C<$domain> must be either a string or a L<Net::DNS::Domain> object containing a
 fully-qualified domain name. The domain may be either a "forward" domain
 (such as C<example.com>) or a "reverse" domain (such as C<168.192.in-addr.arpa>).
 
@@ -142,7 +142,7 @@ perform this encoding:
 
     my $name = "espécime.com";
 
-    my $domain = $rdap->domain->(Net::DNS::Domain->new(idn_to_ascii($name, 'UTF-8')));
+    my $domain = $rdap->domain->(idn_to_ascii($name, 'UTF-8'));
 
 =cut
 
@@ -167,8 +167,8 @@ sub domain {
 This method returns a L<Net::RDAP::Object::IPNetwork> object containing
 information about the resource referenced by C<$ip>.
 
-C<$ip> must be either a L<Net::IP> object or a string, and can represent any of the
-following:
+C<$ip> must be either a string or a L<Net::IP> object, and can represent any
+of the following:
 
 =over
 
@@ -207,7 +207,7 @@ sub ip {
 This method returns a L<Net::RDAP::Object::Autnum> object containing
 information about the autonymous system referenced by C<$autnum>.
 
-C<$autnum> must be a L<Net::ASN> object or a literal integer AS number.
+C<$autnum> must be a a literal integer AS number or a L<Net::ASN> object.
 
 If there was an error, this method will return a L<Net::RDAP::Error>.
 
@@ -234,7 +234,7 @@ sub autnum {
 This method returns a L<Net::RDAP::Object::Entity> object containing
 information about the entity referenced by C<$handle>, which must be
 a string containing a "tagged" handle, such as C<ABC123-EXAMPLE>, as
-per RFC 8521.
+per L<RFC 8521|https://www.rfc-editor.org/rfc/rfc8521.html>.
 
 =cut
 
@@ -281,7 +281,9 @@ sub query {
     $exists = $rdap->exists($object);
 
 This method returns a boolean indicating whether C<$object> (which
-must be a L<Net::DNS::Domain>, L<Net::IP> or L<Net::ASN>) exists.
+must be a L<Net::DNS::Domain>, L<Net::IP> or L<Net::ASN>) exists. This
+is determined by performing an HTTP C<HEAD> request and inspecting the
+resulting HTTP status code.
 
 B<Note>: the non-existence of an object does not indicate whether that
 object is available for registration.
@@ -670,46 +672,6 @@ RDAP-related modules that all work together. They are:
 
 =back
 
-=head1 DEPENDENCIES
-
-=over
-
-=item * L<DateTime::Format::ISO8601>
-
-=item * L<Digest::SHA1>
-
-=item * L<File::Basename>
-
-=item * L<File::Slurp>
-
-=item * L<File::Spec>
-
-=item * L<File::stat>
-
-=item * L<HTTP::Request::Common>
-
-=item * L<JSON>
-
-=item * L<LWP::Protocol::https>
-
-=item * L<LWP::UserAgent>
-
-=item * L<Mozilla::CA>
-
-=item * L<Net::ASN>
-
-=item * L<Net::DNS>
-
-=item * L<Net::IP>
-
-=item * L<URI>
-
-=item * L<vCard>
-
-=item * L<XML::LibXML>
-
-=back
-
 =head1 REFERENCES
 
 =over
@@ -741,7 +703,7 @@ Protocol (RDAP) Object Tagging
 
 =head1 COPYRIGHT
 
-Copyright 2022 CentralNic Ltd. All rights reserved.
+Copyright 2018 - 2023 CentralNic Ltd. All rights reserved.
 
 =head1 LICENSE
 
