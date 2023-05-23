@@ -11,11 +11,13 @@ use Net::RDAP::UA;
 use XML::LibXML;
 use vars qw($UA $REGISTRY @EXPORT);
 use constant {
-	RDAP_TYPE_NOTICE_OR_REMARK_TYPE		=> 'notice or remark type',	# 
-	RDAP_TYPE_STATUS			=> 'status',			# these values are defined in
-	RDAP_TYPE_ROLE				=> 'role',			# RFC 7483, section 10.2.
-	RDAP_TYPE_EVENT_ACTION			=> 'event action',		# 
-	RDAP_TYPE_DOMAIN_VARIANT_RELATION	=> 'domain variant relation',	# 
+    IANA_REGISTRY_URL                   => 'https://www.iana.org/assignments/rdap-json-values/rdap-json-values.xml',
+    RDAP_TYPE_NOTICE_OR_REMARK_TYPE     => 'notice or remark type',     #
+    RDAP_TYPE_STATUS                    => 'status',                    # these values are defined in
+    RDAP_TYPE_ROLE                      => 'role',                      # RFC 7483, section 10.2.
+    RDAP_TYPE_EVENT_ACTION              => 'event action',              #
+    RDAP_TYPE_DOMAIN_VARIANT_RELATION   => 'domain variant relation',   #
+    CACHE_TTL                           => 86400,                       # this registry is fairly stable
 };
 use base qw(Exporter);
 use strict;
@@ -24,11 +26,11 @@ use strict;
 # export these symbols
 #
 our @EXPORT = qw(
-	RDAP_TYPE_NOTICE_OR_REMARK_TYPE
-	RDAP_TYPE_STATUS
-	RDAP_TYPE_ROLE
-	RDAP_TYPE_EVENT_ACTION
-	RDAP_TYPE_DOMAIN_VARIANT_RELATION
+    RDAP_TYPE_NOTICE_OR_REMARK_TYPE
+    RDAP_TYPE_STATUS
+    RDAP_TYPE_ROLE
+    RDAP_TYPE_EVENT_ACTION
+    RDAP_TYPE_DOMAIN_VARIANT_RELATION
 );
 
 #
@@ -61,11 +63,11 @@ that it retrieves from the IANA web server.
 
 =head2 check()
 
-	Net::RDAP::Values->check($value, $type);
+    Net::RDAP::Values->check($value, $type);
 
-	Net::RDAP::Values->check('add period', RDAP_TYPE_STATUS);
+    Net::RDAP::Values->check('add period', RDAP_TYPE_STATUS);
 
-	Net::RDAP::Values->check('registration', RDAP_TYPE_EVENT_ACTION);
+    Net::RDAP::Values->check('registration', RDAP_TYPE_EVENT_ACTION);
 
 The C<check()> function allows you to determine if a given value is present
 in the registry. You must also specify the type of the value using one of
@@ -77,22 +79,22 @@ value, otherwise it returns C<undef>.
 =cut
 
 sub check {
-	my ($self, $value, $type) = @_;
+    my ($self, $value, $type) = @_;
 
-	foreach my $registered ($self->values($type)) {
-		return 1 if ($registered eq $value);
-	}
+    foreach my $registered ($self->values($type)) {
+        return 1 if ($registered eq $value);
+    }
 
-	return undef;
+    return undef;
 }
 
 =pod
 
 =head2 values()
 
-	@values = Net::RDAP::Values->values($type);
+    @values = Net::RDAP::Values->values($type);
 
-	@values = Net::RDAP::Values->values(RDAP_TYPE_ROLE);
+    @values = Net::RDAP::Values->values(RDAP_TYPE_ROLE);
 
 The C<values()> function returns a list of the permitted values for the
 given value type. If you specify an invalid type, an exception is raised.
@@ -100,47 +102,49 @@ given value type. If you specify an invalid type, an exception is raised.
 =cut
 
 sub values {
-	my ($self, $type) = @_;
+    my ($self, $type) = @_;
 
-	if (!defined($REGISTRY->{'values_by_type'}->{$type})) {
-		croak(sprintf("'%s' is not a permitted value type", $type));
+    $REGISTRY = load_registry() unless ($REGISTRY);
 
-	} else {
-		return sort @{$REGISTRY->{'values_by_type'}->{$type}};
+    if (!defined($REGISTRY->{'values_by_type'}->{$type})) {
+        croak(sprintf("'%s' is not a permitted value type", $type));
 
-	}
+    } else {
+        return sort @{$REGISTRY->{'values_by_type'}->{$type}};
+
+    }
 }
 
 =pod
 
 =head2 types()
 
-	@types = Net::RDAP::Values->types;
+    @types = Net::RDAP::Values->types;
 
 The C<types()> function returns a list of all possible RDAP value types.
 
 =cut
 
 sub types {
-	return (
-		RDAP_TYPE_NOTICE_OR_REMARK_TYPE,
-		RDAP_TYPE_STATUS,
-		RDAP_TYPE_ROLE,
-		RDAP_TYPE_EVENT_ACTION,
-		RDAP_TYPE_DOMAIN_VARIANT_RELATION,
-	);
+    return (
+        RDAP_TYPE_NOTICE_OR_REMARK_TYPE,
+        RDAP_TYPE_STATUS,
+        RDAP_TYPE_ROLE,
+        RDAP_TYPE_EVENT_ACTION,
+        RDAP_TYPE_DOMAIN_VARIANT_RELATION,
+    );
 }
 
 =pod
 
 =head2 description()
 
-	$description = Net::RDAP::Values->description($value, $type);
+    $description = Net::RDAP::Values->description($value, $type);
 
-	$description = Net::RDAP::Values->description('registration', RDAP_TYPE_EVENT_ACTION);
+    $description = Net::RDAP::Values->description('registration', RDAP_TYPE_EVENT_ACTION);
 
-	use Net::RDAP::EPPStatusMap;
-	$description = Net::RDAP::Values->description(epp2rdap('serverHold'), RDAP_TYPE_STATUS);
+    use Net::RDAP::EPPStatusMap;
+    $description = Net::RDAP::Values->description(epp2rdap('serverHold'), RDAP_TYPE_STATUS);
 
 The C<description()> function returns a textual description (in English) of the value
 in the registry, suitable for display to the user.
@@ -211,8 +215,7 @@ sub load_registry {
 	} else {
 		return undef;
 
-	}
-}
+__END__
 
 =pod
 
@@ -258,5 +261,3 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 =cut
-
-1;

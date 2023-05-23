@@ -269,7 +269,7 @@ sub query {
             'errorCode'    => 400,
             'title'        => 'Unable to obtain URL for object',
         );
-        
+
     } else {
         return $self->fetch($url, %args);
 
@@ -495,12 +495,12 @@ sub object_from_response {
     #
     # lookup results
     #
-    if ('domain'        eq $data->{'objectClassName'})     { return Net::RDAP::Object::Domain->new($data, $url)    }
-    elsif ('ip network'    eq $data->{'objectClassName'})    { return Net::RDAP::Object::IPNetwork->new($data, $url)    }
-    elsif ('autnum'        eq $data->{'objectClassName'})    { return Net::RDAP::Object::Autnum->new($data, $url)    }
-    elsif ('nameserver'    eq $data->{'objectClassName'})    { return Net::RDAP::Object::Nameserver->new($data, $url)}
-    elsif ('entity'        eq $data->{'objectClassName'})    { return Net::RDAP::Object::Entity->new($data, $url)    }
-    elsif ('help'        eq $data->{'objectClassName'})    { return Net::RDAP::Help->new($data, $url)        }
+    if    ('domain'     eq $data->{'objectClassName'})  { return Net::RDAP::Object::Domain->new($data, $url)    }
+    elsif ('ip network' eq $data->{'objectClassName'})  { return Net::RDAP::Object::IPNetwork->new($data, $url) }
+    elsif ('autnum'     eq $data->{'objectClassName'})  { return Net::RDAP::Object::Autnum->new($data, $url)    }
+    elsif ('nameserver' eq $data->{'objectClassName'})  { return Net::RDAP::Object::Nameserver->new($data, $url)}
+    elsif ('entity'     eq $data->{'objectClassName'})  { return Net::RDAP::Object::Entity->new($data, $url)    }
+    elsif ('help'       eq $data->{'objectClassName'})  { return Net::RDAP::Help->new($data, $url)              }
 
     #
     # search results
@@ -513,11 +513,12 @@ sub object_from_response {
     # unprocessable response
     #
     else {
+        my $msg = "Unknown objectClassName '$data->{'objectClassName'}'";
         return $self->error(
-            'url'        => $url,
-            'errorCode'    => 500,
-            'title'        => "Unknown objectClassName '$data->{'objectClassName'}'",
-            'description'    => [ "Unknown objectClassName '$data->{'objectClassName'}'" ],
+            'url'           => $url,
+            'errorCode'     => 500,
+            'title'         => $msg,
+            'description'   => [ $msg ],
         );
     }
 }
@@ -528,7 +529,7 @@ sub object_from_response {
 sub is_rdap {
     my ($self, $response) = @_;
 
-    return ('file' eq $response->base->scheme || ($response->header('Content-Type') =~ /^application\/rdap\+json/ || $response->header('Content-Type') =~ /^application\/json/));
+    return ((!$response->base || 'file' eq $response->base->scheme) || ($response->header('Content-Type') =~ /^application\/rdap\+json/ || $response->header('Content-Type') =~ /^application\/json/));
 }
 
 #
@@ -593,6 +594,10 @@ sub error {
         $params{'url'},
     );
 }
+
+1;
+
+__END__
 
 =pod
 
@@ -724,5 +729,3 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 =cut
-
-1;

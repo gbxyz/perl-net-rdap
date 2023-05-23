@@ -11,11 +11,12 @@ use Net::RDAP::UA;
 use Net::RDAP::Registry::IANARegistry;
 use vars qw($UA $REGISTRY);
 use constant {
-	IP4_URL	=> 'https://data.iana.org/rdap/ipv4.json',
-	IP6_URL => 'https://data.iana.org/rdap/ipv6.json',
-	DNS_URL => 'https://data.iana.org/rdap/dns.json',
-	ASN_URL => 'https://data.iana.org/rdap/asn.json',
-	TAG_URL => 'https://data.iana.org/rdap/object-tags.json',
+    IP4_URL             => 'https://data.iana.org/rdap/ipv4.json',
+    IP6_URL             => 'https://data.iana.org/rdap/ipv6.json',
+    DNS_URL             => 'https://data.iana.org/rdap/dns.json',
+    ASN_URL             => 'https://data.iana.org/rdap/asn.json',
+    TAG_URL             => 'https://data.iana.org/rdap/object-tags.json',
+    CACHE_TTL           => 86400,
 };
 use strict;
 
@@ -32,15 +33,15 @@ L<Net::RDAP::Registry> - an interface to the IANA RDAP registries.
 
 =head1 SYNOPSIS
 
-	use Net::RDAP::Registry;
-	use Net::IP;
-	use Net::ASN;
+    use Net::RDAP::Registry;
+    use Net::IP;
+    use Net::ASN;
 
-	$url = Net::RDAP::Registry->get_url(Net::DNS::Domain->new('example.com'));
-	$url = Net::RDAP::Registry->get_url(Net::IP->new('192.168.0.1'));
-	$url = Net::RDAP::Registry->get_url(Net::IP->new('2001:DB8::/32'));
-	$url = Net::RDAP::Registry->get_url(Net::ASN->new(65536));
-	$url = Net::RDAP::Registry->get_url("ABC123-TAG");
+    $url = Net::RDAP::Registry->get_url(Net::DNS::Domain->new('example.com'));
+    $url = Net::RDAP::Registry->get_url(Net::IP->new('192.168.0.1'));
+    $url = Net::RDAP::Registry->get_url(Net::IP->new('2001:DB8::/32'));
+    $url = Net::RDAP::Registry->get_url(Net::ASN->new(65536));
+    $url = Net::RDAP::Registry->get_url("ABC123-TAG");
 
 =head1 DESCRIPTION
 
@@ -57,7 +58,7 @@ website and will maintain up-to-date copies of those files locally.
 
 =head1 METHODS
 
-	$url = Net::RDAP::Registry->get_url($resource);
+    $url = Net::RDAP::Registry->get_url($resource);
 
 This method returns a L<URI> object corresponding to the authoritative
 RDAP URL for the given resource. C<$resource> may be one of the
@@ -363,17 +364,17 @@ sub load_registry {
 # simply preferring the first one with the "https" scheme.
 #
 sub get_best_url {
-	my ($package, @urls) = @_;
+    my ($package, @urls) = @_;
 
-	my @https = grep { 'https' eq lc($_->scheme) } @urls;
+    my @https = grep { 'https' eq lc($_->scheme) } @urls;
 
-	if (scalar(@https)) {
-		return shift(@https);
+    if (scalar(@https)) {
+        return shift(@https);
 
-	} else {
-		return shift(@urls);
+    } else {
+        return shift(@urls);
 
-	}
+    }
 }
 
 #
@@ -382,12 +383,16 @@ sub get_best_url {
 # trailing slashes
 #
 sub assemble_url {
-	my ($package, $url, @segments) = @_;
+    my ($package, $url, @segments) = @_;
 
-	$url->path_segments(grep { length > 0 } ($url->path_segments, @segments));
+    $url->path_segments(grep { length > 0 } ($url->path_segments, @segments));
 
-	return $url;
+    return $url;
 }
+
+1;
+
+__END__
 
 =pod
 
@@ -414,5 +419,3 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 =cut
-
-1;

@@ -18,54 +18,54 @@ access to all that module's methods.
 
 Other methods include:
 
-	$start = $network->start;
+    $start = $network->start;
 
 Returns a L<Net::IP> object representing the starting IP address of
 the network.
 
-	$end = $network->end;
+    $end = $network->end;
 
 Returns a L<Net::IP> object representing the ending IP address of
 the network.
 
-	$version = $network->version;
+    $version = $network->version;
 
 Returns a string signifying the IP protocol version of the network,
 either "v4" or "v6".
 
-	$name = $network->name;
+    $name = $network->name;
 
 Returns a string containing the identifier assigned to the network
 registration by the registration holder.
 
-	$type = $network->type;
+    $type = $network->type;
 
 Returns a string containing an RIR-specific classification of the
 network.
 
-	$country = $network->country;
+    $country = $network->country;
 
 Returns a string containing the two-character country code of the
 network.
 
-	$parentHandle = $network->parentHandle;
+    $parentHandle = $network->parentHandle;
 
 Returns a string containing an RIR-unique identifier of the parent
 network of this network registration.
 
 =cut
 
-sub start		{ Net::IP->new($_[0]->{'startAddress'})	}
-sub end			{ Net::IP->new($_[0]->{'endAddress'})	}
-sub version		{ $_[0]->{'ipVersion'}			}
-sub name		{ $_[0]->{'name'}			}
-sub type		{ $_[0]->{'type'}			}
-sub country		{ $_[0]->{'country'}			}
-sub parentHandle	{ $_[0]->{'parentHandle'}		}
+sub start           { Net::IP->new($_[0]->{'startAddress'}) }
+sub end             { Net::IP->new($_[0]->{'endAddress'})   }
+sub version         { $_[0]->{'ipVersion'}                  }
+sub name            { $_[0]->{'name'}                       }
+sub type            { $_[0]->{'type'}                       }
+sub country         { $_[0]->{'country'}                    }
+sub parentHandle    { $_[0]->{'parentHandle'}               }
 
 =pod
 
-	$range = $network->range;
+    $range = $network->range;
 
 Returns a L<Net::IP> object representing the range of addresses
 between the start and end addresses.
@@ -73,15 +73,15 @@ between the start and end addresses.
 =cut
 
 sub range {
-	my $self = shift;
+    my $self = shift;
 
-	my $str = sprintf(
-		'%s - %s',
-		$self->start->ip,
-		$self->end->ip,
-	);
+    my $str = sprintf(
+        '%s - %s',
+        $self->start->ip,
+        $self->end->ip,
+    );
 
-	return Net::IP->new($str);
+    return Net::IP->new($str);
 }
 
 =pod
@@ -107,7 +107,7 @@ sub cidrs {
 
 =pod
 
-	$url = $network->domain;
+    $url = $network->domain;
 
 Returns a L<URI> object representing the RDAP URL of the "reverse"
 domain object corresponding to this network. For example, if the IP
