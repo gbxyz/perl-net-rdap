@@ -1,11 +1,9 @@
 package Net::RDAP::Registry;
 use Carp qw(croak);
-use File::Basename qw(dirname basename);
+use File::Basename qw(basename);
 use File::Slurp;
 use File::Spec;
-use File::Temp;
 use File::stat;
-use HTTP::Request::Common;
 use JSON;
 use Net::RDAP::UA;
 use Net::RDAP::Registry::IANARegistry;
@@ -20,10 +18,9 @@ use constant {
 };
 use strict;
 
-#
-# cache to avoid touching the file system if we don't need to
-#
-$REGISTRY = {};
+our $UA;
+
+our $REGISTRY = {};
 
 =pod
 
@@ -85,136 +82,136 @@ If no URL can be found in the IANA registry, then C<undef> is returned.
 =cut
 
 sub get_url {
-	my ($package, $object) = @_;
+    my ($package, $object) = @_;
 
-	if ('Net::IP' eq ref($object)) {
-		return $package->ip($object);
+    if ('Net::IP' eq ref($object)) {
+        return $package->ip($object);
 
-	} elsif ('Net::ASN' eq ref($object)) {
-		return $package->autnum($object);
+    } elsif ('Net::ASN' eq ref($object)) {
+        return $package->autnum($object);
 
-	} elsif ('Net::DNS::Domain' eq ref($object)) {
-		return $package->domain($object);
+    } elsif ('Net::DNS::Domain' eq ref($object)) {
+        return $package->domain($object);
 
-	} elsif ($object =~ /-/) {
-		return $package->entity($object);
+    } elsif ($object =~ /-/) {
+        return $package->entity($object);
 
-	} else {
-		croak("Unable to deal with '$object'");
+    } else {
+        croak("Unable to deal with '$object'");
 
-	}
+    }
 }
 
 #
 # get URL for IP
 #
 sub ip {
-	my ($package, $ip) = @_;
-	croak(sprintf('Argument to %s->ip() must be a Net::IP', $package)) unless ('Net::IP' eq ref($ip));
+    my ($package, $ip) = @_;
+    croak(sprintf('Argument to %s->ip() must be a Net::IP', $package)) unless ('Net::IP' eq ref($ip));
 
-	my $registry = $package->load_registry(4 == $ip->version ? IP4_URL : IP6_URL);
-	return undef if (!$registry);
+    my $registry = $package->load_registry(4 == $ip->version ? IP4_URL : IP6_URL);
+    return undef if (!$registry);
 
-	my %matches;
-	SERVICE: foreach my $service ($registry->services) {
-		VALUE: foreach my $value ($service->registries) {
-			my $range = Net::IP->new($value);
+    my %matches;
+    SERVICE: foreach my $service ($registry->services) {
+        VALUE: foreach my $value ($service->registries) {
+            my $range = Net::IP->new($value);
 
-			if ($range->overlaps($ip)) {
-				$matches{$value} = $package->get_best_url($service->urls);
-				last VALUE;
-			}
-		}
-	}
+            if ($range->overlaps($ip)) {
+                $matches{$value} = $package->get_best_url($service->urls);
+                last VALUE;
+            }
+        }
+    }
 
-	return undef if (scalar(keys(%matches)) < 1);
+    return undef if (scalar(keys(%matches)) < 1);
 
-	# prefer the service with the longest prefix length
-	my $longest = (sort { Net::IP->new($b)->prefixlen <=> Net::IP->new($a)->prefixlen } keys(%matches))[0];
+    # prefer the service with the longest prefix length
+    my $longest = (sort { Net::IP->new($b)->prefixlen <=> Net::IP->new($a)->prefixlen } keys(%matches))[0];
 
-	return $package->assemble_url($matches{$longest}, 'ip', split(/\//, $ip->prefix));
+    return $package->assemble_url($matches{$longest}, 'ip', split(/\//, $ip->prefix));
 }
 
 #
 # get URL for AS Number
 #
 sub autnum {
-	my ($package, $autnum) = @_;
-	croak(sprintf('Argument to %s->autnum() must be a Net::ASN', $package)) unless ('Net::ASN' eq ref($autnum));
+    my ($package, $autnum) = @_;
+    croak(sprintf('Argument to %s->autnum() must be a Net::ASN', $package)) unless ('Net::ASN' eq ref($autnum));
 
-	my $registry = $package->load_registry(ASN_URL);
-	return undef if (!$registry);
+    my $registry = $package->load_registry(ASN_URL);
+    return undef if (!$registry);
 
-	my %matches;
-	SERVICE: foreach my $service ($registry->services) {
-		VALUE: foreach my $value ($service->registries) {
-			if ($value == $autnum->toasplain) {
-				# exact match, create an entry for NNNN-NNNN where both sides are
-				# the same (simplifies sorting later)
-				$matches{sprintf('%d-%d', $value, $value)} = $package->get_best_url($service->urls);
-				last SERVICE;
+    my %matches;
+    SERVICE: foreach my $service ($registry->services) {
+        VALUE: foreach my $value ($service->registries) {
+            if ($value == $autnum->toasplain) {
+                # exact match, create an entry for NNNN-NNNN where both sides are
+                # the same (simplifies sorting later)
+                $matches{sprintf('%d-%d', $value, $value)} = $package->get_best_url($service->urls);
+                last SERVICE;
 
-			} elsif ($value =~ /^(\d+)-(\d+)$/) {
-				if ($1 <= $autnum->toasplain && $autnum->toasplain <= $2) {
-					$matches{sprintf('%d-%d', $value, $value)} = $package->get_best_url($service->urls);
-					last VALUE;
-				}
-			}
-		}
-	}
+            } elsif ($value =~ /^(\d+)-(\d+)$/) {
+                if ($1 <= $autnum->toasplain && $autnum->toasplain <= $2) {
+                    $matches{sprintf('%d-%d', $value, $value)} = $package->get_best_url($service->urls);
+                    last VALUE;
+                }
+            }
+        }
+    }
 
-	return undef if (scalar(keys(%matches)) < 1);
+    return undef if (scalar(keys(%matches)) < 1);
 
-	my @ranges = keys(%matches);
+    my @ranges = keys(%matches);
 
-	# convert array of NNNN-NNNN strings to array of array refs
-	my @pairs = map { [ split(/-/, $_, 2) ] } @ranges;
+    # convert array of NNNN-NNNN strings to array of array refs
+    my @pairs = map { [ split(/-/, $_, 2) ] } @ranges;
 
-	# sort by descending order of the "width" of the range
-	my @sorted = sort { $b->{1} - $b->{0} <=> $a->{1} - $a->{0} } @pairs;
+    # sort by descending order of the "width" of the range
+    my @sorted = sort { $b->{1} - $b->{0} <=> $a->{1} - $a->{0} } @pairs;
 
-	# prefer the narrowest (more specific) range
-	my $closest = sprintf('%d-%d', @{$sorted[0]});
+    # prefer the narrowest (more specific) range
+    my $closest = sprintf('%d-%d', @{$sorted[0]});
 
-	return $package->assemble_url($matches{$closest}, 'autnum', $autnum->toasplain);
+    return $package->assemble_url($matches{$closest}, 'autnum', $autnum->toasplain);
 }
 
 #
 # get URL for domain
 #
 sub domain {
-	my ($package, $domain) = @_;
-	croak(sprintf('Argument to %s->domain() must be a Net::DNS::Domain', $package)) unless ('Net::DNS::Domain' eq ref($domain));
+    my ($package, $domain) = @_;
+    croak(sprintf('Argument to %s->domain() must be a Net::DNS::Domain', $package)) unless ('Net::DNS::Domain' eq ref($domain));
 
-	my $registry = $package->load_registry(DNS_URL);
-	return undef if (!$registry);
+    my $registry = $package->load_registry(DNS_URL);
+    return undef if (!$registry);
 
-	my %matches;
-	SERVICE: foreach my $service ($registry->services) {
-		VALUE: foreach my $value ($service->registries) {
-			if ($domain->name =~ /\.$value$/i) {
-				$matches{$value} = $package->get_best_url($service->urls);
-				last VALUE;
-			}
-		}
-	}
+    my %matches;
+    SERVICE: foreach my $service ($registry->services) {
+        VALUE: foreach my $value ($service->registries) {
+            if ($domain->name =~ /\.$value$/i) {
+                $matches{$value} = $package->get_best_url($service->urls);
+                last VALUE;
+            }
+        }
+    }
 
-	if (scalar(keys(%matches)) < 1) {
-		if ($domain->name =~ /\.(in-addr|ip6)\.arpa$/) {
-			# special workaround for the lack of .arpa in the RDAP registry
-			return $package->reverse_domain($domain);
+    if (scalar(keys(%matches)) < 1) {
+        if ($domain->name =~ /\.(in-addr|ip6)\.arpa$/) {
+            # special workaround for the lack of .arpa in the RDAP registry
+            return $package->reverse_domain($domain);
 
-		} else {
-			return undef;
+        } else {
+            return undef;
 
-		}
+        }
 
-	} else {
-		# prefer the service with the longest domain name
-		my $parent = (sort { length($b) <=> length($a) } keys(%matches))[0];
+    } else {
+        # prefer the service with the longest domain name
+        my $parent = (sort { length($b) <=> length($a) } keys(%matches))[0];
 
-		return $package->assemble_url($matches{$parent}, 'domain', $domain->name);
-	}
+        return $package->assemble_url($matches{$parent}, 'domain', $domain->name);
+    }
 }
 
 #
@@ -225,80 +222,80 @@ sub domain {
 # obtain the URL for the domain. clever, eh?
 #
 sub reverse_domain {
-	my ($package, $domain) = @_;
+    my ($package, $domain) = @_;
 
-	my @labels = reverse($domain->label);
-	shift(@labels); # discard 'arpa'
+    my @labels = reverse($domain->label);
+    shift(@labels); # discard 'arpa'
 
-	my $ip;
-	if ('ip6' eq shift(@labels)) {
-		# @labels is an array of hex digits, we want an array of 4-hex digit parts
-		my @parts;
-		push(@parts, join('', splice(@labels, 0, 4))) while (scalar(@labels) > 0);
+    my $ip;
+    if ('ip6' eq shift(@labels)) {
+        # @labels is an array of hex digits, we want an array of 4-hex digit parts
+        my @parts;
+        push(@parts, join('', splice(@labels, 0, 4))) while (scalar(@labels) > 0);
 
-		# remove any trailing parts that are zero
-		pop(@parts) while (0 == hex($parts[-1]));
+        # remove any trailing parts that are zero
+        pop(@parts) while (0 == hex($parts[-1]));
 
-		# compute prefix length
-		my $prefixlen = 16 * (scalar(@parts));
+        # compute prefix length
+        my $prefixlen = 16 * (scalar(@parts));
 
-		$ip = Net::IP->new(sprintf(
-			'%s:%s:%s:%s:%s:%s:%s:%s/%u',
-			shift(@parts) || 0,
-			shift(@parts) || 0,
-			shift(@parts) || 0,
-			shift(@parts) || 0,
-			shift(@parts) || 0,
-			shift(@parts) || 0,
-			shift(@parts) || 0,
-			shift(@parts) || 0,
-			$prefixlen,
-		));
+        $ip = Net::IP->new(sprintf(
+            '%s:%s:%s:%s:%s:%s:%s:%s/%u',
+            shift(@parts) || 0,
+            shift(@parts) || 0,
+            shift(@parts) || 0,
+            shift(@parts) || 0,
+            shift(@parts) || 0,
+            shift(@parts) || 0,
+            shift(@parts) || 0,
+            shift(@parts) || 0,
+            $prefixlen,
+        ));
 
-	} else {
-		pop(@labels) while (0 == $labels[-1]);
+    } else {
+        pop(@labels) while (0 == $labels[-1]);
 
-		my $prefixlen = 8 * (scalar(@labels));
+        my $prefixlen = 8 * (scalar(@labels));
 
-		$ip = Net::IP->new(sprintf(
-			'%u.%u.%u.%u/%u',
-			shift(@labels) || 0,
-			shift(@labels) || 0,
-			shift(@labels) || 0,
-			shift(@labels) || 0,
-			$prefixlen,
-		));
-	}
+        $ip = Net::IP->new(sprintf(
+            '%u.%u.%u.%u/%u',
+            shift(@labels) || 0,
+            shift(@labels) || 0,
+            shift(@labels) || 0,
+            shift(@labels) || 0,
+            $prefixlen,
+        ));
+    }
 
-	return undef if (!$ip);
+    return undef if (!$ip);
 
-	my $url = $package->ip($ip);
+    my $url = $package->ip($ip);
 
-	return undef if (!$url);
+    return undef if (!$url);
 
-	return URI->new_abs(sprintf('../../domain/%s', $domain->name), $url);
+    return URI->new_abs(sprintf('../../domain/%s', $domain->name), $url);
 }
 
 #
 # get URL for a tagged entity
 #
 sub entity {
-	my ($package, $handle) = @_;
+    my ($package, $handle) = @_;
 
-	my @parts = split(/-/, $handle);
-	my $tag = pop(@parts);
+    my @parts = split(/-/, $handle);
+    my $tag = pop(@parts);
 
-	my $registry = $package->load_registry(TAG_URL);
-	return undef if (!$registry);
+    my $registry = $package->load_registry(TAG_URL);
+    return undef if (!$registry);
 
-	foreach my $service ($registry->services) {
-		foreach my $value ($service->registries) {
-			# unlike the other registries we are only looking for an exact match, as there is no hierarchy:
-			return $package->assemble_url($package->get_best_url($service->urls), 'entity', $handle) if (lc($value) eq lc($tag));
-		}
-	}
+    foreach my $service ($registry->services) {
+        foreach my $value ($service->registries) {
+            # unlike the other registries we are only looking for an exact match, as there is no hierarchy:
+            return $package->assemble_url($package->get_best_url($service->urls), 'entity', $handle) if (lc($value) eq lc($tag));
+        }
+    }
 
-	return undef;
+    return undef;
 }
 
 #
@@ -307,56 +304,24 @@ sub entity {
 # (or undef)
 #
 sub load_registry {
-	my ($package, $url) = @_;
+    my ($package, $url) = @_;
 
-	if (!defined($REGISTRY->{$url})) {
-		$package =~ s/:+/-/g;
+    if (!defined($REGISTRY->{$url})) {
+        $package =~ s/:+/-/g;
 
-		my $file = sprintf('%s/%s-%s', File::Spec->tmpdir, $package, basename($url));
+        my $file = sprintf('%s/%s-%s', File::Spec->tmpdir, $package, basename($url));
 
-		my ($mirror, $stat);
-		if (-e $file) {
-			$stat = stat($file);
-			$mirror = (time() - $stat->mtime > 86400);
+        #
+        # $UA may have been injected by Net::RDAP->ua()
+        #
+        $UA = Net::RDAP::UA->new unless(defined($UA));
 
-		} else {
-			$mirror = 1;
+        $UA->mirror($url, $file, CACHE_TTL);
 
-		}
+        $REGISTRY->{$url} = Net::RDAP::Registry::IANARegistry->new(from_json(read_file($file))) if (-e $file);
+    }
 
-		if ($mirror) {
-			my $request = GET($url);
-			$request->header('If-Modified-Since' => HTTP::Date::time2str($stat->mtime)) if ($stat);
-
-			$UA = Net::RDAP::UA->new if (!$UA);
-
-			my $response = $UA->request($request);
-
-			if (304 == $response->code) {
-				utime(undef, undef, $file);
-
-			} elsif ($response->is_success) {
-				my $tmpfile = File::Temp::tempnam(dirname($file), basename($file));
-				carp("Unable to write response data to $tmpfile: $!") if (!write_file($tmpfile, $response->content));
-				carp("Unable to move $tmpfile to $file: $!") if (!rename($tmpfile, $file));
-
-			} else {
-				carp($response->status_line);
-
-			}
-
-		}
-
-		if (-e $file) {
-			$REGISTRY->{$url} = Net::RDAP::Registry::IANARegistry->new(from_json(read_file($file)));
-
-		} else {
-			$REGISTRY->{$url} = undef;
-
-		}
-	}
-
-	return $REGISTRY->{$url};
+    return $REGISTRY->{$url};
 }
 
 #
