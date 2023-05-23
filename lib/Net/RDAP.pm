@@ -1,5 +1,5 @@
 package Net::RDAP;
-use Digest::SHA1 qw(sha1_hex);
+use Digest::SHA qw(sha256_hex);
 use File::Slurp;
 use File::stat;
 use HTTP::Request::Common;
