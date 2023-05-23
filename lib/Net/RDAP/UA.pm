@@ -1,10 +1,11 @@
 package Net::RDAP::UA;
 use base qw(LWP::UserAgent);
+use Carp;
+use File::stat;
+use HTTP::Date;
 use Mozilla::CA;
-use vars qw($DEBUG);
+use constant DEFAULT_CACHE_TTL => 300;
 use strict;
-
-our $DEBUG;
 
 =pod
 
@@ -58,19 +59,40 @@ sub new {
 }
 
 #
-# override the default request() method to make sure that we ask the
-# server for JSON:
+# usage: $ua->mirror($url, $file, $ttl);
 #
-sub request {
-	my ($self, $request) = @_;
+# this overrides the parent mirror() method to avoid a network roundtrip if a locally-
+# cached copy of the resource is less than $ttl seconds old. If not provided, the default
+# value for $ttl is 300 seconds.
+#
+sub mirror {
+    my ($self, $url, $file, $ttl) = @_;
 
-	print STDERR $request->as_string if ($DEBUG || 1 == $ENV{'NET_RDAP_UA_DEBUG'});
+    if (-e $file) {
+        my $expires = stat($file)->mtime + ($ttl || DEFAULT_CACHE_TTL);
+        return HTTP::Response->new(304) unless (time() > $expires);
+    }
 
-	my $response = $self->SUPER::request($request);
+    my $response;
 
-	print STDERR $response->as_string if ($DEBUG || 1 == $ENV{'NET_RDAP_UA_DEBUG'});
+    eval {
+        $response = $self->SUPER::mirror($url, $file);
+    };
 
-	return $response;
+    if ($@) {
+        chomp($@);
+        carp($@);
+        return HTTP::Response->new(500, $@);
+    }
+
+    carp($response->status_line) unless ($response->is_success || 304 == $response->code);
+
+    if (-e $file) {
+        my $mtime = (HTTP::Date->str2time($response->header('Expires') || $response->header('Date')) || time());
+        utime(undef, $mtime, $file);
+    }
+
+    return $response;
 }
 
 1;
