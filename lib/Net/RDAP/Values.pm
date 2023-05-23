@@ -1,12 +1,7 @@
 package Net::RDAP::Values;
 use Carp;
-use File::Basename qw(dirname basename);
-use File::Slurp;
+use File::Basename qw(basename);
 use File::Spec;
-use File::Temp;
-use File::stat;
-use HTTP::Request::Common;
-use List::MoreUtils qw(any);
 use Net::RDAP::UA;
 use XML::LibXML;
 use vars qw($UA $REGISTRY @EXPORT);
@@ -33,15 +28,7 @@ our @EXPORT = qw(
     RDAP_TYPE_DOMAIN_VARIANT_RELATION
 );
 
-#
-# in case we need to download something
-#
-$UA = Net::RDAP::UA->new;
-
-#
-# where we store the registry data
-#
-$REGISTRY = load_registry();
+our ($UA, $REGISTRY);
 
 =pod
 
@@ -152,68 +139,45 @@ in the registry, suitable for display to the user.
 =cut
 
 sub description {
-	my ($self, $value, $type) = @_;
+    my ($self, $value, $type) = @_;
 
-	return $REGISTRY->{'descriptions'}->{$type}->{$value};
+    $REGISTRY = load_registry() unless ($REGISTRY);
+
+    return $REGISTRY->{'descriptions'}->{$type}->{$value};
 }
 
 sub load_registry {
-	my $package = shift;
+    my $package = shift;
 
-	my $url = 'https://www.iana.org/assignments/rdap-json-values/rdap-json-values.xml';
+    my $file = sprintf('%s/%s-%s', File::Spec->tmpdir, $package, basename(IANA_REGISTRY_URL));
 
-	my $file = sprintf('%s/%s-%s', File::Spec->tmpdir, $package, basename($url));
+    #
+    # $UA may have been injected by Net::RDAP->ua()
+    #
+    $UA = Net::RDAP::UA->new unless(defined($UA));
 
-	my ($mirror, $stat);
-	if (-e $file) {
-		$stat = stat($file);
-		$mirror = (time() - $stat->mtime > 86400);
+    $UA->mirror(IANA_REGISTRY_URL, $file, CACHE_TTL);
 
-	} else {
-		$mirror = 1;
+    return undef unless (-e $file);
 
-	}
+    my $doc = XML::LibXML->load_xml('location' => $file, 'no_blanks' => 1);
 
-	if ($mirror) {
-		my $request = GET($url);
-		$request->header('Accept' => '*/*');
-		$request->header('If-Modified-Since' => HTTP::Date::time2str($stat->mtime)) if ($stat);
+    my $registry = {};
 
-		my $response = $UA->request($request);
+    foreach my $record ($doc->getElementsByTagName('record')) {
+        my $value       = $record->getElementsByTagName('value')->shift->textContent;
+        my $type        = $record->getElementsByTagName('type')->shift->textContent;
+        my $description = $record->getElementsByTagName('description')->shift->textContent;
 
-		if (304 == $response->code) {
-			utime(undef, undef, $file);
+        push(@{$registry->{'value_types'}->{$value}}, $type);
+        push(@{$registry->{'values_by_type'}->{$type}}, $value);
+        $registry->{'descriptions'}->{$type}->{$value} = $description;
+    }
 
-		} elsif ($response->is_success) {
-			my $tmpfile = File::Temp::tempnam(dirname($file), basename($file));
-			carp("Unable to write response data to $tmpfile: $!") if (!write_file($tmpfile, $response->content));
-			carp("Unable to move $tmpfile to $file: $!") if (!rename($tmpfile, $file));
+    return $registry;
+}
 
-		} else {
-			carp($response->status_line);
-
-		}
-	}
-
-	if (-e $file) {
-		my $doc = XML::LibXML->load_xml('location' => $file, 'no_blanks' => 1);
-
-		my $registry = {};
-
-		foreach my $record ($doc->getElementsByTagName('record')) {
-			my $value = $record->getElementsByTagName('value')->shift->textContent;
-			my $type = $record->getElementsByTagName('type')->shift->textContent;
-			my $description = $record->getElementsByTagName('description')->shift->textContent;
-
-			push(@{$registry->{'value_types'}->{$value}}, $type);
-			push(@{$registry->{'values_by_type'}->{$type}}, $value);
-			$registry->{'descriptions'}->{$type}->{$value} = $description;
-		}
-
-		return $registry;
-
-	} else {
-		return undef;
+1;
 
 __END__
 
