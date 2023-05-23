@@ -2,6 +2,7 @@ package Net::RDAP;
 use Digest::SHA qw(sha256_hex);
 use File::Slurp;
 use File::stat;
+use File::Spec;
 use HTTP::Request::Common;
 use JSON;
 use MIME::Base64;
@@ -15,7 +16,9 @@ use Net::RDAP::Object::Nameserver;
 use Net::RDAP::Registry;
 use Net::RDAP::SearchResult;
 use Net::RDAP::Service;
+use Net::RDAP::Values;
 use vars qw($VERSION);
+use constant DEFAULT_CACHE_TTL => 3600;
 use strict;
 
 $VERSION = 0.18;
