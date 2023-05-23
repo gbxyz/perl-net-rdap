@@ -38,7 +38,7 @@ L<Net::RDAP::Registry> - an interface to the IANA RDAP registries.
     $url = Net::RDAP::Registry->get_url(Net::IP->new('192.168.0.1'));
     $url = Net::RDAP::Registry->get_url(Net::IP->new('2001:DB8::/32'));
     $url = Net::RDAP::Registry->get_url(Net::ASN->new(65536));
-    $url = Net::RDAP::Registry->get_url("ABC123-TAG");
+    $url = Net::RDAP::Registry->get_url('ABC123-TAG');
 
 =head1 DESCRIPTION
 

@@ -338,150 +338,154 @@ sub fetch {
 
     } else {
         return $self->error(
-            'errorCode'        => 400,
-            'title'            => "Unable to deal with '$arg'",
+            'errorCode' => 400,
+            'title'     => "Unable to deal with '$arg'",
         );
     }
 
     #
-    # construct HTTP::Request object
+    # add Authorization header field if we have a username/password
     #
-    my ($request, $file);
-    if ('HEAD' eq $args{'method'}) {
-        $request = HEAD($url);
+    if ($args{'user'} && $args{'pass'}) {
+        $self->ua->default_header('Authorization' => 'Basic '.encode_base64($args{'user'}.':'.$args{'pass'}));
 
     } else {
-        $request = GET($url);
+        $self->ua->default_headers->remove_header('Authorization');
 
-        #
-        # add Authorization header field if we have a username/password
-        #
-        $request->header('Authorization' => sprintf('Basic %s', encode_base64(join(':', ($args{'user'}, $args{'pass'}))))) if ($args{'user'} && $args{'pass'});
-
-        #
-        # path to local copy of the remote resource
-        #
-        $file = sprintf(
-            '%s/Net-RDAP-cache-%s.json',
-            ($ENV{'TMPDIR'} || '/tmp'),
-            sha1_hex($url->isa('URI') ? $url->as_string : $url),
-        );
-
-        #
-        # we have a locally-cached copy, so add the If-Modified-Since header field
-        #
-        $request->header('If-Modified-Since' => HTTP::Date::time2str(stat($file)->mtime)) if (-e $file && $self->{'use_cache'});
     }
 
-    #
-    # get the response from the server
-    #
-    my $response = $self->request($request);
-
     if ('HEAD' eq $args{'method'}) {
-        if (404 == $response->code) {
-            return undef;
-
-        } elsif (200 == $response->code) {
-            return 1;
-
-        } else {
-            return $self->error(
-                'url'        => $url,
-                'errorCode'    => $response->code,
-                'title'        => $response->status_line,
-            );
-        }
+        return $self->_head($url);
 
     } else {
-        #
-        # attempt to parse the JSON. The RDAP server *should* only ever send JSON, but
-        # this cannot be guaranteed:
-        #
-        my $data;
+        return $self->_get($url, %args);
+
+    }
+}
+
+sub _head {
+    my ($self, $url) = @_;
+
+    my $response = $self->request(HEAD($url));
+
+    if (404 == $response->code) {
+        return undef;
+
+    } elsif (200 == $response->code) {
+        return 1;
+
+    } else {
+        return $self->error(
+            'url'           => $url,
+            'errorCode'     => $response->code,
+            'title'         => $response->status_line,
+            'description'   => [$response->status_line],
+        );
+    }
+}
+
+sub _get {
+    my ($self, $url, %args) = @_;
+
+    #
+    # this is how long we allow things to be cached before checking
+    # if they have been updated:
+    #
+    my $ttl = $self->{'cache_ttl'} || DEFAULT_CACHE_TTL;
+
+    #
+    # path to local copy of the remote resource
+    #
+    my $file = sprintf(
+        '%s/Net-RDAP-%s.json',
+        File::Spec->tmpdir,
+        sha256_hex($url->as_string),
+    );
+
+    my ($response, $data);
+    if (!$self->{'use_cache'}) {
+        $response = $self->ua->request(GET($url));
         eval { $data = decode_json($response->decoded_content) };
 
+    } else {
+        $response = $self->ua->mirror($url, $file, $ttl);
+        eval { $data = decode_json(read_file($file)) };
+
+    }
+
+    return $self->rdap_from_response($url, $response, $data, %args);
+}
+
+sub error_from_response {
+    my ($self, $url, $response, $data) = @_;
+
+    if ($self->is_rdap($response) && defined($data->{'errorCode'})) {
         #
-        # check and parse the response
+        # we got an RDAP response from the server which looks like
+        # it's an error, so convert it and return:
         #
-        if (-e $file && (304 == $response->code || ($response->code >= 500))) {
-            #
-            # 304 response, or some sort of network/server error, but we have a
-            # cached copy:
-            #
-            utime(undef, undef, $file) if (304 == $response->code);
-            return $self->object_from_response(decode_json(read_file($file)), $url);
+        return Net::RDAP::Error->new($data, $url);
 
-        } elsif ($response->is_error) {
-            #
-            # some other error:
-            #
-            if ($self->is_rdap($response) && defined($data->{'errorCode'})) {
-                #
-                # we got an RDAP response from the server which looks like
-                # it's an error, so convert it and return:
-                #
-                return Net::RDAP::Error->new($data, $url);
+    } else {
+        #
+        # build our own error
+        #
+        return $self->error(
+            'url'           => $url,
+            'errorCode'     => $response->code,
+            'title'         => $response->status_line,
+            'description'   => [$response->status_line],
+        );
+    }
+}
 
-            } else {
-                #
-                # build our own error
-                #
-                return $self->error(
-                    'url'        => $url,
-                    'errorCode'    => $response->code,
-                    'title'        => $response->status_line,
-                );
-            }
+sub rdap_from_response {
+    my ($self, $url, $response, $data, %args) = @_;
 
-        } elsif (!$self->is_rdap($response)) {
+    if ($response->is_error) {
+        return $self->error_from_response($url, $response, $data);
+
+    } elsif (!$self->is_rdap($response)) {
+        #
+        # we got something that isn't a valid RDAP response:
+        #
+        return $self->error(
+            'url'           => $url,
+            'errorCode'     => 500,
+            'title'         => 'Invalid Content-Type',
+            'description'   => [ sprintf("The Content-Type of the header is '%s', should be 'application/rdap+json'", $response->header('Content-Type')) ],
+        );
+
+    } elsif (!defined($data) || 'HASH' ne ref($data)) {
+        #
+        # response was not parseable as JSON:
+        #
+        return $self->error(
+            'url'           => $url,
+            'errorCode'     => 500,
+            'title'         => 'Error parsing response body',
+            'description'   => [ 'The response from the server is not a valid JSON object' ],
+        );
+
+    } else {
+        $data->{'objectClassName'} = $args{'class_override'} if ($args{'class_override'});
+
+        if (!defined($data->{'objectClassName'}) && scalar(grep { /^(domain|nameserver|entity)SearchResults$/ } keys(%{$data})) < 1) {
             #
-            # we got something that isn't a valid RDAP response:
+            # response is missing the objectClassName property and is not a search result:
             #
             return $self->error(
-                'url'        => $url,
-                'errorCode'    => 500,
-                'title'        => 'Invalid Content-Type',
-                'description'    => [ sprintf("The Content-Type of the header is '%s', should be 'application/rdap+json'", $response->header('Content-Type')) ],
-            );
-
-        } elsif (!defined($data) || 'HASH' ne ref($data)) {
-            #
-            # response was not parseable as JSON:
-            #
-            return $self->error(
-                'url'        => $url,
-                'errorCode'    => 500,
-                'title'        => 'Error parsing response body',
-                'description'    => [ 'The response from the server is not a valid JSON object' ],
+                'url'           => $url,
+                'errorCode'     => 500,
+                'title'         => "Missing 'objectClassName' property",
+                'description'   => [ "The response from the server is missing the 'objectClassName' property" ],
             );
 
         } else {
-            $data->{'objectClassName'} = $args{'class_override'} if ($args{'class_override'});
-
-            if (!defined($data->{'objectClassName'}) && scalar(grep { /^(domain|nameserver|entity)SearchResults$/ } keys(%{$data})) < 1) {
-                #
-                # response is missing the objectClassName property and is not a search result:
-                #
-                return $self->error(
-                    'url'        => $url,
-                    'errorCode'    => 500,
-                    'title'        => "Missing 'objectClassName' property",
-                    'description'    => [ "The response from the server is missing the 'objectClassName' property" ],
-                );
-
-            } else {
-                #
-                # update local cache
-                #
-                write_file($file, $response->decoded_content) if ($self->{'use_cache'});
-                chmod(0600, $file);
-
-                #
-                # return object
-                #
-                return $self->object_from_response($data, $url);
-            }
+            #
+            # return object
+            #
+            return $self->object_from_response($data, $url);
         }
     }
 }
@@ -572,10 +576,10 @@ sub ua {
     $self->{'ua'} = Net::RDAP::UA->new if (!defined($self->{'ua'}));
 
     #
-    # inject our UA object into NET::RDAP::Registry so everything
+    # inject our UA object into NET::RDAP::Registry and NET::RDAP::Values so everything
     # uses the same user agent
     #
-    $NET::RDAP::Registry::UA = $self->{'ua'} if (!defined($NET::RDAP::Registry::UA));
+    $NET::RDAP::Registry::UA = $NET::RDAP::Registry::Values = $self->{'ua'};
 
     return $self->{'ua'};
 }
@@ -587,9 +591,9 @@ sub error {
     my ($self, %params) = @_;
     return Net::RDAP::Error->new(
         {
-            'errorCode' => $params{'errorCode'},
-            'title'    => $params{'title'},
-            'description' => $params{'description'},
+            'errorCode'     => $params{'errorCode'},
+            'title'         => $params{'title'},
+            'description'   => $params{'description'},
         },
         $params{'url'},
     );
