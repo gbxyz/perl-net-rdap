@@ -14,14 +14,14 @@
     #
 
     # get domain info:
-    $object = $rdap->domain(Net::DNS::Domain->new('example.com'));
+    $object = $rdap->domain('example.com');
 
     # get info about IP addresses/ranges:
-    $object = $rdap->ip(Net::IP->new('192.168.0.1'));
-    $object = $rdap->ip(Net::IP->new('2001:DB8::/32'));
+    $object = $rdap->ip('192.168.0.1');
+    $object = $rdap->ip('2001:DB8::/32');
 
     # get info about AS numbers:
-    $object = $rdap->autnum(Net::ASN->new(65536));
+    $object = $rdap->autnum(65536);
 
     #
     # search functions:
@@ -43,12 +43,12 @@
 [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) provides an interface to the Registration Data Access
 Protocol (RDAP).
 
-RDAP is gradually replacing Whois as the preferred way of obtainining
-information about Internet resources (IP addresses, autonymous system
-numbers, and domain names). As of writing, RDAP is quite well-supported
-by Regional Internet Registries (who are responsible for the allocation
-of IP addresses and AS numbers) but is still being rolled out among
-domain name registries and registrars.
+RDAP is replacing Whois as the preferred way of obtainining information
+about Internet resources (IP addresses, autonymous system numbers, and
+domain names). As of writing, RDAP is fully supported by Regional
+Internet Registries (who are responsible for the allocation of IP
+addresses and AS numbers) and generic TLD operators (e.g. .com, .org,
+.xyz) but is still being rolled out among country-code registries.
 
 [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) does all the hard work of determining the correct
 server to query ([Net::RDAP::Registry](https://metacpan.org/pod/Net%3A%3ARDAP%3A%3ARegistry) is an interface to the
@@ -70,8 +70,12 @@ may contain any of the following options:
 - `use_cache` - if true, copies of RDAP responses are stored on
 disk, and are updated if the copy on the server is more up-to-date.
 This behaviour is disabled by default and must be explicitly enabled.
-- `debug` - if true, tells [Net::RDAP::UA](https://metacpan.org/pod/Net%3A%3ARDAP%3A%3AUA) to print all HTTP
-requests and responses to `STDERR`.
+**Note:** this setting controls whether [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) caches RDAP records;
+it doesn't control caching of IANA registries by [Net::RDAP::Registry](https://metacpan.org/pod/Net%3A%3ARDAP%3A%3ARegistry)
+and [Net::RDAP::Values](https://metacpan.org/pod/Net%3A%3ARDAP%3A%3AValues).
+- `cache_ttl` - if set, specifies how long after a record has
+been cached before [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) asks the server for any update. By
+default this is one hour (3600 seconds).
 
 ## Domain Lookup
 
@@ -80,7 +84,7 @@ requests and responses to `STDERR`.
 This method returns a [Net::RDAP::Object::Domain](https://metacpan.org/pod/Net%3A%3ARDAP%3A%3AObject%3A%3ADomain) object containing
 information about the domain name referenced by `$domain`.
 
-`$domain` must be a [Net::DNS::Domain](https://metacpan.org/pod/Net%3A%3ADNS%3A%3ADomain) object or a string containing a
+`$domain` must be either a string or a [Net::DNS::Domain](https://metacpan.org/pod/Net%3A%3ADNS%3A%3ADomain) object containing a
 fully-qualified domain name. The domain may be either a "forward" domain
 (such as `example.com`) or a "reverse" domain (such as `168.192.in-addr.arpa`).
 
@@ -97,7 +101,7 @@ perform this encoding:
 
     my $name = "espécime.com";
 
-    my $domain = $rdap->domain->(Net::DNS::Domain->new(idn_to_ascii($name, 'UTF-8')));
+    my $domain = $rdap->domain->(idn_to_ascii($name, 'UTF-8'));
 
 ## IP Lookup
 
@@ -106,8 +110,8 @@ perform this encoding:
 This method returns a [Net::RDAP::Object::IPNetwork](https://metacpan.org/pod/Net%3A%3ARDAP%3A%3AObject%3A%3AIPNetwork) object containing
 information about the resource referenced by `$ip`.
 
-`$ip` must be either a [Net::IP](https://metacpan.org/pod/Net%3A%3AIP) object or a string, and can represent any of the
-following:
+`$ip` must be either a string or a [Net::IP](https://metacpan.org/pod/Net%3A%3AIP) object, and can represent any
+of the following:
 
 - An IPv4 address (e.g. `192.168.0.1`);
 - An IPv4 CIDR range (e.g. `192.168.0.1/16`);
@@ -123,7 +127,7 @@ If there was an error, this method will return a [Net::RDAP::Error](https://meta
 This method returns a [Net::RDAP::Object::Autnum](https://metacpan.org/pod/Net%3A%3ARDAP%3A%3AObject%3A%3AAutnum) object containing
 information about the autonymous system referenced by `$autnum`.
 
-`$autnum` must be a [Net::ASN](https://metacpan.org/pod/Net%3A%3AASN) object or a literal integer AS number.
+`$autnum` must be a a literal integer AS number or a [Net::ASN](https://metacpan.org/pod/Net%3A%3AASN) object.
 
 If there was an error, this method will return a [Net::RDAP::Error](https://metacpan.org/pod/Net%3A%3ARDAP%3A%3AError).
 
@@ -134,12 +138,14 @@ If there was an error, this method will return a [Net::RDAP::Error](https://meta
 This method returns a [Net::RDAP::Object::Entity](https://metacpan.org/pod/Net%3A%3ARDAP%3A%3AObject%3A%3AEntity) object containing
 information about the entity referenced by `$handle`, which must be
 a string containing a "tagged" handle, such as `ABC123-EXAMPLE`, as
-per RFC 8521.
+per [RFC 8521](https://www.rfc-editor.org/rfc/rfc8521.html).
 
     $exists = $rdap->exists($object);
 
 This method returns a boolean indicating whether `$object` (which
-must be a [Net::DNS::Domain](https://metacpan.org/pod/Net%3A%3ADNS%3A%3ADomain), [Net::IP](https://metacpan.org/pod/Net%3A%3AIP) or [Net::ASN](https://metacpan.org/pod/Net%3A%3AASN)) exists.
+must be a [Net::DNS::Domain](https://metacpan.org/pod/Net%3A%3ADNS%3A%3ADomain), [Net::IP](https://metacpan.org/pod/Net%3A%3AIP) or [Net::ASN](https://metacpan.org/pod/Net%3A%3AASN)) exists. This
+is determined by performing an HTTP `HEAD` request and inspecting the
+resulting HTTP status code.
 
 **Note**: the non-existence of an object does not indicate whether that
 object is available for registration.
@@ -224,26 +230,6 @@ RDAP-related modules that all work together. They are:
 - [Net::RDAP::UA](https://metacpan.org/pod/Net%3A%3ARDAP%3A%3AUA)
 - [Net::RDAP::Values](https://metacpan.org/pod/Net%3A%3ARDAP%3A%3AValues)
 
-# DEPENDENCIES
-
-- [DateTime::Format::ISO8601](https://metacpan.org/pod/DateTime%3A%3AFormat%3A%3AISO8601)
-- [Digest::SHA1](https://metacpan.org/pod/Digest%3A%3ASHA1)
-- [File::Basename](https://metacpan.org/pod/File%3A%3ABasename)
-- [File::Slurp](https://metacpan.org/pod/File%3A%3ASlurp)
-- [File::Spec](https://metacpan.org/pod/File%3A%3ASpec)
-- [File::stat](https://metacpan.org/pod/File%3A%3Astat)
-- [HTTP::Request::Common](https://metacpan.org/pod/HTTP%3A%3ARequest%3A%3ACommon)
-- [JSON](https://metacpan.org/pod/JSON)
-- [LWP::Protocol::https](https://metacpan.org/pod/LWP%3A%3AProtocol%3A%3Ahttps)
-- [LWP::UserAgent](https://metacpan.org/pod/LWP%3A%3AUserAgent)
-- [Mozilla::CA](https://metacpan.org/pod/Mozilla%3A%3ACA)
-- [Net::ASN](https://metacpan.org/pod/Net%3A%3AASN)
-- [Net::DNS](https://metacpan.org/pod/Net%3A%3ADNS)
-- [Net::IP](https://metacpan.org/pod/Net%3A%3AIP)
-- [URI](https://metacpan.org/pod/URI)
-- [vCard](https://metacpan.org/pod/vCard)
-- [XML::LibXML](https://metacpan.org/pod/XML%3A%3ALibXML)
-
 # REFERENCES
 
 - [https://tools.ietf.org/html/rfc7480](https://tools.ietf.org/html/rfc7480) - HTTP Usage in the Registration
@@ -264,7 +250,7 @@ Protocol (RDAP) Object Tagging
 
 # COPYRIGHT
 
-Copyright 2022 CentralNic Ltd. All rights reserved.
+Copyright CentralNic Ltd. All rights reserved.
 
 # LICENSE
 
