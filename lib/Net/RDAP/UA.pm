@@ -44,19 +44,17 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #
 # create a new object, which is just an LWP::UserAgent with
-# some additional
+# some additional options set by default
 #
 sub new {
-	my ($package, %options) = @_;
+    my ($package, %options) = @_;
 
-	$options{'agent'} = sprintf('%s/%f', $package, $Net::RDAP::VERSION) if (!defined($options{'agent'}));
+    $options{'agent'} = sprintf('%s/%f', $package, $Net::RDAP::VERSION)     unless (defined($options{'agent'}));
+    $options{'ssl_opts'} = {}                                               unless (defined($options{'ssl_opts'}));
+    $options{'ssl_opts'}->{'verify_hostname'} = 1                           unless (defined($options{'ssl_opts'}->{'verify_hostname'}));
+    $options{'ssl_opts'}->{'SSL_ca_file'} = Mozilla::CA::SSL_ca_file()      unless (defined($options{'ssl_opts'}->{'SSL_ca_file'}));
 
-	$options{'ssl_opts'}= {} if (!defined($options{'ssl_opts'}));
-
-	$options{'ssl_opts'}->{'verify_hostname'} = 1 unless (defined($options{'ssl_opts'}->{'verify_hostname'}));
-	$options{'ssl_opts'}->{'SSL_ca_file'} = Mozilla::CA::SSL_ca_file() unless (defined($options{'ssl_opts'}->{'SSL_ca_file'}));
-
-	return $package->SUPER::new(%options);
+    return bless($package->SUPER::new(%options), $package);
 }
 
 #
