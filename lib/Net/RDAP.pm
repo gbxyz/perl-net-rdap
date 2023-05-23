@@ -113,11 +113,7 @@ default this is one hour (3600 seconds).
 sub new {
     my ($package, %options) = @_;
 
-    my $self = bless(\%options, $package);
-
-    $Net::RDAP::UA::DEBUG = $self->{'debug'};
-
-    return $self;
+    return bless(\%options, $package);
 }
 
 =pod
