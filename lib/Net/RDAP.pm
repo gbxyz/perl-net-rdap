@@ -703,7 +703,7 @@ Protocol (RDAP) Object Tagging
 
 =head1 COPYRIGHT
 
-Copyright 2018 - 2023 CentralNic Ltd. All rights reserved.
+Copyright CentralNic Ltd. All rights reserved.
 
 =head1 LICENSE
 

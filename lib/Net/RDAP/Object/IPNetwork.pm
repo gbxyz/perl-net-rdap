@@ -118,30 +118,30 @@ the RDAP service for the IP network.
 You will need to fetch the object representing this domain yourself,
 for example:
 
-	$ip = $rdap->ip(Net::IP->new('192.168.0.0/24'));
+    $ip = $rdap->ip(Net::IP->new('192.168.0.0/24'));
 
-	# $ip is a Net::RDAP::IPNetwork
+    # $ip is a Net::RDAP::IPNetwork
 
-	$url = $ip->domain;
+    $url = $ip->domain;
 
-	# $url is a URI
+    # $url is a URI
 
-	$domain = $rdap->fetch($url);
+    $domain = $rdap->fetch($url);
 
-	# domain is a Net::RDAP::Domain for 168.192.in-addr.arpa
+    # domain is a Net::RDAP::Domain for 168.192.in-addr.arpa
 
 =cut
 
 sub domain {
-	my $self = shift;
-	URI->new_abs(sprintf('../../domain/%s', $self->start->reverse_ip), $self->self->href);
+    my $self = shift;
+    URI->new_abs(sprintf('../../domain/%s', $self->start->reverse_ip), $self->self->href);
 }
 
 =pod
 
 =head1 COPYRIGHT
 
-Copyright 2022 CentralNic Ltd. All rights reserved.
+Copyright CentralNic Ltd. All rights reserved.
 
 =head1 LICENSE
 
