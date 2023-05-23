@@ -98,9 +98,13 @@ may contain any of the following options:
 =item * C<use_cache> - if true, copies of RDAP responses are stored on
 disk, and are updated if the copy on the server is more up-to-date.
 This behaviour is disabled by default and must be explicitly enabled.
+B<Note:> this setting controls whether L<Net::RDAP> caches RDAP records;
+it doesn't control caching of IANA registries by L<Net::RDAP::Registry>
+and L<Net::RDAP::Values>.
 
-=item * C<debug> - if true, tells L<Net::RDAP::UA> to print all HTTP
-requests and responses to C<STDERR>.
+=item * C<cache_ttl> - if set, specifies how long after a record has
+been cached before L<Net::RDAP> asks the server for any update. By
+default this is one hour (3600 seconds).
 
 =back
 
