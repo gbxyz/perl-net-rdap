@@ -54,6 +54,7 @@ sub mirror {
     if (-e $file) {
         my $mtime = (HTTP::Date->str2time($response->header('Expires') || $response->header('Date')) || time());
         utime(undef, $mtime, $file);
+        chmod(0600, $file);
     }
 
     return $response;
