@@ -414,7 +414,7 @@ sub _get {
 
     } else {
         $response = $self->ua->mirror($url, $file, $ttl);
-        eval { $data = decode_json(read_file($file)) };
+        eval { $data = decode_json(scalar(read_file($file))) };
 
     }
 
