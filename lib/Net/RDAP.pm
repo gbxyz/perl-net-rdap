@@ -22,7 +22,7 @@ use vars qw($VERSION);
 use constant DEFAULT_CACHE_TTL => 3600;
 use strict;
 
-$VERSION = 0.23;
+$VERSION = 0.24;
 
 =pod
 
@@ -726,6 +726,9 @@ Protocol (EPP) and Registration Data Access Protocol (RDAP) Status Mapping
 
 =item * L<https://tools.ietf.org/html/rfc8521> -  Registration Data Access
 Protocol (RDAP) Object Tagging
+
+=item * L<https://tools.ietf.org/html/rfc9537> -  Redacted Fields in the
+Registration Data Access Protocol (RDAP) Response
 
 =back
 
