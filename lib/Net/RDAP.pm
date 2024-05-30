@@ -13,6 +13,7 @@ use Net::RDAP::Object::Domain;
 use Net::RDAP::Object::Entity;
 use Net::RDAP::Object::IPNetwork;
 use Net::RDAP::Object::Nameserver;
+use Net::RDAP::Redaction;
 use Net::RDAP::Registry;
 use Net::RDAP::SearchResult;
 use Net::RDAP::Service;
