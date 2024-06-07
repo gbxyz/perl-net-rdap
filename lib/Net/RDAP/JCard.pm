@@ -1,10 +1,10 @@
-package Net::RDAP::vcardArray;
-use Net::RDAP::vcardArray::Node;
+package Net::RDAP::JCard;
+use Net::RDAP::JCard::Node;
 use strict;
 
 =head1 NAME
 
-L<Net::RDAP::vcardArray> - an object representing an RDAP jCard object.
+L<Net::RDAP::JCard> - an object representing an RDAP jCard object.
 
 =head1 SYNOPSIS
 
@@ -28,7 +28,7 @@ an alternative to L<vCard>.
 
 =head1 CONSTRUCTOR
 
-    $vcardArray = Net::RDAP::vcardArray->new($ref);
+    $vcardArray = Net::RDAP::JCard->new($ref);
 
 You probably don't need to instantiate these objects yourself, but if you do,
 you just need to pass an arrayref of nodes.
@@ -39,7 +39,7 @@ sub new {
     my ($package, $arrayref) = @_;
 
     my $self = {
-        nodes => [map { Net::RDAP::vcardArray::Node->new($_) } @{$arrayref}],
+        nodes => [map { Net::RDAP::JCard::Node->new($_) } @{$arrayref}],
     };
     
     return bless($self, $package);
@@ -53,7 +53,7 @@ sub new {
 
     @nodes = $vcardArray->nodes($type);
 
-Returns an array of L<Net::RDAP::vcardArray::Node> objects, optionally filtered
+Returns an array of L<Net::RDAP::JCard::Node> objects, optionally filtered
 to just those that have the C<$type> type.
 
 =cut

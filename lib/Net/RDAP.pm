@@ -18,7 +18,7 @@ use Net::RDAP::Registry;
 use Net::RDAP::SearchResult;
 use Net::RDAP::Service;
 use Net::RDAP::Values;
-use Net::RDAP::vcardArray;
+use Net::RDAP::JCard;
 use vars qw($VERSION);
 use constant DEFAULT_CACHE_TTL => 3600;
 use strict;
@@ -684,6 +684,8 @@ RDAP-related modules that all work together. They are:
 =back
 
 =item * L<Net::RDAP::EPPStatusMap>
+
+=item * L<Net::RDAP::JCard>
 
 =item * L<Net::RDAP::Registry>
 

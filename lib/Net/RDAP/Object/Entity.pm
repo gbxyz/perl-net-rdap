@@ -36,16 +36,16 @@ sub roles { $_[0]->{'roles'} ? @{$_[0]->{'roles'}} : () }
 
 =pod
 
-    my $vcardArray = $entity->vcardArray;
+    my $jcard = $entity->jcard;
 
-Returns a L<Net::RDAP::vcardArray> for the entity. This is the recommended way
+Returns a L<Net::RDAP::JCard> for the entity. This is the recommended way
 to access the contents of the C<vcardArray> property of the entity object.
 
 =cut
 
-sub vcardArray {
+sub jcard {
     my $self = shift;
-    return $self->{'vcardArray'}->[1] ? Net::RDAP::vcardArray->new($self->{'vcardArray'}->[1]) : undef;
+    return $self->{'vcardArray'}->[1] ? Net::RDAP::JCard->new($self->{'vcardArray'}->[1]) : undef;
 }
 
 =pod

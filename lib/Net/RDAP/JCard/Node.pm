@@ -1,17 +1,17 @@
-package Net::RDAP::vcardArray::Node;
+package Net::RDAP::JCard::Node;
 use strict;
 
 =pod
 
 =head1 NAME
 
-L<Net::RDAP::vcardArray::Node> - an object representing a node in a L<Net::RDAP::vcardArray>
+L<Net::RDAP::JCard::Node> - an object representing a node in a L<Net::RDAP::JCard>
 object.
 
 =head1 SYNOPSIS
 
     #
-    # get a node by calling the nodes() method on a Net::RDAP::vcardArray object
+    # get a node by calling the nodes() method on a Net::RDAP::JCard object
     #
     $node = ($vcardArray->nodes('tel'))[0];
 
@@ -37,12 +37,12 @@ Nodes have exactly four elements, specifically:
 
 =back
 
-L<Net::RDAP::vcardArray::Node> provides an ergonomic way to access these
+L<Net::RDAP::JCard::Node> provides an ergonomic way to access these
 elements.
 
 =head1 CONSTRUCTOR
 
-    $node = Net::RDAP::vcardArray::Node->new($ref);
+    $node = Net::RDAP::JCard::Node->new($ref);
 
 You probably don't need to instantiate these objects yourself, but if you do,
 you just need to pass an arrayref.
