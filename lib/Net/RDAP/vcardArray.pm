@@ -63,6 +63,8 @@ sub nodes {
     return grep { !$type || $type eq $_->type } @{$self->{nodes}};
 }
 
+sub TO_JSON { shift->{nodes} }
+
 =pod
 
 =head1 COPYRIGHT

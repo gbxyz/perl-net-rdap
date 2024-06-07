@@ -96,6 +96,17 @@ sub param       { $_[0]->params->{$_[1]} }
 sub value_type  { $_[0]->{value_type} }
 sub value       { $_[0]->{value} }
 
+sub TO_JSON {
+    my $self = shift;
+
+    return [
+        $self->type,
+        $self->params,
+        $self->value_type,
+        $self->value,
+    ];
+}
+
 =pod
 
 =head1 COPYRIGHT
