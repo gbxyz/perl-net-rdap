@@ -713,13 +713,13 @@ Data Access Protocol (RDAP)
 =item * L<https://tools.ietf.org/html/rfc7481> - Security Services for the
 Registration Data Access Protocol (RDAP)
 
-=item * L<https://tools.ietf.org/html/rfc7482> - Registration Data Access
+=item * L<https://tools.ietf.org/html/rfc9082> - Registration Data Access
 Protocol (RDAP) Query Format
 
-=item * L<https://tools.ietf.org/html/rfc7483> - JSON Responses for the
+=item * L<https://tools.ietf.org/html/rfc9083> - JSON Responses for the
 Registration Data Access Protocol (RDAP)
 
-=item * L<https://tools.ietf.org/html/rfc7484> - Finding the Authoritative
+=item * L<https://tools.ietf.org/html/rfc9224> - Finding the Authoritative
 Registration Data (RDAP) Service
 
 =item * L<https://tools.ietf.org/html/rfc8056> - Extensible Provisioning
