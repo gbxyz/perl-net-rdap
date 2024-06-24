@@ -687,6 +687,12 @@ RDAP-related modules that all work together. They are:
 
 =item * L<Net::RDAP::JCard>
 
+=over
+
+=item * L<Net::RDAP::JCard::Property>
+
+=back
+
 =item * L<Net::RDAP::Registry>
 
 =item * L<Net::RDAP::Registry::IANARegistry>
