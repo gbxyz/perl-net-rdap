@@ -1,5 +1,5 @@
 package Net::RDAP::JCard;
-use Net::RDAP::JCard::Node;
+use Net::RDAP::JCard::Property;
 use strict;
 
 =head1 NAME
@@ -9,29 +9,30 @@ L<Net::RDAP::JCard> - an object representing an RDAP jCard object.
 =head1 SYNOPSIS
 
     #
-    # get an object by calling the vcardArray() method on a Net::RDAP::Object::Entity
+    # get an object by calling the jcard() method on a Net::RDAP::Object::Entity
     #
-    my $vcardArray = $entity->vcardArray;
+    my $vcardArray = $entity->jcard;
 
-    my $name = ($vcardArray->nodes('fn'))[0];
+    my $fn = [ $vcardArray->properties('FN') ]->[0];
 
-    say $name->value;
+    say $fn->value;
 
 =head1 DESCRIPTION
 
-This module provides a representation of jCard objects, as described in
-L<RFC 7095|https://www.rfc-editor.org/rfc/rfc7095.html>. Historically, the only
-way to access the contents of the C<vcardArray> property of L<Net::RDAP::Object::Entity>
-objects was to call the C<vcard()> method and get a L<vCard> object back, but
-the conversion was lossy. This module provides a lossless ergonomic interface as
-an alternative to L<vCard>.
+This module provides a representation of jCard properties, as described in
+L<RFC 7095|https://www.rfc-editor.org/rfc/rfc7095.html>.
+
+Historically, the only way to access the contents of the C<vcardArray> property
+of L<Net::RDAP::Object::Entity> objects was to call the C<vcard()> method and
+get a L<vCard> object back, but the conversion was lossy. This module provides a
+lossless and ergonomic alternative to using L<vCard>.
 
 =head1 CONSTRUCTOR
 
     $vcardArray = Net::RDAP::JCard->new($ref);
 
 You probably don't need to instantiate these objects yourself, but if you do,
-you just need to pass an arrayref of nodes.
+you just need to pass an arrayref of properties.
 
 =cut
 
@@ -39,7 +40,7 @@ sub new {
     my ($package, $arrayref) = @_;
 
     my $self = {
-        nodes => [map { Net::RDAP::JCard::Node->new($_) } @{$arrayref}],
+        properties => [map { Net::RDAP::JCard::Property->new($_) } @{$arrayref}],
     };
     
     return bless($self, $package);
@@ -49,21 +50,26 @@ sub new {
 
 =head1 METHODS
 
-    @nodes = $vcardArray->nodes;
+    @properties = $vcardArray->properties;
 
-    @nodes = $vcardArray->nodes($type);
+    @properties = $vcardArray->properties($type);
 
-Returns an array of L<Net::RDAP::JCard::Node> objects, optionally filtered
-to just those that have the C<$type> type.
+Returns an array of L<Net::RDAP::JCard::Property> objects, optionally filtered
+to just those that have the C<$type> type (matched case-insensitively).
+
+Before v0.26, this method was called C<nodes()>. This name still works but is
+deprecated and will be removed in the future.
 
 =cut
 
-sub nodes {
+sub properties {
     my ($self, $type) = @_;
-    return grep { !$type || $type eq $_->type } @{$self->{nodes}};
+    return grep { !$type || uc($type) eq uc($_->type) } @{$self->{properties}};
 }
 
-sub TO_JSON { shift->{nodes} }
+sub nodes { shift->properties(@_) }
+
+sub TO_JSON { ['vcard', shift->{properties}] }
 
 =pod
 
