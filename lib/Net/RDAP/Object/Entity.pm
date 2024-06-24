@@ -13,16 +13,17 @@ or organization).
 =head1 DESCRIPTION
 
 L<Net::RDAP::Object::Entity> represents persons or organizations in
-RDAP responses. An entity is a vCard object plus metadata.
-L<Net::RDAP::Object::Entity> inherits from L<Net::RDAP::Object> so has
-access to all that module's methods.
+RDAP responses. An entity is a L<jCard object|Net::RDAP::JCard> plus metadata.
+
+L<Net::RDAP::Object::Entity> inherits from L<Net::RDAP::Object> so has access to
+all that module's methods.
 
 Other methods include:
 
     @roles = $object->roles;
 
-Returns a (potentially empty) array listing this entity's roles.
-The possible values is defined by an IANA registry, see:
+Returns a (potentially empty) array listing this entity's roles. The possible
+values is defined by an IANA registry, see:
 
 =over
 
