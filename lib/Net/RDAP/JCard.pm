@@ -1,5 +1,6 @@
 package Net::RDAP::JCard;
 use Net::RDAP::JCard::Property;
+use Net::RDAP::JCard::Address;
 use strict;
 
 =head1 NAME
@@ -11,9 +12,9 @@ L<Net::RDAP::JCard> - an object representing an RDAP jCard object.
     #
     # get an object by calling the jcard() method on a Net::RDAP::Object::Entity
     #
-    my $vcardArray = $entity->jcard;
+    my $jcard = $entity->jcard;
 
-    my $fn = [ $vcardArray->properties('FN') ]->[0];
+    my $fn = [ $jcard->properties('fn') ]->[0];
 
     say $fn->value;
 
@@ -29,7 +30,7 @@ lossless and ergonomic alternative to using L<vCard>.
 
 =head1 CONSTRUCTOR
 
-    $vcardArray = Net::RDAP::JCard->new($ref);
+    $jcard = Net::RDAP::JCard->new($ref);
 
 You probably don't need to instantiate these objects yourself, but if you do,
 you just need to pass an arrayref of properties.
@@ -50,12 +51,13 @@ sub new {
 
 =head1 METHODS
 
-    @properties = $vcardArray->properties;
+    @properties = $jcard->properties;
 
-    @properties = $vcardArray->properties($type);
+    @properties = $jcard->properties($type);
 
-Returns an array of L<Net::RDAP::JCard::Property> objects, optionally filtered
-to just those that have the C<$type> type (matched case-insensitively).
+Returns a (potentially empty) array of L<Net::RDAP::JCard::Property> objects,
+optionally filtered to just those that have the C<$type> type (matched
+case-insensitively).
 
 Before v0.26, this method was called C<nodes()>. This name still works but is
 deprecated and will be removed in the future.
@@ -64,10 +66,35 @@ deprecated and will be removed in the future.
 
 sub properties {
     my ($self, $type) = @_;
+
     return grep { !$type || uc($type) eq uc($_->type) } @{$self->{properties}};
 }
 
 sub nodes { shift->properties(@_) }
+
+=pod
+
+    $property = $jcard->first('fn');
+
+Returns the first property matching the provided type, or C<undef> if none was
+found.
+
+=cut
+
+sub first {
+    return [ shift->properties(@_) ]->[0];
+}
+
+sub addresses {
+    return map { Net::RDAP::JCard::Address->new([$_->type, $_->params, $_->value_type, $_->value]) } shift->properties('adr');
+}
+
+sub first_address {
+    my $self = shift;
+    my $adr = $self->first('adr');
+
+    return ($adr ? Net::RDAP::JCard::Address->new([$adr->type, $adr->params, $adr->value_type, $adr->value]) : undef);
+}
 
 sub TO_JSON { ['vcard', shift->{properties}] }
 

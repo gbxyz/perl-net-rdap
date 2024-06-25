@@ -12,9 +12,10 @@ L<Net::RDAP::JCard> object.
 =head1 SYNOPSIS
 
     #
-    # get a node by calling the properties() method on a Net::RDAP::JCard object
+    # get a property by calling the properties() method on a Net::RDAP::JCard
+    # object
     #
-    $prop = ($jcard->properties('tel'))[0];
+    $prop = [ $jcard->properties('tel') ]->[0];
 
     say $prop->param('type');
     say $prop->value;
@@ -69,15 +70,20 @@ sub new {
 
 =head1 NOTE ON CASE SENSITIVITY
 
-In general, most values in vCard objects are case-insensitive.
-L<Net::RDAP::JCard::Property> will preserve the case of these values internally
-so that a call to the C<TO_JSON()> method will return the original data
-structure, but the methods below may
+In general, most values in vCard objects are case-insensitive, however, the
+L<jCard RFC|https://datatracker.ietf.org/doc/html/rfc7095> requires that
+property and value types be lowercase.
 
-, but the C<type()>, and C<value_type()> methods will return upper-case
-values for those elements. The C<params()> method will return a ha, while C<param($type)> will do a case
+L<Net::RDAP::JCard::Property> will internally preserve the case of property and
+value types so that JSON serialization via the C<TO_JSON()> method will return
+the original data structure.
+
+Please see the documentation for each of the methods listed below to see how
+case is handled for those methods.
 
 =head1 METHODS
+
+=head2 PROPERTY TYPE
 
     $type = $prop->type;
 
@@ -85,20 +91,25 @@ Returns a string containing the property type. See the L<vCard
 Properties|https://www.iana.org/assignments/vcard-elements/vcard-elements.xhtml#properties>
 IANA registry for a list of possible values.
 
-This method will always return the property type in UPPERCASE.
+This method will always return the property type in lowercase.
+
+=head2 PROPERTY PARAMETERS
 
     $params = $prop->params;
 
 Returns a hashref containing the property parameters. See the C<vCard
 Parameters|https://www.iana.org/assignments/vcard-elements/vcard-elements.xhtml#parameters>
-IANA registry for a list of possible parameter names. The keys of this hashref
-will always be in lowercase as per L<Section 3.4 of RFC 7095
-states|https://datatracker.ietf.org/doc/html/rfc7095#section-3.4>.
+IANA registry for a list of possible parameter names.
+
+The keys of this hashref will always be in lowercase as per L<Section 3.4 of
+RFC 7095|https://datatracker.ietf.org/doc/html/rfc7095#section-3.4>.
 
     $param = $prop->param($name);
 
 Returns the value of the C<$name> parameter or C<undef>. C<$name> will be matched
 case-insensitively against the keys in the hashref.
+
+=head2 PROPERTY VALUE TYPE
 
     $value_type = $prop->value_type;
 
@@ -108,13 +119,15 @@ IANA registry for a list of possible values.
 
 This method will always return the value type in UPPERCASE.
 
+=head2 PROPERTY VALUE
+
     $value = $prop->value;
 
 Returns the property value.
 
 =cut
 
-sub type { uc($_[0]->{type}) }
+sub type { lc($_[0]->{type}) }
 
 sub params {
     my $self = shift;
@@ -128,7 +141,7 @@ sub params {
 }
 
 sub param       { $_[0]->params->{lc($_[1])} }
-sub value_type  { uc($_[0]->{value_type}) }
+sub value_type  { lc($_[0]->{value_type}) }
 sub value       { $_[0]->{value} }
 
 sub TO_JSON {
