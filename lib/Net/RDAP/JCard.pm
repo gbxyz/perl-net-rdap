@@ -85,6 +85,20 @@ sub first {
     return [ shift->properties(@_) ]->[0];
 }
 
+=pod
+
+    @addresses = $jcard->addresses;
+
+Returns a (potentially empty) array of L<Net::RDAP::JCard::Address> objects,
+representing the C<adr> properties of the jCard object.
+
+    $address = $jcard->first_address;
+
+Returns a L<Net::RDAP::JCard::Address> object representing the first address
+found, or C<undef>.
+
+=cut
+
 sub addresses {
     return map { Net::RDAP::JCard::Address->new([$_->type, $_->params, $_->value_type, $_->value]) } shift->properties('adr');
 }
