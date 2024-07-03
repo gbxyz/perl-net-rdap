@@ -15,9 +15,24 @@ use strict;
 # Constructor method. Expects a hashref as an argument.
 #
 sub new {
-    my ($package, $args) = @_;
+    my ($package, $args, $document_url) = @_;
     my %self = %{$args};
+
+    $self{_document_url} = $document_url if ($document_url);
+
     return bless(\%self, $package);
+}
+
+#
+# returns a URI object corresponding to URL of the document this object appears
+# in.
+#
+sub document_url {
+    my $self = shift;
+
+    my $url = $self->{_document_url};
+
+    return ($url->isa('URI') ? $url : URI->new($url)) if ($url);
 }
 
 #
@@ -32,9 +47,11 @@ sub objects {
 
     my @list;
 
+    my $document_url = $self->document_url;
+
     if (defined($ref) && 'ARRAY' eq ref($ref)) {
         foreach my $item (@{$ref}) {
-            push(@list, $class->new($item));
+            push(@list, $class->new($item, $document_url));
         }
     }
 
@@ -102,6 +119,9 @@ is configured with the C<convert_blessed> option.
 sub TO_JSON {
     my $self = shift;
     my %hash = %{$self};
+
+    delete($hash{_document_url});
+
     return \%hash;
 }
 
