@@ -24,18 +24,6 @@ sub new {
 }
 
 #
-# returns a URI object corresponding to URL of the document this object appears
-# in.
-#
-sub document_url {
-    my $self = shift;
-
-    my $url = $self->{_document_url};
-
-    return ($url->isa('URI') ? $url : URI->new($url)) if ($url);
-}
-
-#
 # Returns a (potentially empty) array of <$class> objects
 # generated from the hashrefs in C<$ref>, which is
 # expected to be a reference to an array.
@@ -105,6 +93,26 @@ link of this object (if one is available).
 =cut
 
 sub self { (grep { 'self' eq $_->rel } $_[0]->links)[0] }
+
+=pod
+
+=head2 DOCUMENT URL
+
+    $url = $object->document_url;
+
+This method returns a L<URI> object representing the URL of the document that
+this object appears in. This is helpful when converting relative URLs (which
+might appear in links) into absolute URLs.
+
+=cut
+
+sub document_url {
+    my $self = shift;
+
+    my $url = $self->{_document_url};
+
+    return ($url->isa('URI') ? $url : URI->new($url)) if ($url);
+}
 
 =pod
 
