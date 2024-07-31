@@ -24,7 +24,7 @@ sub new {
 }
 
 #
-# Returns a (potentially empty) array of <$class> objects
+# Returns a (potentially empty) array of C<$class> objects
 # generated from the hashrefs in C<$ref>, which is
 # expected to be a reference to an array.
 #
