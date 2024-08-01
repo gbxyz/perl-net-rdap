@@ -22,7 +22,7 @@ access to all that module's methods.
 
 Other methods include:
 
-    $name = $nameserver->name;
+    $name = $domain->name;
 
 Returns a L<Net::DNS::Domain> representing the name of the nameserver.
 
