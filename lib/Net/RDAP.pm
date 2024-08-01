@@ -644,7 +644,7 @@ RDAP-related modules that all work together. They are:
 
 =over
 
-=item * L<Net::RDAP::Base>, and its submodules:
+=item * L<Net::RDAP::Base>
 
 =over
 
@@ -652,7 +652,7 @@ RDAP-related modules that all work together. They are:
 
 =item * L<Net::RDAP::ID>
 
-=item * L<Net::RDAP::Object>, and its submodules:
+=item * L<Net::RDAP::Object>
 
 =over
 
@@ -674,7 +674,7 @@ RDAP-related modules that all work together. They are:
 
 =back
 
-=item * L<Net::RDAP::Remark>, and its submodule:
+=item * L<Net::RDAP::Remark>
 
 =over
 
@@ -709,6 +709,10 @@ RDAP-related modules that all work together. They are:
 =item * L<Net::RDAP::UA>
 
 =item * L<Net::RDAP::Values>
+
+=item * L<Net::RDAP::Variant>
+
+=item * L<Net::RDAP::VariantName>
 
 =back
 
