@@ -32,6 +32,16 @@ sub name { Net::DNS::Domain->new($_[0]->{'ldhName'}) }
 
 =pod
 
+    $name = $domain->unicodeName;
+
+Returns a string containing the DNS Unicode name of the domain (or C<undef>).
+
+=cut
+
+sub unicodeName { $_[0]->{'unicodeName'} }
+
+=pod
+
     @ns = $domain->nameservers;
 
 Returns a (potentially empty) array of L<Net::RDAP::Object::Nameserver>
