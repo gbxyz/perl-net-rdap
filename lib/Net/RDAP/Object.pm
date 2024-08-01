@@ -51,7 +51,7 @@ in a response.
 
 sub conformance {
     my $self = shift;
-    return @{$self->{'rdapConformance'}};
+    return @{$self->{'rdapConformance'} || []};
 }
 
 =pod
