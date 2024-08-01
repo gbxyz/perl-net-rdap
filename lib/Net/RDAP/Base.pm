@@ -9,6 +9,7 @@ use Net::RDAP::Object::Entity;
 use Net::RDAP::Object::IPNetwork;
 use Net::RDAP::Object::Nameserver;
 use Net::RDAP::Remark;
+use Net::RDAP::Variant;
 use strict;
 
 #

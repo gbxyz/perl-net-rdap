@@ -146,6 +146,17 @@ sub network { Net::RDAP::Obect::IPNetwork->new($_[0]->{'network'}) }
 
 =pod
 
+    my @variants = $domain->variants;
+
+Returns a (potentially empty) array of L<Net::RDAP::Variant> objects
+representing variants of the domain name.
+
+=cut
+
+sub variants { $_[0]->objects('Net::RDAP::Variant', $_[0]->{'variants'}) }
+
+=pod
+
 =head1 COPYRIGHT
 
 Copyright 2018-2023 CentralNic Ltd, 2024 Gavin Brown. All rights reserved.
