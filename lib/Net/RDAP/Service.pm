@@ -12,11 +12,16 @@ sub new {
 }
 
 sub fetch {
-    my ($self, $type, $handle, %params) = @_;
+    my ($self, $type, $segments, %params) = @_;
 
     my $uri = dclone($self->base);
 
-    $uri->path_segments(grep { defined } $uri->path_segments, $type, $handle);
+    $uri->path_segments(grep { defined } (
+        $uri->path_segments,
+        $type,
+        'ARRAY' eq ref($segments) ? @{$segments} : $segments
+    ));
+
     $uri->query_form(%params);
 
     my %opt;
