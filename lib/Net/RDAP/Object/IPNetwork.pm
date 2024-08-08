@@ -91,7 +91,7 @@ sub range {
 
 Returns an array of L<Net::IP> objects representing the CIDR
 prefix(es) for this network registration (see
-L<https://bitbucket.org/nroecg/nro-rdap-cidr/src/master/nro-rdap-cidr.txt).
+L<https://bitbucket.org/nroecg/nro-rdap-cidr/src/master/nro-rdap-cidr.txt>).
 
 =cut
 
