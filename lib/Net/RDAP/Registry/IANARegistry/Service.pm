@@ -1,6 +1,7 @@
 package Net::RDAP::Registry::IANARegistry::Service;
 use URI;
 use strict;
+use warnings;
 
 =pod
 

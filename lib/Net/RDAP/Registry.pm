@@ -145,15 +145,15 @@ sub autnum {
     my %matches;
     SERVICE: foreach my $service ($registry->services) {
         VALUE: foreach my $value ($service->registries) {
-            if ($value == $autnum->toasplain) {
-                # exact match, create an entry for NNNN-NNNN where both sides are
-                # the same (simplifies sorting later)
+            if ($value =~ /^\d+$/ && $value == $autnum->toasplain) {
+                # exact match, create an entry for NNNN-NNNN where both sides
+                # are the same (simplifies sorting later)
                 $matches{sprintf('%d-%d', $value, $value)} = $package->get_best_url($service->urls);
                 last SERVICE;
 
             } elsif ($value =~ /^(\d+)-(\d+)$/) {
                 if ($1 <= $autnum->toasplain && $autnum->toasplain <= $2) {
-                    $matches{sprintf('%d-%d', $value, $value)} = $package->get_best_url($service->urls);
+                    $matches{$value} = $package->get_best_url($service->urls);
                     last VALUE;
                 }
             }

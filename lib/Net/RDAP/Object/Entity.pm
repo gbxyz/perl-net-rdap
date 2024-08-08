@@ -2,6 +2,7 @@ package Net::RDAP::Object::Entity;
 use base qw(Net::RDAP::Object);
 use vCard;
 use strict;
+use warnings;
 
 =pod
 

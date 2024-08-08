@@ -3,6 +3,7 @@ use DateTime::Format::ISO8601;
 use Net::RDAP::Link;
 use base qw(Net::RDAP::Base);
 use strict;
+use warnings;
 
 =pod
 

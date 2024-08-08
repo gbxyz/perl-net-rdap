@@ -2,6 +2,7 @@ package Net::RDAP::Object::IPNetwork;
 use base qw(Net::RDAP::Object);
 use Net::IP;
 use strict;
+use warnings;
 
 =head1 NAME
 

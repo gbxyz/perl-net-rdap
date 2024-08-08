@@ -1,6 +1,7 @@
 package Net::RDAP::Error;
 use base qw(Net::RDAP::Object);
 use strict;
+use warnings;
 
 =head1 NAME
 

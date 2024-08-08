@@ -1,6 +1,7 @@
 package Net::RDAP::JCard::Property;
 use List::Util qw(pairmap);
 use strict;
+use warnings;
 
 =pod
 

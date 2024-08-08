@@ -1,6 +1,7 @@
 package Net::RDAP::EPPStatusMap;
 use base qw(Exporter);
 use strict;
+use warnings;
 
 our @EXPORT = qw(epp2rdap rdap2epp);
 

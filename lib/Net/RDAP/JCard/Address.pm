@@ -2,6 +2,7 @@ package Net::RDAP::JCard::Address;
 use List::Util qw(any);
 use base qw(Net::RDAP::JCard::Property);
 use strict;
+use warnings;
 
 =pod
 

@@ -2,6 +2,7 @@ package Net::RDAP::JCard;
 use Net::RDAP::JCard::Property;
 use Net::RDAP::JCard::Address;
 use strict;
+use warnings;
 
 =head1 NAME
 

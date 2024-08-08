@@ -21,6 +21,7 @@ use constant {
 };
 use base qw(Exporter);
 use strict;
+use warnings;
 
 #
 # export these symbols

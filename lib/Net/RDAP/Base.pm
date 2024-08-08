@@ -11,6 +11,7 @@ use Net::RDAP::Object::Nameserver;
 use Net::RDAP::Remark;
 use Net::RDAP::Variant;
 use strict;
+use warnings;
 
 #
 # Constructor method. Expects a hashref as an argument.

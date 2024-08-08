@@ -2,6 +2,7 @@ package Net::RDAP::Service;
 use Storable qw(dclone);
 use Net::RDAP;
 use strict;
+use warnings;
 
 sub new {
     my ($package, $base, $client) = @_;

@@ -2,6 +2,7 @@ package Net::RDAP::Registry::IANARegistry;
 use DateTime::Format::ISO8601;
 use Net::RDAP::Registry::IANARegistry::Service;
 use strict;
+use warnings;
 
 =pod
 

@@ -1,6 +1,7 @@
 package Net::RDAP::Notice;
 use base qw(Net::RDAP::Remark);
 use strict;
+use warnings;
 
 =pod
 
