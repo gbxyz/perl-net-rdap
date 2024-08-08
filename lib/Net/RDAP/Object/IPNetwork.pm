@@ -135,7 +135,7 @@ for example:
 
 sub domain {
     my $self = shift;
-    URI->new_abs(sprintf('../../domain/%s', $self->start->reverse_ip), $self->self->href);
+    return URI->new_abs(sprintf('../../domain/%s', $self->start->reverse_ip), $self->self->href);
 }
 
 =pod
