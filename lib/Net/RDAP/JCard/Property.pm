@@ -63,7 +63,7 @@ sub new {
         value_type  => $arrayref->[2],
         value       => $arrayref->[3],
     };
-    
+
     return bless($self, $package);
 }
 
