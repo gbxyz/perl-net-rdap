@@ -44,7 +44,7 @@ sub new {
     my $self = {
         properties => [map { Net::RDAP::JCard::Property->new($_) } @{$arrayref}],
     };
-    
+
     return bless($self, $package);
 }
 
