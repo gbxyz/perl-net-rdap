@@ -480,7 +480,8 @@ sub rdap_from_response {
 
         if (!defined($data->{'objectClassName'}) && scalar(grep { /^(domain|nameserver|entity)SearchResults$/ } keys(%{$data})) < 1) {
             #
-            # response is missing the objectClassName property and is not a search result:
+            # response is missing the objectClassName property and is not a
+            # search result:
             #
             return $self->error(
                 'url'           => $url,
@@ -525,9 +526,11 @@ sub object_from_response {
     #
     # search results
     #
-    elsif (exists($data->{'domainSearchResults'}))     { return Net::RDAP::SearchResult->new($data, $url) }
-    elsif (exists($data->{'nameserverSearchResults'})) { return Net::RDAP::SearchResult->new($data, $url) }
-    elsif (exists($data->{'entitySearchResults'}))     { return Net::RDAP::SearchResult->new($data, $url) }
+    elsif (exists($data->{'domainSearchResults'}))      { return Net::RDAP::SearchResult->new($data, $url) }
+    elsif (exists($data->{'nameserverSearchResults'}))  { return Net::RDAP::SearchResult->new($data, $url) }
+    elsif (exists($data->{'entitySearchResults'}))      { return Net::RDAP::SearchResult->new($data, $url) }
+    elsif (exists($data->{'ipSearchResults'}))          { return Net::RDAP::SearchResult->new($data, $url) }
+    elsif (exists($data->{'autnumSearchResults'}))      { return Net::RDAP::SearchResult->new($data, $url) }
 
     #
     # unprocessable response
@@ -549,7 +552,11 @@ sub object_from_response {
 sub is_rdap {
     my ($self, $response) = @_;
 
-    return ((!$response->base || 'file' eq $response->base->scheme) || ($response->header('Content-Type') =~ /^application\/rdap\+json/ || $response->header('Content-Type') =~ /^application\/json/));
+    return 1 if (!$response->base);
+    return 1 if ('file' eq $response->base->scheme);
+    return 1 if ($response->header('content-type') || '' =~ /^application\/(rdap\+|)json/);
+
+    return undef;
 }
 
 #
