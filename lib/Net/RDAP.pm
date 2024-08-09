@@ -33,8 +33,7 @@ $VERSION = 0.28;
 
 =head1 NAME
 
-L<Net::RDAP> - an interface to the Registration Data Access Protocol
-(RDAP).
+L<Net::RDAP> - an interface to the Registration Data Access Protocol (RDAP).
 
 =head1 SYNOPSIS
 

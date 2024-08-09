@@ -7,7 +7,7 @@ use warnings;
 
 =head1 NAME
 
-L<Net::RDAP::JCard::Property> - an object representing a property of a
+L<Net::RDAP::JCard::Property> - a module representing a property of a
 L<Net::RDAP::JCard> object.
 
 =head1 SYNOPSIS

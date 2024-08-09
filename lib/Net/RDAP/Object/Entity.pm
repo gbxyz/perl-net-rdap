@@ -8,8 +8,8 @@ use warnings;
 
 =head1 NAME
 
-L<Net::RDAP::Object::Entity> - a module representing an entity (person
-or organization).
+L<Net::RDAP::Object::Entity> - a module representing an entity (person or
+organization).
 
 =head1 DESCRIPTION
 

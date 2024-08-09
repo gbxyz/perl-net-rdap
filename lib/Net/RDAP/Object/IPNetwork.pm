@@ -6,8 +6,8 @@ use warnings;
 
 =head1 NAME
 
-L<Net::RDAP::Object::IPNetwork> - an RDAP object representing an IP
-address network.
+L<Net::RDAP::Object::IPNetwork> - a module representing an IPv4 or IPv6 address
+network.
 
 =head1 DESCRIPTION
 

@@ -53,7 +53,7 @@ sub objects {
 
 =head1 NAME
 
-Net::RDAP::Base - base module for some L<Net::RDAP>:: modules.
+Net::RDAP::Base - the base module for many L<Net::RDAP>:: modules.
 
 =head1 DESCRIPTION
 

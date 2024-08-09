@@ -26,7 +26,8 @@ our $REGISTRY = {};
 
 =head1 NAME
 
-L<Net::RDAP::Registry> - an interface to the IANA RDAP registries.
+L<Net::RDAP::Registry> - a module which provides an interface to the IANA RDAP
+registries.
 
 =head1 SYNOPSIS
 

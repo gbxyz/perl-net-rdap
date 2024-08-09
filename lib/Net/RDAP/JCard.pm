@@ -6,7 +6,7 @@ use warnings;
 
 =head1 NAME
 
-L<Net::RDAP::JCard> - an object representing an RDAP jCard object.
+L<Net::RDAP::JCard> - a module representing an RDAP jCard object.
 
 =head1 SYNOPSIS
 

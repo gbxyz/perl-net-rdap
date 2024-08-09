@@ -51,7 +51,7 @@ __END__
 
 =head1 NAME
 
-L<Net::RDAP::Service> - an interface to an RDAP server.
+L<Net::RDAP::Service> - a module which provides an interface to an RDAP server.
 
 =head1 SYNOPSIS
 

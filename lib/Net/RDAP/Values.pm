@@ -42,7 +42,8 @@ our ($UA, $REGISTRY);
 
 =head1 NAME
 
-L<Net::RDAP::Values> - interface to the RDAP values registry.
+L<Net::RDAP::Values> - a module which provides interface to the RDAP values
+registry.
 
 =head1 DESCRIPTION
 

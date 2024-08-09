@@ -5,8 +5,7 @@ use warnings;
 
 =head1 NAME
 
-L<Net::RDAP::Help> - an RDAP object representing a help
-response.
+L<Net::RDAP::Help> - a module representing an RDAP help response.
 
 =head1 DESCRIPTION
 

@@ -9,7 +9,7 @@ use warnings;
 
 =head1 NAME
 
-L<Net::RDAP::Event> - object representing an RDAP event.
+L<Net::RDAP::Event> - a module representing an RDAP event.
 
 =head1 DESCRIPTION
 

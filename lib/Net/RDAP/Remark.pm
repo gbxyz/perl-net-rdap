@@ -7,7 +7,7 @@ use warnings;
 
 =head1 NAME
 
-L<Net::RDAP::Remark> - an RDAP remark
+L<Net::RDAP::Remark> - a module representing an RDAP remark.
 
 =head1 DESCRIPTION
 

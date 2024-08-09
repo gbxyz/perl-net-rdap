@@ -8,7 +8,7 @@ use warnings;
 
 =head1 NAME
 
-L<Net::RDAP::Registry::IANARegistry> - a class which represents an RDAP
+L<Net::RDAP::Registry::IANARegistry> - a module which represents an RDAP
 bootstrap registry.
 
 =head1 DESCRIPTION

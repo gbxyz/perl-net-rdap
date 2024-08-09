@@ -77,7 +77,8 @@ __END__
 
 =head1 NAME
 
-L<Net::RDAP::UA> - an RDAP user agent, based on L<LWP::UserAgent>.
+L<Net::RDAP::UA> - a module which provides an RDAP user agent, based on
+L<LWP::UserAgent>.
 
 =head1 DESCRIPTION
 

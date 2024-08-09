@@ -5,8 +5,7 @@ use warnings;
 
 =head1 NAME
 
-L<Net::RDAP::Object::Autnum> - an RDAP object representing an
-autonymous system.
+L<Net::RDAP::Object::Autnum> - a module representing an autonymous system.
 
 =head1 DESCRIPTION
 
