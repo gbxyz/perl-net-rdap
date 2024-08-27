@@ -5,6 +5,7 @@ use File::Slurp;
 use File::Spec;
 use File::stat;
 use JSON;
+use POSIX qw(getpwuid);
 use Net::RDAP::UA;
 use Net::RDAP::Registry::IANARegistry;
 use vars qw($UA $REGISTRY);
@@ -325,7 +326,13 @@ sub load_registry {
     if (!defined($REGISTRY->{$url})) {
         $package =~ s/:+/-/g;
 
-        my $file = sprintf('%s/%s-%s', File::Spec->tmpdir, $package, basename($url));
+        my $file = sprintf(
+            '%s/%s-%s-%s',
+            File::Spec->tmpdir,
+            $package,
+            basename($url),
+            getpwuid($<),
+        );
 
         #
         # $UA may have been injected by Net::RDAP->ua()
