@@ -249,6 +249,8 @@ query parameters using the C<entity> parameter:
 
 =head2 Advanced IP Address Search
 
+TODO
+
 =head2 Help
 
 Each RDAP server has a "help" endpoint which provides "helpful
