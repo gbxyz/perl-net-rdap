@@ -17,7 +17,7 @@ sub fetch {
 
     my $uri = dclone($self->base);
 
-    $uri->path_segments(grep { defined } (
+    $uri->path_segments(grep { defined && length > 0 } (
         $uri->path_segments,
         $type,
         'ARRAY' eq ref($segments) ? @{$segments} : $segments
