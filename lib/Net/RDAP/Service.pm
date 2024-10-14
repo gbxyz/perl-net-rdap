@@ -7,7 +7,7 @@ use warnings;
 sub new {
     my ($package, $base, $client) = @_;
     return bless({
-        'base'      => $base->isa('REF') ? $base : URI->new($base),
+        'base'      => $base->isa('URI') ? $base : URI->new($base),
         'client'    => $client || Net::RDAP->new,
     }, $package);
 }
