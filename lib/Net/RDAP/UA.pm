@@ -5,8 +5,11 @@ use File::stat;
 use HTTP::Date;
 use Mozilla::CA;
 use constant DEFAULT_CACHE_TTL => 300;
+use vars qw($DEBUG);
 use strict;
 use warnings;
+
+$DEBUG = exists($ENV{'NET_RDAP_UA_DEBUG'});
 
 #
 # create a new object, which is just an LWP::UserAgent with
@@ -21,6 +24,18 @@ sub new {
     $options{'ssl_opts'}->{'SSL_ca_file'} = Mozilla::CA::SSL_ca_file()  unless (exists($options{'ssl_opts'}->{'SSL_ca_file'}));
 
     return bless($package->SUPER::new(%options), $package);
+}
+
+sub request {
+    my $self = shift;
+
+    print STDERR $_[0]->as_string if ($DEBUG);
+
+    my $response = $self->SUPER::request(@_);
+
+    print STDERR $response->as_string."\n" if ($DEBUG);
+
+    return $response;
 }
 
 #
@@ -88,6 +103,13 @@ L<LWP::UserAgent>.
 This module extends L<LWP::UserAgent> in order to inject various
 RDAP-related configuration settings and HTTP request headers. Nothing
 should ever need to use it.
+
+=head1 DEBUGGING HTTP TRANSACTIONS
+
+If you ever want to see what L<Net::RDAP::UA> sends and receives, set the
+L<Net::RDAP::UA::DEBUG> variable to a true value, or set the
+C<NET_RDAP_UA_DEBUG> environment variable. This will cause all HTTP requests
+and responses to be printed to C<STDERR>.
 
 =head1 COPYRIGHT
 
