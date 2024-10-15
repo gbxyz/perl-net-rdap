@@ -373,7 +373,7 @@ sub get_best_url {
 sub assemble_url {
     my ($package, $url, @segments) = @_;
 
-    $url->path_segments(grep { length > 0 } ($url->path_segments, @segments));
+    $url->path_segments(grep { defined && length > 0 } ($url->path_segments, @segments));
 
     return $url;
 }
