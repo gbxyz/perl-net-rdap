@@ -12,6 +12,5 @@ jobs:
     container: gbxyz/rdapper:latest
     steps:
       - uses: actions/checkout@v4
-      - run: cpanm -qn LWP::Online
       - run: perl Makefile.PL
       - run: make test
