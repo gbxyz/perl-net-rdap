@@ -1,6 +1,8 @@
 package Net::RDAP::Service;
-use Storable qw(dclone);
+use Carp;
+use List::Util qw(any);
 use Net::RDAP;
+use Storable qw(dclone);
 use strict;
 use warnings;
 
@@ -85,6 +87,19 @@ sub entities    { shift->search('entities',     @_ ) }
 sub ips         { shift->search('ips',          @_ ) }
 sub autnums     { shift->search('autnums',      @_ ) }
 
+sub implements {
+    my ($self, $token) = @_;
+
+    my $help = $self->help;
+
+    croak($help->title) if ($help->isa('Net::RDAP::Error'));
+
+    my @tokens = $help->conformance;
+    croak('Missing or empty rdapConformance property') if (scalar(@tokens) < 1);
+
+    return any { $_ eq $token } @tokens;
+}
+
 1;
 
 __END__
@@ -125,13 +140,12 @@ L<Net::RDAP::Service> - a module which provides an interface to an RDAP server.
 
 =head1 DESCRIPTION
 
-While L<Net::RDAP> provides a unified interface to the universe of
-RIR, domain registry, and domain registrar RDAP services,
-L<Net::RDAP::Service> provides an interface to a specific RDAP service.
+While L<Net::RDAP> provides a unified interface to the universe of RIR, domain
+registry, and domain registrar RDAP services, L<Net::RDAP::Service> provides an
+interface to a specific RDAP service.
 
 You can do direct lookup of objects using methods of the same name that
-L<Net::RDAP> provides. In addition, this module allows you to perform
-searches.
+L<Net::RDAP> provides. In addition, this module allows you to perform searches.
 
 =head1 METHODS
 
@@ -195,7 +209,7 @@ examples:
 
     $result = $svc->autnums(handle => 'FOOBAR-RIR');
 
-References:
+=head3 References
 
 =over
 
@@ -205,9 +219,11 @@ References:
 
 =item * Entity search: L<Section 3.2.3 of RFC 9083|https://www.rfc-editor.org/rfc/rfc9082.html#section-3.2.3>
 
-=item * IP search: L<Section 2.2 of draft-ietf-regext-rdap-rir-search-09|https://www.ietf.org/archive/id/draft-ietf-regext-rdap-rir-search-09.html#section-2.2>
+=item * "Reverse" search: L<RFC 9536|https://www.rfc-editor.org/rfc/rfc9536.html>
 
-=item * AS number search: L<Section 2.3 of draft-ietf-regext-rdap-rir-search-09|https://www.ietf.org/archive/id/draft-ietf-regext-rdap-rir-search-09.html#section-2.3>
+=item * IP search: L<Section 2.2 of draft-ietf-regext-rdap-rir-search-11|https://www.ietf.org/archive/id/draft-ietf-regext-rdap-rir-search-11.html#section-2.2>
+
+=item * AS number search: L<Section 2.3 of draft-ietf-regext-rdap-rir-search-11|https://www.ietf.org/archive/id/draft-ietf-regext-rdap-rir-search-11.html#section-2.3>
 
 =back
 
@@ -235,7 +251,7 @@ in the string.
 
 These methods all return L<Net::RDAP::SearchResult> objects.
 
-=head2 Reverse Search
+=head2 "Reverse" Search
 
 Some RDAP servers implement "reverse search" which is specified in L<RFC
 9536|https://www.rfc-editor.org/rfc/rfc9536.html>. This allows you to search for
@@ -246,10 +262,6 @@ To perform a reverse search (on a server that supports this), pass a set of
 query parameters using the C<entity> parameter:
 
     $result = $svc->domains(entity => { handle => 9999 });
-
-=head2 Advanced IP Address Search
-
-TODO
 
 =head2 Help
 
@@ -262,6 +274,17 @@ obtained by performing a C<help> query:
     my $help = $svc->help;
 
 The return value is a L<Net::RDAP::Help> object.
+
+=head2 Extension Implementation
+
+You can determine if an RDAP server implements a particular RDAP extension using
+C<implements()>:
+
+    $svc->implements('lunarNic');
+
+This will return a true value if the RDAP server advertises support for the
+C<lunarNic> extension. This methods works by checking the "help" response, and
+will throw an exception if the help request fails.
 
 =head1 COPYRIGHT
 
