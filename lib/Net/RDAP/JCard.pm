@@ -24,17 +24,12 @@ L<Net::RDAP::JCard> - a module representing an RDAP jCard object.
 This module provides a representation of jCard properties, as described in
 L<RFC 7095|https://www.rfc-editor.org/rfc/rfc7095.html>.
 
-Historically, the only way to access the contents of the C<vcardArray> property
-of L<Net::RDAP::Object::Entity> objects was to call the C<vcard()> method and
-get a L<vCard> object back, but the conversion was lossy. This module provides a
-lossless and ergonomic alternative to using L<vCard>.
-
 =head1 CONSTRUCTOR
 
     $jcard = Net::RDAP::JCard->new($ref);
 
 You probably don't need to instantiate these objects yourself, but if you do,
-you just need to pass an arrayref of properties.
+you just need to pass an arrayref of properties (which are themelves arrayrefs).
 
 =cut
 
@@ -60,9 +55,6 @@ Returns a (potentially empty) array of L<Net::RDAP::JCard::Property> objects,
 optionally filtered to just those that have the C<$type> type (matched
 case-insensitively).
 
-Before v0.26, this method was called C<nodes()>. This name still works but is
-deprecated and will be removed in the future.
-
 =cut
 
 sub properties {
@@ -71,6 +63,9 @@ sub properties {
     return grep { !$type || uc($type) eq uc($_->type) } @{$self->{properties}};
 }
 
+#
+# DEPRECATED
+#
 sub nodes { shift->properties(@_) }
 
 =pod

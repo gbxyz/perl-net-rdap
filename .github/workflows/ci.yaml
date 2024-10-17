@@ -1,0 +1,17 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: gbxyz/rdapper:latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: perl Makefile.PL
+      - run: make
+      - run: make test
