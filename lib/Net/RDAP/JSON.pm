@@ -21,7 +21,7 @@ __END__
 
 =head1 NAME
 
-L<Net::RDAP::JSON> - 
+L<Net::RDAP::JSON> - a wrapper to allow JSON backends to be switched.
 
 =head1 DESCRIPTION
 
