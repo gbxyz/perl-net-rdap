@@ -460,17 +460,6 @@ sub rdap_from_response {
     if ($response->is_error) {
         return $self->error_from_response($url, $response, $data);
 
-    } elsif (!$self->is_rdap($response)) {
-        #
-        # we got something that isn't a valid RDAP response:
-        #
-        return $self->error(
-            'url'           => $url,
-            'errorCode'     => 500,
-            'title'         => 'Invalid Content-Type',
-            'description'   => [ sprintf("The Content-Type of the header is '%s', should be 'application/rdap+json'", $response->header('Content-Type')) ],
-        );
-
     } elsif (!defined($data) || 'HASH' ne ref($data)) {
         #
         # response was not parseable as JSON:
