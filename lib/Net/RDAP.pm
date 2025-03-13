@@ -437,29 +437,6 @@ sub _get {
     }
 }
 
-sub error_from_response {
-    my ($self, $url, $response, $data) = @_;
-
-    if ($self->is_rdap($response) && defined($data->{'errorCode'})) {
-        #
-        # we got an RDAP response from the server which looks like
-        # it's an error, so convert it and return:
-        #
-        return Net::RDAP::Error->new($data, $url);
-
-    } else {
-        #
-        # build our own error
-        #
-        return $self->error(
-            'url'           => $url,
-            'errorCode'     => $response->code,
-            'title'         => $response->status_line,
-            'description'   => [$response->status_line],
-        );
-    }
-}
-
 sub rdap_from_response {
     my ($self, $url, $response, $data, %args) = @_;
 
@@ -497,6 +474,29 @@ sub rdap_from_response {
             #
             return $self->object_from_response($data, $url);
         }
+    }
+}
+
+sub error_from_response {
+    my ($self, $url, $response, $data) = @_;
+
+    if ($self->is_rdap($response) && defined($data->{'errorCode'})) {
+        #
+        # we got an RDAP response from the server which looks like
+        # it's an error, so convert it and return:
+        #
+        return Net::RDAP::Error->new($data, $url);
+
+    } else {
+        #
+        # build our own error
+        #
+        return $self->error(
+            'url'           => $url,
+            'errorCode'     => $response->code,
+            'title'         => $response->status_line,
+            'description'   => [$response->status_line],
+        );
     }
 }
 
