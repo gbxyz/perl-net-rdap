@@ -404,10 +404,17 @@ sub _get {
     #
     # path to local copy of the remote resource
     #
-    my $file = sprintf(
-        '%s/Net-RDAP-%s.json',
+    my $file = File::Spec->catfile(
         File::Spec->tmpdir,
-        sha256_hex($url->as_string),
+        sprintf(
+            '%s-%s.json',
+            ref($self),
+            sha256_hex(join(chr(0), (
+                $VERSION,
+                $url->as_string,
+                getpwuid($<)
+            )))
+        )
     );
 
     my ($response, $data);
