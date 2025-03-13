@@ -400,7 +400,7 @@ sub _get {
     # this is how long we allow things to be cached before checking
     # if they have been updated:
     #
-    my $ttl = $self->{'cache_ttl'} || DEFAULT_CACHE_TTL;
+    my $ttl = $self->{'use_cache'} ? ($self->{'cache_ttl'} || DEFAULT_CACHE_TTL) : 0;
 
     #
     # path to local copy of the remote resource
