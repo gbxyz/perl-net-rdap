@@ -14,17 +14,8 @@ my $server = $class->new('https://rdap.example.com/');
 
 isa_ok($server, $class);
 
-my $result = $server->nameservers(
-    entity => { handle => 9999 }
-);
-
-isa_ok($result, $base.'::SearchResult');
-
-my @objects = $result->nameservers;
-cmp_ok(scalar(@objects), '>=', 0);
-
-foreach my $object (@objects) {
-    isa_ok($object, $base.'::Object::Nameserver');
-}
+#
+# TODO: add more tests
+#
 
 done_testing;

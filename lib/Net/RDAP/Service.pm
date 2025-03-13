@@ -14,6 +14,25 @@ sub new {
     }, $package);
 }
 
+sub new_for_tld {
+    my ($package, $tld) = @_;
+
+    foreach my $service (Net::RDAP::Registry->load_registry(Net::RDAP::Registry::DNS_URL)->services) {
+        foreach my $zone ($service->registries) {
+            if (lc($zone) eq lc($tld)) {
+                return $package->new(Net::RDAP::Registry->get_best_url($service->urls));
+            }
+        }
+    }
+
+    return undef;
+}
+
+#
+# generate a URL given the params and fetch it. $type and $segments are used as
+# path segments ($segments must be an arrayref, and may be empty). %args is used
+# to construct query parameters.
+#
 sub fetch {
     my ($self, $type, $segments, %params) = @_;
 
@@ -22,7 +41,7 @@ sub fetch {
     $uri->path_segments(grep { defined && length > 0 } (
         $uri->path_segments,
         $type,
-        'ARRAY' eq ref($segments) ? @{$segments} : $segments
+        @{$segments},
     ));
 
     $uri->query_form(%params);
@@ -36,16 +55,22 @@ sub fetch {
 sub search {
     my ($self, $type, %params) = @_;
 
-    if (exists($params{entity}) && 'HASH' eq ref($params{entity})) {
+    if ('HASH' eq ref($params{entity})) {
         return $self->reverse_search($type, %{$params{entity}});
 
-    } elsif ('ips' eq $type && ($params{up} || $params{down} || $params{top} || $params{bottom})) {
+    } elsif ('ips' eq $type && (any { exists($params{$_}) } qw(up down top bottom))) {
         return $self->rir_reverse_search($type, %params);
 
     } else {
         return $self->fetch($type, undef, %params);
 
     }
+}
+
+sub reverse_search {
+    my ($self, $type, %params) = @_;
+
+    return $self->fetch($type, [qw(reverse_search entity)], %params);
 }
 
 sub rir_reverse_search {
@@ -65,27 +90,21 @@ sub rir_reverse_search {
     return undef;
 }
 
-sub reverse_search {
-    my ($self, $type, %params) = @_;
+sub base        { shift->{'base'} }
+sub client      { shift->{'client'} }
 
-    return $self->fetch($type, [qw(reverse_search entity)], %params);
-}
+sub help        { shift->fetch('help',          []                  ) }
+sub domain      { shift->fetch('domain',        [ pop->name      ]  ) }
+sub ip          { shift->fetch('ip',            [ pop->prefix    ]  ) }
+sub autnum      { shift->fetch('autnum',        [ pop->toasplain ]  ) }
+sub entity      { shift->fetch('entity',        [ pop->handle    ]  ) }
+sub nameserver  { shift->fetch('nameserver',    [ pop->name      ]  ) }
 
-sub base        { $_[0]->{'base'}   }
-sub client      { $_[0]->{'client'} }
-
-sub help        { $_[0]->fetch('help'                               ) }
-sub domain      { $_[0]->fetch('domain',        $_[1]->name         ) }
-sub ip          { $_[0]->fetch('ip',            $_[1]->prefix       ) }
-sub autnum      { $_[0]->fetch('autnum',        $_[1]->toasplain    ) }
-sub entity      { $_[0]->fetch('entity',        $_[1]->handle       ) }
-sub nameserver  { $_[0]->fetch('nameserver',    $_[1]->name         ) }
-
-sub domains     { shift->search('domains',      @_ ) }
-sub nameservers { shift->search('nameservers',  @_ ) }
-sub entities    { shift->search('entities',     @_ ) }
-sub ips         { shift->search('ips',          @_ ) }
-sub autnums     { shift->search('autnums',      @_ ) }
+sub domains     { shift->search('domains',      @_                  ) }
+sub nameservers { shift->search('nameservers',  @_                  ) }
+sub entities    { shift->search('entities',     @_                  ) }
+sub ips         { shift->search('ips',          @_                  ) }
+sub autnums     { shift->search('autnums',      @_                  ) }
 
 sub implements {
     my ($self, $token) = @_;
@@ -159,6 +178,13 @@ L<URI> object representing the base URL of the service.
 You can also provide a second argument which should be an existing
 L<Net::RDAP> instance. This is used when fetching resources from the
 server.
+
+=head3 TLD Service Constructor
+
+    my $svc = Net::RDAP::Service->new_for_tld($tld);
+
+This method searches the IANA registry for an entry for the TLD in C<$tld> and
+returns the corresponding L<Net::RDAP::Service> object.
 
 =head2 Lookup Methods
 
