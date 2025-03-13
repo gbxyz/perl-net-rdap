@@ -1,4 +1,5 @@
 package Net::RDAP::JCard;
+use Carp;
 use Net::RDAP::JCard::Property;
 use Net::RDAP::JCard::Address;
 use strict;
@@ -59,14 +60,16 @@ case-insensitively).
 
 sub properties {
     my ($self, $type) = @_;
-
     return grep { !$type || uc($type) eq uc($_->type) } @{$self->{properties}};
 }
 
 #
 # DEPRECATED
 #
-sub nodes { shift->properties(@_) }
+sub nodes {
+    carp("Warning: Net::RDAP::JCard::nodes() has been deprecated and will be removed in a future release.");
+    return shift->properties(@_);
+}
 
 =pod
 
