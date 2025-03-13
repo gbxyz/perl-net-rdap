@@ -23,6 +23,18 @@ sub new {
     return bless($package->SUPER::new(%options), $package);
 }
 
+sub send_request {
+    my ($self, $req) = @_;
+
+    print STDERR $req->as_string if (exists($ENV{NET_RDAP_UA_DEBUG}));
+
+    my $res = $self->SUPER::send_request($req);
+
+    print STDERR $res->as_string if (exists($ENV{NET_RDAP_UA_DEBUG}));
+
+    return $res;
+}
+
 #
 # usage: $ua->mirror($url, $file, $ttl);
 #
