@@ -31,17 +31,17 @@ sub fetch {
     return $self->client->fetch($uri, %opt);
 }
 
-sub base        { $_[0]->{'base'}   }
-sub client      { $_[0]->{'client'} }
-sub help        { $_[0]->fetch('help'                               ) }
-sub domain      { $_[0]->fetch('domain',        $_[1]->name         ) }
-sub ip          { $_[0]->fetch('ip',            $_[1]->prefix       ) }
-sub autnum      { $_[0]->fetch('autnum',        $_[1]->toasplain    ) }
-sub entity      { $_[0]->fetch('entity',        $_[1]->handle       ) }
-sub nameserver  { $_[0]->fetch('nameserver',    $_[1]->name         ) }
-sub domains     { $_[0]->fetch('domains',       undef, $_[1] => $_[2]) }
-sub nameservers { $_[0]->fetch('nameservers',   undef, $_[1] => $_[2]) }
-sub entities    { $_[0]->fetch('entities',      undef, $_[1] => $_[2]) }
+sub base        { shift->{'base'}                                     }
+sub client      { shift->{'client'}                                   }
+sub help        { shift->fetch('help'                               ) }
+sub domain      { shift->fetch('domain',        pop->name           ) }
+sub ip          { shift->fetch('ip',            pop->prefix         ) }
+sub autnum      { shift->fetch('autnum',        pop->toasplain      ) }
+sub entity      { shift->fetch('entity',        pop->handle         ) }
+sub nameserver  { shift->fetch('nameserver',    pop->name           ) }
+sub domains     { shift->fetch('domains',       [], @_              ) }
+sub nameservers { shift->fetch('nameservers',   [], @_              ) }
+sub entities    { shift->fetch('entities',      [], @_              ) }
 
 1;
 
