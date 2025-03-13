@@ -1,6 +1,5 @@
 package Net::RDAP::UA;
 use base qw(LWP::UserAgent);
-use Carp;
 use File::stat;
 use File::Slurp;
 use HTTP::Date;
@@ -82,10 +81,6 @@ sub mirror {
 
             utime($mtime, $mtime, $file);
             chmod(0600, $file);
-
-        } elsif ($response->is_error) {
-            carp($response->status_line);
-
         }
     }
 
