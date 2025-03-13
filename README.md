@@ -63,11 +63,11 @@ interface to information about all unique Internet identifiers.
 
     $rdap = Net::RDAP->new(%OPTIONS);
 
-Constructor method, returns a new object. %OPTIONS is optional, but
+Constructor method, returns a new object. `%OPTIONS` is optional, but
 may contain any of the following options:
 
-- `use_cache` - if true, copies of RDAP responses are stored on
-disk, and are updated if the copy on the server is more up-to-date.
+- `use_cache` - if set to a true value, copies of RDAP responses are
+stored on disk, and are updated if the copy on the server is more up-to-date.
 This behaviour is disabled by default and must be explicitly enabled.
 **Note:** this setting controls whether [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) caches RDAP records;
 it doesn't control caching of IANA registries by [Net::RDAP::Registry](https://metacpan.org/pod/Net%3A%3ARDAP%3A%3ARegistry)
@@ -100,7 +100,7 @@ perform this encoding:
 
     my $name = "espécime.com";
 
-    my $domain = $rdap->domain->(idn_to_ascii($name, 'UTF-8'));
+    my $domain = $rdap->domain(idn_to_ascii($name, 'UTF-8'));
 
 ## IP Lookup
 
