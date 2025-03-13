@@ -418,18 +418,23 @@ sub _get {
         )
     );
 
-    my ($response, $data);
-    if (!$self->{'use_cache'}) {
-        $response = $self->ua->request(GET($url));
-        eval { $data = decode_json($response->decoded_content) };
+    my $response = $self->ua->mirror($url, $file, $ttl);
+
+    my $data = eval { decode_json(scalar(read_file($file))) };
+
+    if ($@) {
+        chomp($@);
+        return $self->error(
+            url         => $url,
+            errorCode   => 500,
+            title       => 'JSON parse error',
+            description => [ $@ ],
+        );
 
     } else {
-        $response = $self->ua->mirror($url, $file, $ttl);
-        eval { $data = decode_json(scalar(read_file($file))) };
+        return $self->rdap_from_response($url, $response, $data, %args);
 
     }
-
-    return $self->rdap_from_response($url, $response, $data, %args);
 }
 
 sub error_from_response {
@@ -461,7 +466,7 @@ sub rdap_from_response {
     if ($response->is_error) {
         return $self->error_from_response($url, $response, $data);
 
-    } elsif (!defined($data) || 'HASH' ne ref($data)) {
+    } elsif ('HASH' ne ref($data)) {
         #
         # response was not parseable as JSON:
         #
