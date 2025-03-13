@@ -12,6 +12,20 @@ sub new {
     }, $package);
 }
 
+sub new_for_tld {
+    my ($package, $tld) = @_;
+
+    foreach my $service (Net::RDAP::Registry->load_registry(Net::RDAP::Registry::DNS_URL)->services) {
+        foreach my $zone ($service->registries) {
+            if (lc($zone) eq lc($tld)) {
+                return $package->new(Net::RDAP::Registry->get_best_url($service->urls));
+            }
+        }
+    }
+
+    return undef;
+}
+
 sub fetch {
     my ($self, $type, $segments, %params) = @_;
 
@@ -103,6 +117,13 @@ L<URI> object representing the base URL of the service.
 You can also provide a second argument which should be an existing
 L<Net::RDAP> instance. This is used when fetching resources from the
 server.
+
+=head3 TLD Service Constructor
+
+    my $svc = Net::RDAP::Service->new_for_tld($tld);
+
+This method searches the IANA registry for an entry for the TLD in C<$tld> and
+returns the corresponding L<Net::RDAP::Service> object.
 
 =head2 Lookup Methods
 
