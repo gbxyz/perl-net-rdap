@@ -20,6 +20,7 @@ use Net::RDAP::SearchResult;
 use Net::RDAP::Service;
 use Net::RDAP::Values;
 use Net::RDAP::JCard;
+use POSIX qw(getpwuid);
 use vars qw($VERSION);
 use constant DEFAULT_CACHE_TTL => 3600;
 use strict;
