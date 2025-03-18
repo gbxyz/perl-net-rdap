@@ -57,6 +57,8 @@ is an RDAP HTTP user agent), and parsing the response
 returned by the server). As such, it provides a single unified
 interface to information about all unique Internet identifiers.
 
+If you want a command-line RDAP client, see [App::rdapper](https://metacpan.org/pod/App%3A%3Ardapper).
+
 # METHODS
 
 ## Constructor

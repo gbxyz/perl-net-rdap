@@ -92,6 +92,8 @@ is an RDAP HTTP user agent), and parsing the response
 returned by the server). As such, it provides a single unified
 interface to information about all unique Internet identifiers.
 
+If you want a command-line RDAP client, see L<App::rdapper>.
+
 =head1 METHODS
 
 =head2 Constructor
