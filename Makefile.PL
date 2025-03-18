@@ -10,7 +10,7 @@ WriteMakefile(
     AUTHOR          => ['Gavin Brown <gavin.brown@fastmail.uk>'],
     LICENSE         => 'freebsd',
     PREREQ_PM => {
-        'DateTime::Format::ISO8601' => 0,
+        'DateTime::Tiny'            => 0,
         'Digest::SHA'               => 0,
         'File::Basename'            => 0,
         'File::Slurp'               => 0,

@@ -7,6 +7,7 @@ use HTTP::Request::Common;
 use JSON;
 use MIME::Base64;
 use Net::ASN;
+use Net::IP;
 use Net::RDAP::Error;
 use Net::RDAP::Help;
 use Net::RDAP::Object::Autnum;
@@ -26,7 +27,7 @@ use constant DEFAULT_CACHE_TTL => 3600;
 use strict;
 use warnings;
 
-$VERSION = '0.34';
+$VERSION = '0.35';
 
 =pod
 

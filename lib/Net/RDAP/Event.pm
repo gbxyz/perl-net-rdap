@@ -1,6 +1,5 @@
 package Net::RDAP::Event;
-use DateTime::Format::ISO8601;
-use Net::RDAP::Link;
+use DateTime::Tiny;
 use base qw(Net::RDAP::Base);
 use strict;
 use warnings;
@@ -56,30 +55,30 @@ sub actor { $_[0]->{'eventActor'} }
 
     $date = $event->date;
 
-Returns a L<DateTime> object corresponding to the date and time of the
+Returns a L<DateTime::Tiny> object corresponding to the date and time of the
 event.
+
+Prior to Net::RDAP v0.35, this method returned a L<DateTime>, but this was
+switched to L<DateTime::Tiny> for performance reasons. If you need a
+L<DateTime>, use C<$event-E<gt>date-E<gt>DateTime>.
 
 =cut
 
-sub date {
-    #
-    # DateTime::Format::ISO8601 doesn't seem to like strings with "time-secfrac" components, so we strip them out
-    #
-    my $str = shift->{'eventDate'};
-    $str =~ s/(T\d{2}:\d{2}:\d{2})\.\d{1,3}(\+)/$1$2/;
+sub date { DateTime::Tiny->from_string(substr(shift->{'eventDate'}, 0, 19)) }
 
-    my $date;
-    eval {
-        $date = DateTime::Format::ISO8601->parse_datetime($str || '1970-01-01T00:00:00.0Z');
-    };
-    if ($@) {
-        return DateTime::Format::ISO8601->parse_datetime('1970-01-01T00:00:00.0Z');
+=pod
 
-    } else {
-        return $date;
+=head2 Event Time Zone
 
-    }
-}
+    $tz = $event->date_timezone;
+
+Since L<DateTime::Tiny> does not support time zones, this method will return the
+time zone part of the C<eventDate> property. This will be a UTC offset, mnemonic
+name, etc.
+
+=cut
+
+sub date_timezone { substr(shift->{'eventDate'}, 20) }
 
 =pod
 
