@@ -64,7 +64,7 @@ L<DateTime>, use C<$event-E<gt>date-E<gt>DateTime>.
 
 =cut
 
-sub date { DateTime::Tiny->from_string(substr(shift->{'eventDate'}, 0, 19)) }
+sub date { DateTime::Tiny->from_string(substr(shift->{eventDate}, 0, 19)) }
 
 =pod
 
@@ -73,12 +73,16 @@ sub date { DateTime::Tiny->from_string(substr(shift->{'eventDate'}, 0, 19)) }
     $tz = $event->date_timezone;
 
 Since L<DateTime::Tiny> does not support time zones, this method will return the
-time zone part of the C<eventDate> property. This will be a UTC offset, mnemonic
-name, etc.
+time zone part of the C<eventDate> property. For a well-formed C<eventDate>
+value, this will either be C<Z> (indicating UTC, or an offset of the form
+C<+/-HH:MM>.
 
 =cut
 
-sub date_timezone { substr(shift->{'eventDate'}, 20) }
+sub date_timezone {
+    my $str = substr(shift->{eventDate}, 20);
+    $str =~ s/^\.\d+//g;
+}
 
 =pod
 
