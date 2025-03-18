@@ -70,7 +70,7 @@ sub date { DateTime::Tiny->from_string(substr(shift->{eventDate}, 0, 19)) }
 
 =head2 Event Time Zone
 
-    $tz = $event->date_timezone;
+    $tz = $event->date_tz;
 
 Since L<DateTime::Tiny> does not support time zones, this method will return the
 time zone part of the C<eventDate> property. For a well-formed C<eventDate>
@@ -79,9 +79,10 @@ C<+/-HH:MM>.
 
 =cut
 
-sub date_timezone {
-    my $str = substr(shift->{eventDate}, 20);
+sub date_tz {
+    my $str = substr(shift->{eventDate}, 19);
     $str =~ s/^\.\d+//g;
+    return $str;
 }
 
 =pod
