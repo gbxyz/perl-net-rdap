@@ -7,7 +7,6 @@ use HTTP::Request::Common;
 use JSON;
 use MIME::Base64;
 use Net::ASN;
-use Net::IP;
 use Net::RDAP::Error;
 use Net::RDAP::Help;
 use Net::RDAP::Object::Autnum;
