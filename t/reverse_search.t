@@ -10,6 +10,8 @@ require_ok $base;
 
 my $class = $base.'::Service';
 
+require_ok $class;
+
 my $server = $class->new('https://rdap.example.com/');
 
 isa_ok($server, $class);
