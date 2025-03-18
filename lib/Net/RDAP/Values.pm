@@ -211,6 +211,8 @@ to the permitted types of RDAP values:
 
 =item * C<RDAP_TYPE_DOMAIN_VARIANT_RELATION>
 
+=item * C<RDAP_REDACTED_NAME>
+
 =back
 
 =head1 COPYRIGHT
