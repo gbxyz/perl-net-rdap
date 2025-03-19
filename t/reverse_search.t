@@ -12,9 +12,11 @@ my $class = $base.'::Service';
 
 require_ok $class;
 
-my $server = $class->new('https://rdap.example.com/');
+my $server = $class->new('https://rdap.db.ripe.net/');
 
 isa_ok($server, $class);
+
+ok($server->implements(q{rirSearch1}), q{server implements the RIR reverse search extension});
 
 #
 # TODO: add more tests
