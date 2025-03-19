@@ -247,9 +247,9 @@ examples:
 
 =item * "Reverse" search: L<RFC 9536|https://www.rfc-editor.org/rfc/rfc9536.html>
 
-=item * IP search: L<Section 2.2 of draft-ietf-regext-rdap-rir-search-11|https://www.ietf.org/archive/id/draft-ietf-regext-rdap-rir-search-11.html#section-2.2>
+=item * IP search (B<EXPERIMENTAL>): L<Section 2.2 of draft-ietf-regext-rdap-rir-search-11|https://www.ietf.org/archive/id/draft-ietf-regext-rdap-rir-search-11.html#section-2.2>
 
-=item * AS number search: L<Section 2.3 of draft-ietf-regext-rdap-rir-search-11|https://www.ietf.org/archive/id/draft-ietf-regext-rdap-rir-search-11.html#section-2.3>
+=item * AS number search (B<EXPERIMENTAL>): L<Section 2.3 of draft-ietf-regext-rdap-rir-search-11|https://www.ietf.org/archive/id/draft-ietf-regext-rdap-rir-search-11.html#section-2.3>
 
 =back
 
@@ -279,6 +279,10 @@ These methods all return L<Net::RDAP::SearchResult> objects.
 
 =head2 "Reverse" Search
 
+B<IMPORTANT NOTE:> due to a lack of server implementations to test against,
+reverse search. functionality is I<experimental> and should not be relied upon
+in production code.
+
 Some RDAP servers implement "reverse search" which is specified in L<RFC
 9536|https://www.rfc-editor.org/rfc/rfc9536.html>. This allows you to search for
 objects based on their relationship to some other object: for example, to search
@@ -289,12 +293,25 @@ query parameters using the C<entity> parameter:
 
     $result = $svc->domains(entity => { handle => 9999 });
 
+=head3 RIR Relation Searches
+
+L<Section 3 of draft-ietf-regext-rdap-rir-search-11|https://www.ietf.org/archive/id/draft-ietf-regext-rdap-rir-search-11.html#section-3>
+describes searches and link relations for finding objects and sets of objects
+with respect to their position within a hierarchy.
+
+Some examples:
+
+    $svc->ips(up => q{2001:DB8::42});
+
+Since this specification is in draft, this functionality may change
+significantly in future versions of this module.
+
 =head2 Help
 
 Each RDAP server has a "help" endpoint which provides "helpful
 information" (command syntax, terms of service, privacy policy,
 rate-limiting policy, supported authentication methods, supported
-extensions, technical support contact, etc.). This information may be
+extensions, technical support contact, etc). This information may be
 obtained by performing a C<help> query:
 
     my $help = $svc->help;
