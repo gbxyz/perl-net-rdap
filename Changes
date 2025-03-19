@@ -1,6 +1,6 @@
 Revision history for perl module Net::RDAP:
 
-0.35 - YYYY-MM-DD
+0.35 - 2025-03-19
   - limited support for the Reverse Search and RIR Reverse Search specs.
   - add Net::RDAP::JSON to allow JSON backends to be switched.
   - use DateTime::Tiny instead of DateTime::Format::ISO8601 to improve performance.
