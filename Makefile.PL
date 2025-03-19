@@ -33,7 +33,6 @@ WriteMakefile(
         'Test::More'                => 0,
         'URI'                       => 0,
         'XML::LibXML'               => 0,
-        'vCard'                     => 0,
     },
     META_MERGE => {
         'meta-spec' => {
