@@ -431,18 +431,20 @@ sub _get {
 
     my $data = eval { decode_json(scalar(read_file($file))) };
 
-    if ($@) {
-        chomp($@);
+    if ($response->code >= 400) {
+        return $self->error_from_response($url, $response, $data);
+
+    } elsif ($data) {
+        return $self->rdap_from_response($url, $response, $data, %args);
+
+    } else {
+        unlink($file) if (-e $file);
+
         return $self->error(
             url         => $url,
             errorCode   => 500,
             title       => 'JSON parse error',
-            description => [ $@ ],
         );
-
-    } else {
-        return $self->rdap_from_response($url, $response, $data, %args);
-
     }
 }
 
