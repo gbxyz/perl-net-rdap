@@ -420,6 +420,13 @@ sub _get {
         )
     );
 
+    #
+    # untaint file
+    #
+    if ($file =~ /(.+)/) {
+        $file = $1;
+    }
+
     my $response = $self->ua->mirror($url, $file, $ttl);
 
     my $data = eval { decode_json(scalar(read_file($file))) };
