@@ -12,5 +12,6 @@ jobs:
     container: gbxyz/rdapper:latest
     steps:
       - uses: actions/checkout@v4
+      - run: cpanm -n Carp::Always
       - run: perl Makefile.PL
       - run: make test
