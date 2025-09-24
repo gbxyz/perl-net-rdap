@@ -449,10 +449,12 @@ sub _get {
     } else {
         unlink($file) if (-e $file);
 
+        chomp($@);
+
         return $self->error(
             url         => $url,
             errorCode   => 500,
-            title       => 'JSON parse error',
+            title       => sprintf('JSON parse error: %s', $@),
         );
     }
 }
