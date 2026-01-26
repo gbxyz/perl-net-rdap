@@ -230,9 +230,53 @@ sub redactions { $_[0]->objects('Net::RDAP::Redaction', $_[0]->{'redacted'}) }
 
 =pod
 
+=head1 TTL values
+
+	$ttl = $domain->dns_ttl("NS");
+	$ttl = $host->dns_ttl("AAAA");
+
+If the server supports
+L<draft-ietf-regext-rdap-ttl-extension|https://datatracker.ietf.org/doc/draft-ietf-regext-rdap-ttl-extension/>,
+this method returns a number representing the Time-To-Live (TTL) (in seconds) of
+the DNS record(s) of the specified type that are published in the DNS for the
+given domain or nameserver object. Returns C<undef> if the server does not
+support this extension, or if no values are available for the given type. Not
+applicable to entities.
+
+=cut
+
+sub dns_ttl {
+	my ($self, $type) = @_;
+
+	return $self->{'ttl0_data'}->{'values'}->{$type};
+}
+
+=pod
+
+	@types = $domain_or_host->dns_ttl_types;
+
+Returns a list of the DNS record types for which TTL values are available.
+
+=cut
+
+sub dns_ttl_types { sort(keys(%{$_[0]->{'ttl0_data'}->{'values'}})) }
+
+=pod
+
+	@types = $domain_or_host->dns_ttl_remarks;
+
+Returns a list of L<Net::RDAP::Remark> objects relating to the TTL values of the
+object.
+
+=cut
+
+sub dns_ttl_remarks { $_[0]->objects('Net::RDAP::Remark', $_[0]->{'ttl0_data'}->{'remarks'}) }
+
+=pod
+
 =head1 COPYRIGHT
 
-Copyright 2018-2023 CentralNic Ltd, 2024-2025 Gavin Brown. For licensing information,
+Copyright 2018-2023 CentralNic Ltd, 2024-2026 Gavin Brown. For licensing information,
 please see the C<LICENSE> file in the L<Net::RDAP> distribution.
 
 =cut
