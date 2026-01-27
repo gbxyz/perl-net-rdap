@@ -1,4 +1,5 @@
 package Net::RDAP::Object;
+use List::Util qw(any);
 use base qw(Net::RDAP::Base);
 use strict;
 use warnings;
@@ -271,6 +272,20 @@ object.
 =cut
 
 sub dns_ttl_remarks { $_[0]->objects('Net::RDAP::Remark', $_[0]->{'ttl0_data'}->{'remarks'}) }
+
+=pod
+
+=head1 Extensions
+
+	$object->has_extension($extn);
+
+This method returns true if the RDAP extension identied by C<$extn> is present
+in the C<rdapConformance> property. This method only works on the topmost object
+of a response.
+
+=cut
+
+sub has_extension { any { $_ eq $_[1] } $_[0]->conformance }
 
 =pod
 
