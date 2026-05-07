@@ -13,5 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: cpanm -n Carp::Always
+      - run: cpanm -n File::XDG
       - run: perl Makefile.PL
       - run: make test
