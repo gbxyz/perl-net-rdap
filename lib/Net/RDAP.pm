@@ -157,8 +157,8 @@ If there was an error, this method will return a L<Net::RDAP::Error>.
 
 Domain names which contain characters other than those from the ASCII-compatible
 range must be encoded into "A-label" (or "Punycode") format before being passed
-to L<Net::DNS::Domain>. You can use L<Net::LibIDN> or L<Net::LibIDN2> to
-perform this encoding:
+to L<Net::DNS::Domain>. You can use L<Net::LibIDN>, L<Net::LibIDN2>, or
+L<Net::IDN::PP> to perform this encoding, for example:
 
     use Net::LibIDN;
 
