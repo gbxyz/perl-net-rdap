@@ -1,6 +1,7 @@
 package Net::RDAP;
 use Carp;
 use Digest::SHA qw(sha256_hex);
+use File::Glob qw(bsd_glob);
 use File::Path qw(make_path);
 use File::Slurp;
 use File::Spec;
@@ -693,6 +694,24 @@ sub error {
         },
         $params{'url'},
     );
+}
+
+sub clean_cache {
+    my $self = shift;
+    my $dir = $self->_cache_dir;
+    my $ttl = $self->_cache_ttl;
+    foreach my $file (bsd_glob(sprintf('%s/*.json', $dir))) {
+        if (stat($file)->mtime < time() - $ttl) {
+            #
+            # untaint file
+            #
+            if ($file =~ /(.+)/) {
+                $file = $1;
+            }
+
+            unlink($file);
+        }
+    }
 }
 
 1;
