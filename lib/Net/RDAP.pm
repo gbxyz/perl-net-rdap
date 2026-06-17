@@ -435,41 +435,49 @@ sub _accept_language {
 sub _get {
     my ($self, $url, %args) = @_;
 
-    #
-    # this is how long we allow things to be cached before checking
-    # if they have been updated:
-    #
-    my $ttl = $self->{'use_cache'} ? ($self->{'cache_ttl'} || DEFAULT_CACHE_TTL) : 0;
+    my $lang = $self->_accept_language;
 
-    my $lang = $self->{accept_language} || DEFAULT_ACCEPT_LANGUAGE;
+    my ($response, $data, $file);
 
-    #
-    # path to local copy of the remote resource
-    #
+    if (!$self->{'use_cache'}) {
+        $response = $self->ua->get($url, $lang);
 
-    my $dir = $self->{cache_dir} || File::XDG->new(path_class => 'File::Spec', name => ref($self))->cache_home;
+        $data = eval { decode_json($response->decoded_content) };
 
-    #
-    # untaint $dir
-    #
-    if ($dir =~ /(.+)/) {
-        $dir = $1;
+    } else {
+        #
+        # this is how long we allow things to be cached before checking
+        # if they have been updated:
+        #
+        my $ttl = $self->_cache_ttl;
+
+        #
+        # path to local copy of the remote resource
+        #
+        my $dir = $self->_cache_dir;
+
+        #
+        # untaint $dir
+        #
+        if ($dir =~ /(.+)/) {
+            $dir = $1;
+        }
+
+        croak(sprintf("Unable to create '%s'", $dir)) if (!-d $dir && !make_path($dir, { mode => 0700 }));
+
+        $file = $self->_cache_filename($dir, $url, $lang);
+
+        #
+        # untaint file
+        #
+        if ($file =~ /(.+)/) {
+            $file = $1;
+        }
+
+        $response = $self->ua->mirror($url, $file, $ttl, $lang);
+
+        $data = eval { decode_json(scalar(read_file($file))) };
     }
-
-    croak(sprintf("Unable to create '%s'", $dir)) if (!-d $dir && !make_path($dir, { mode => 0700 }));
-
-    my $file = File::Spec->catfile($dir, sprintf('%s.json', sha256_hex(join(chr(0), ($VERSION, $url->canonical->as_string, $lang)))));
-
-    #
-    # untaint file
-    #
-    if ($file =~ /(.+)/) {
-        $file = $1;
-    }
-
-    my $response = $self->ua->mirror($url, $file, $ttl, $lang);
-
-    my $data = eval { decode_json(scalar(read_file($file))) };
 
     if ($response->code >= 400) {
         return $self->error_from_response($url, $response, $data);
@@ -478,7 +486,7 @@ sub _get {
         return $self->rdap_from_response($url, $response, $data, %args);
 
     } else {
-        unlink($file) if (-e $file);
+        unlink($file) if ($self->{'use_cache'} && -e $file);
 
         chomp($@);
 
