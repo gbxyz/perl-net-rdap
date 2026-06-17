@@ -33,7 +33,7 @@ use constant {
 use strict;
 use warnings;
 
-$VERSION = '0.42';
+$VERSION = '0.43';
 
 =pod
 
