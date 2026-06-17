@@ -42,12 +42,12 @@
 [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) provides an interface to the Registration Data Access
 Protocol (RDAP).
 
-RDAP is replacing Whois as the preferred way of obtainining information
+RDAP replaces Whois as the preferred way of obtainining information
 about Internet resources (IP addresses, autonymous system numbers, and
-domain names). As of writing, RDAP is fully supported by Regional
-Internet Registries (who are responsible for the allocation of IP
-addresses and AS numbers) and generic TLD operators (e.g. .com, .org,
-.xyz) but is still being rolled out among country-code registries.
+domain names). RDAP is fully supported by Regional Internet Registries
+(who are responsible for the allocation of IP addresses and AS numbers)
+and generic TLD operators (e.g. .com, .org, .xyz) but is still being
+rolled out among country-code registries.
 
 [Net::RDAP](https://metacpan.org/pod/Net%3A%3ARDAP) does all the hard work of determining the correct
 server to query ([Net::RDAP::Registry](https://metacpan.org/pod/Net%3A%3ARDAP%3A%3ARegistry) is an interface to the
@@ -57,7 +57,8 @@ is an RDAP HTTP user agent), and parsing the response
 returned by the server). As such, it provides a single unified
 interface to information about all unique Internet identifiers.
 
-If you want a command-line RDAP client, see [App::rdapper](https://metacpan.org/pod/App%3A%3Ardapper).
+If you want a command-line RDAP client, see [App::rdapper](https://metacpan.org/pod/App%3A%3Ardapper). If you want an RDAP
+server, see [Net::RDAP::Server](https://metacpan.org/pod/Net%3A%3ARDAP%3A%3AServer).
 
 # METHODS
 
