@@ -126,6 +126,10 @@ default this is one hour (3600 seconds).
 not provided, then the directory to use is determined using L<File::XDG>. Prior
 to v0.42, the value of C<L<File::Spec>-E<gt>tmpdir()> was used.
 
+=item * C<preserve_cache> - unless this option is set to a true value, any cache
+entry older than the specified TTL will be purged when the L<Net::RDAP> object
+is destroyed. You can manually clean the cache using the C<clean_cache()> method.
+
 =item * C<accept_language> - a string that will be passed to RDAP servers in
 the C<Accept-Language> header. If not provided, the default is "C<en>".
 
@@ -712,6 +716,11 @@ sub clean_cache {
             unlink($file);
         }
     }
+}
+
+sub DESTROY {
+    my $self = shift;
+    $self->clean_cache unless ($self->{preserve_cache});
 }
 
 1;
