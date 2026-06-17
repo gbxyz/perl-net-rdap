@@ -408,6 +408,30 @@ sub _head {
     }
 }
 
+sub _cache_dir {
+    my $self = shift;
+
+    return $self->{cache_dir} || File::XDG->new(path_class => 'File::Spec', name => ref($self))->cache_home;
+}
+
+sub _cache_ttl {
+    my $self = shift;
+
+    return $self->{'cache_ttl'} || DEFAULT_CACHE_TTL;
+}
+
+sub _cache_filename {
+    my ($self, $dir, $url, $lang) = @_;
+
+    return File::Spec->catfile($dir, sprintf('%s.json', sha256_hex(join(chr(0), ($VERSION, $url->canonical->as_string, $lang)))));
+}
+
+sub _accept_language {
+    my $self = shift;
+
+    return $self->{accept_language} || DEFAULT_ACCEPT_LANGUAGE;
+}
+
 sub _get {
     my ($self, $url, %args) = @_;
 
