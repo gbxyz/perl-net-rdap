@@ -31,8 +31,10 @@ my @tests = (
 );
 
 foreach my $test (@tests) {
-    my $object = $test->[0]->($rdap, $test->[1]);
-    isa_ok($object, $test->[2]);
+    my ($method, $input, $expected_type) = @{$test};
+
+    my $object = $method->($rdap, $input);
+    isa_ok($object, $expected_type);
 
     if ($object->isa($class.q{::Error})) {
         ok(int($object->errorCode) == $object->errorCode);
