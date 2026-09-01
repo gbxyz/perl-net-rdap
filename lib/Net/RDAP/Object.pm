@@ -237,12 +237,12 @@ sub redactions { $_[0]->objects('Net::RDAP::Redaction', $_[0]->{'redacted'}) }
 	$ttl = $host->dns_ttl("AAAA");
 
 If the server supports
-L<draft-ietf-regext-rdap-ttl-extension|https://datatracker.ietf.org/doc/draft-ietf-regext-rdap-ttl-extension/>,
+L<RFC 10037|https://www.rfc-editor.org/info/rfc10037/>,
 this method returns a number representing the Time-To-Live (TTL) (in seconds) of
 the DNS record(s) of the specified type that are published in the DNS for the
 given domain or nameserver object. Returns C<undef> if the server does not
 support this extension, or if no values are available for the given type. Not
-applicable to entities.
+applicable to other object types (ie. entities, IP addresses and AS numbers).
 
 =cut
 
@@ -267,7 +267,7 @@ sub dns_ttl_types { sort(keys(%{$_[0]->{'ttl0_data'}->{'values'}})) }
 	@types = $domain_or_host->dns_ttl_remarks;
 
 Returns a list of L<Net::RDAP::Remark> objects relating to the TTL values of the
-object.
+object (if any).
 
 =cut
 
